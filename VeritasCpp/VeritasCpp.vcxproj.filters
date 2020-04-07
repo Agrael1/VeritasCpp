@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Файлы исходного кода">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Заголовочные файлы">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Заголовочные файлы\Engine">
+      <UniqueIdentifier>{7bd0b8bf-3f86-4590-8f4a-ac8c20e04b15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Engine">
+      <UniqueIdentifier>{238fd3ca-186f-4609-a934-3db3fd10fa64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\Framework">
+      <UniqueIdentifier>{edc8170b-9a48-4754-8387-3a087fc56cf3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Framework">
+      <UniqueIdentifier>{f4aa92bc-d0b7-4545-aebc-0a2ca9bc295a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\Engine\Input">
+      <UniqueIdentifier>{57fb7183-3044-4c29-86c2-db370e840b63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Engine\Input">
+      <UniqueIdentifier>{cf3e4a58-adcb-4029-adcb-62237b3f4bef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\Engine\Graphics">
+      <UniqueIdentifier>{c36cf623-b8e3-4f79-b7a9-7b308cd8d661}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Engine\Graphics">
+      <UniqueIdentifier>{061c7cb5-633f-46da-bb1f-e9af3e2f8329}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Engine\Window.cpp">
+      <Filter>Файлы исходного кода\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="EntryMain.cpp">
+      <Filter>Файлы исходного кода\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Exception.cpp">
+      <Filter>Файлы исходного кода\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\VeritasEngine.cpp">
+      <Filter>Файлы исходного кода\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Mouse.cpp">
+      <Filter>Файлы исходного кода\Engine\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Keyboard.cpp">
+      <Filter>Файлы исходного кода\Engine\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Graphics.cpp">
+      <Filter>Файлы исходного кода\Engine\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\SwapChain.cpp">
+      <Filter>Файлы исходного кода\Engine\Graphics</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Engine\VeritasEngine.h">
+      <Filter>Заголовочные файлы\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Window.h">
+      <Filter>Заголовочные файлы\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\WinSetup.h">
+      <Filter>Заголовочные файлы\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Exception.h">
+      <Filter>Заголовочные файлы\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Mouse.h">
+      <Filter>Заголовочные файлы\Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Keyboard.h">
+      <Filter>Заголовочные файлы\Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\SwapChain.h">
+      <Filter>Заголовочные файлы\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Graphics.h">
+      <Filter>Заголовочные файлы\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Color.h">
+      <Filter>Заголовочные файлы\Engine</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
