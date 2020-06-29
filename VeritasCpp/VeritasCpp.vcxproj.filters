@@ -92,5 +92,14 @@
     <ClInclude Include="Engine\Color.h">
       <Filter>Заголовочные файлы\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="XMHelpers.h">
+      <Filter>Заголовочные файлы\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexedTriangleList.h">
+      <Filter>Заголовочные файлы\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="PreClipTransform.h">
+      <Filter>Заголовочные файлы\Engine\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

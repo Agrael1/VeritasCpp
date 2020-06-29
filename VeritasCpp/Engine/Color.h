@@ -89,6 +89,8 @@ enum class PIXEL_TYPE
 class ConsoleColor : public CHAR_INFO
 {
 public:
+	ConsoleColor() = default;
+	ConsoleColor(DEF_COLOUR color) : CHAR_INFO{ (wchar_t)PIXEL_TYPE::PIXEL_NONE, (uint16_t)color } {};
 	ConsoleColor(PIXEL_TYPE pixel, DEF_COLOUR color) 
 		:CHAR_INFO{ (wchar_t)pixel, (uint16_t)color}
 	{

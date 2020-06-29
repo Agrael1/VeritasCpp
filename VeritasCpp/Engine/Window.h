@@ -76,9 +76,9 @@ private:
 	HWND ControlWindow;
 	HINSTANCE hInst;
 
-	SMALL_RECT rWindowRect;
-	COORD cDimentions;
-	short width, height;
+	SMALL_RECT rWindowRect{0};
+	COORD cDimentions{0};
+	short width = 0, height = 0;
 
 	std::vector<BYTE> rawBuffer;
 public:

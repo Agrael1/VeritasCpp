@@ -1,6 +1,8 @@
 #pragma once
 #include <Engine\Window.h>
 #include <Engine\Graphics.h>
+#include "PreClipTransform.h"
+#include "IndexedTriangleList.h"
 
 class VeritasEngine
 {
@@ -14,4 +16,12 @@ private:
 private:
 	Window Console;
 	Graphics Gfx;
+	Cube cube;
+	PC3Transformer pst;
+
+	static constexpr float dTheta = DirectX::XM_2PI;
+	float offset_z = 2.0f;
+	float theta_x = 0.0f;
+	float theta_y = 0.0f;
+	float theta_z = 0.0f;
 };
