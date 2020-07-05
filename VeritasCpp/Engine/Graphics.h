@@ -1,20 +1,22 @@
 #pragma once
-#include "SwapChain.h"
-#include "XMHelpers.h"
+#include <Framework\GDIPlusManager.h>
+#include <wil\resource.h>
+#include <Framework\ConditionalNoexcept.h>
+#include "Buffer.h"
+#include "RenderTarget.h"
 
-
-
-class Graphics
+class VGraphicsDevice
 {
+	friend class VSwapChain;
+	using unique_gdi = wil::unique_any<Gdiplus::GpGraphics*, decltype(&Gdiplus::DllExports::GdipDeleteGraphics), Gdiplus::DllExports::GdipDeleteGraphics>;
 public:
-	Graphics(uint16_t width, uint16_t height, class Window& Wndref);
+	VGraphicsDevice(class Window& window, bool ICCColorAdjustment = false);
 public:
-	void BeginFrame(ConsoleColor color);
-	void DrawTriangle(const vec2A& v0, const vec2A& v1, const vec2A& v2, ConsoleColor color);
-	void EndFrame();
+	void CreateBuffer(const VBUFFER_DESC* desc, IVBuffer** _out_Bufptr, const void* initialData = nullptr)noxnd;
+	void CreateTexture2D(const VTEXTURE_DESC* desc, IVTexture** _out_texptr, const void* initialData = nullptr)noxnd;
+	void CreateRenderTargetView(IVTexture* resource, RenderTargetView* _out_rtv)noxnd;
 private:
-	void DrawFlatTopTriangle(const vec2A& v0, const vec2A& v1, const vec2A& v2, ConsoleColor color);
-	void DrawFlatBottomTriangle(const vec2A& v0, const vec2A& v1, const vec2A& v2, ConsoleColor color);
+	Gdiplus::GpGraphics* GetRawGraphics()noexcept;
 private:
-	SwapChain Swap;
+	unique_gdi pGfx;
 };

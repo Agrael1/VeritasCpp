@@ -37,7 +37,7 @@ enum DB16_COLOUR
 	BG_Skin				= 0x00C0,
 	BG_Sky				= 0x00D0,
 	BG_Honey			= 0x00E0,
-	BG_Moon_White		= 0x00F0,
+	BG_Moon_White		= 0x00F0
 };
 
 // Default color scheme:
@@ -89,10 +89,13 @@ enum class PIXEL_TYPE
 class ConsoleColor : public CHAR_INFO
 {
 public:
-	ConsoleColor() = default;
-	ConsoleColor(DEF_COLOUR color) : CHAR_INFO{ (wchar_t)PIXEL_TYPE::PIXEL_NONE, (uint16_t)color } {};
 	ConsoleColor(PIXEL_TYPE pixel, DEF_COLOUR color) 
 		:CHAR_INFO{ (wchar_t)pixel, (uint16_t)color}
+	{
+
+	}
+	ConsoleColor(DEF_COLOUR color)
+		:CHAR_INFO{ (wchar_t)PIXEL_TYPE::PIXEL_NONE, (uint16_t)color }
 	{
 
 	}

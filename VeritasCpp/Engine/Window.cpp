@@ -1,7 +1,77 @@
 #include "Window.h"
-#include <sstream>
 
-LRESULT WINAPI Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+//Window Class winstyle
+Window::WindowClass Window::WindowClass::wndclass;
+
+Window::WindowClass::WindowClass()noexcept
+	:hinst( GetModuleHandle(nullptr) )
+{
+	appico.reset(LoadIcon(hinst, MAKEINTRESOURCE(IDI_ICON1)));
+	WNDCLASSEX wcWindow = { 0 };
+	wcWindow.cbSize = sizeof(wcWindow);
+	wcWindow.style = CS_OWNDC;
+	wcWindow.lpfnWndProc = HandleMsgSetup;
+	wcWindow.cbClsExtra = 0;
+	wcWindow.cbWndExtra = 0;
+	wcWindow.hInstance = hinst;
+	wcWindow.hCursor = nullptr;
+	wcWindow.hIcon = appico.get();
+	wcWindow.hbrBackground = nullptr;
+	wcWindow.lpszMenuName = nullptr;
+	wcWindow.hIconSm = nullptr;
+	wcWindow.lpszClassName = GetName();
+	RegisterClassEx(&wcWindow);
+}
+Window::WindowClass::~WindowClass()
+{
+	UnregisterClass(wndClassName, hinst);
+}
+
+const wchar_t* Window::WindowClass::GetName() noexcept
+{
+	return wndClassName;
+}
+HINSTANCE Window::WindowClass::GetInstance() noexcept
+{
+	return wndclass.hinst;
+}
+
+
+
+Window::Window(uint32_t width, uint32_t height, std::wstring_view name)
+	:width(width),height(height)
+{
+	RECT rWindow;
+	rWindow.left = 100;
+	rWindow.right = width + rWindow.left;
+	rWindow.top = 100;
+	rWindow.bottom = height + rWindow.top;
+	// Automatic calculation of window height and width to client region
+	WND_CALL_INFO(AdjustWindowRect(&rWindow, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE));
+
+	hWindow.reset(CreateWindow(
+		WindowClass::GetName(), name.data(),
+		WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
+		CW_USEDEFAULT, CW_USEDEFAULT,
+		rWindow.right - rWindow.left,
+		rWindow.bottom - rWindow.top,
+		nullptr, nullptr,
+		WindowClass::GetInstance(), this
+	));
+
+	// Error checks
+	if (!hWindow) throw WND_LAST_EXCEPT();
+	ShowWindow(hWindow.get(), SW_SHOWDEFAULT);
+
+	RAWINPUTDEVICE rid;
+	rid.usUsagePage = 0x01; // mouse page
+	rid.usUsage = 0x02; // mouse usage
+	rid.dwFlags = 0;
+	rid.hwndTarget = nullptr;
+	WND_CALL_INFO(RegisterRawInputDevices(&rid, 1, sizeof(rid)));
+}
+
+LRESULT WINAPI Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)noexcept
 {
 	// Create routine initializer
 	if (msg == WM_NCCREATE)
@@ -18,7 +88,7 @@ LRESULT WINAPI Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
-LRESULT WINAPI Window::HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+LRESULT WINAPI Window::HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)noexcept
 {
 	// retrieve ptr to win class
 	Window* const pWnd = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
@@ -36,11 +106,8 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	}
 	case WM_KILLFOCUS: {	// clear keystate when window loses focus to prevent input getting "stuck"
 		kbd.ClearState();
-		inFocus = false;
 		break;
 	}
-	case WM_SETFOCUS:
-		inFocus = true;
 	case WM_ACTIVATE: {
 		if (!cursorEnabled)
 		{
@@ -97,7 +164,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 			break;
 		}
 		// in client region -> log move, and log enter + capture mouse (if not previously in window)
-		if (pt.x >= 0 && pt.x < width && pt.y >= 0 && pt.y < height)
+		if (pt.x >= 0 && pt.x < (short)width && pt.y >= 0 && pt.y < (short)height)
 		{
 			mouse.OnMouseMove(pt.x, pt.y);
 			if (!mouse.IsInWindow())
@@ -145,7 +212,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 		const POINTS pt = MAKEPOINTS(lParam);
 		mouse.OnLeftReleased(pt.x, pt.y);
 		// release mouse if outside of window
-		if (pt.x < 0 || pt.x >= width || pt.y < 0 || pt.y >= height)
+		if (pt.x < 0 || pt.x >= (short)width || pt.y < 0 || pt.y >= (short)height)
 		{
 			ReleaseCapture();
 			mouse.OnMouseLeave();
@@ -157,7 +224,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 		const POINTS pt = MAKEPOINTS(lParam);
 		mouse.OnRightReleased(pt.x, pt.y);
 		// release mouse if outside of window
-		if (pt.x < 0 || pt.x >= width || pt.y < 0 || pt.y >= height)
+		if (pt.x < 0 || pt.x >= (short)width || pt.y < 0 || pt.y >= (short)height)
 		{
 			ReleaseCapture();
 			mouse.OnMouseLeave();
@@ -218,123 +285,15 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-Window::Window()
-	:hInst(GetModuleHandle(nullptr))
+HWND Window::GetWindowHandle() const noexcept
 {
-	AllocConsole();
-	hWindow = GetConsoleWindow();
-	hIn = GetStdHandle(STD_INPUT_HANDLE);
-	hOut = hOriginalConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-
-	// create a control subwindow
-	WNDCLASSEX wx = { 0 };
-	wx.cbSize = sizeof(WNDCLASSEX);
-	wx.lpfnWndProc = HandleMsgSetup;        // function which will handle messages
-	wx.hInstance = hInst;
-	wx.lpszClassName = wndClassName;
-
-	if (RegisterClassEx(&wx))
-	{
-		ControlWindow = CreateWindow(
-			wndClassName,
-			L"dummy_name",
-			WS_CHILD, 0, 0, 0, 0,
-			hWindow,
-			NULL, hInst, this);
-
-		SetFocus(ControlWindow);
-	}
-}
-Window::~Window()
-{
-	UnregisterClass(wndClassName, GetInstance());
-	FreeConsole();
-}
-
-void Window::SetFont(BYTE fontw, BYTE fonth) const
-{
-	CONSOLE_FONT_INFOEX cfi;
-	cfi.cbSize = sizeof(cfi);
-	cfi.nFont = 0;
-	cfi.dwFontSize.X = fontw;
-	cfi.dwFontSize.Y = fonth;
-	cfi.FontFamily = FF_DONTCARE;
-	cfi.FontWeight = FW_NORMAL;
-
-	wcscpy_s(cfi.FaceName, 9, L"Consolas");
-
-	WND_CALL_INFO(SetCurrentConsoleFontEx(hOut, false, &cfi));
-}
-void Window::CreateConsole(WORD width, WORD height, BYTE fontw, BYTE fonth)
-{
-	SetWindowLongPtr(hWindow, GWL_STYLE,
-		GetWindowLong(hWindow, GWL_STYLE)
-		& ~WS_SIZEBOX & ~WS_SYSMENU & ~WS_MINIMIZEBOX);
-
-	cDimentions.Y = height;
-	cDimentions.X = width;
-
-	hOut = CreateConsoleScreenBuffer(
-		GENERIC_READ |           // read/write access 
-		GENERIC_WRITE,
-		FILE_SHARE_READ |
-		FILE_SHARE_WRITE,        // shared 
-		NULL,                    // default security attributes 
-		CONSOLE_TEXTMODE_BUFFER, // must be TEXTMODE 
-		NULL);
-
-	WND_CALL_INFO(hOut != INVALID_HANDLE_VALUE);
-	WND_CALL_INFO(SetConsoleActiveScreenBuffer(hOut));
-	SetFont(fontw, fonth);
-
-	COORD coordLargest = GetLargestConsoleWindowSize(hOut);
-	if (height > coordLargest.Y)
-		cDimentions.Y = coordLargest.Y;
-	if (width > coordLargest.X)
-		cDimentions.X = coordLargest.X;
-
-	// Set size of buffer
-	WND_CALL_INFO(SetConsoleScreenBufferSize(hOut, cDimentions));
-
-	// Set Physical Console Window Size
-	rWindowRect = SMALL_RECT{ 0, 0, cDimentions.X - 1, cDimentions.Y - 1 };
-	WND_CALL_INFO(SetConsoleWindowInfo(hOut, TRUE, &rWindowRect));
-
-	RECT windowR = { 0 };
-	WND_CALL_INFO(GetClientRect(hWindow, &windowR));
-	width = (short)windowR.right;
-	height = (short)windowR.bottom;
-}
-
-void Window::Restore()
-{
-	WND_CALL_INFO(SetConsoleActiveScreenBuffer(hOriginalConsole));
-}
-void Window::SetConsoleCursor(bool value)
-{
-	CONSOLE_CURSOR_INFO info;
-	info.dwSize = 100;
-	info.bVisible = value;
-	WND_CALL_INFO(SetConsoleCursorInfo(hOut, &info));
-}
-void Window::OutputToScreen(const std::vector<CHAR_INFO>& buffer)
-{
-	WriteConsoleOutputW(hOut, buffer.data(), cDimentions, {	0, 0 },	&rWindowRect);
-}
-void Window::SetPalette(COLORREF palette[16])
-{
-	CONSOLE_SCREEN_BUFFER_INFOEX csbiex = { 0 };
-	csbiex.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
-	GetConsoleScreenBufferInfoEx(hOut, &csbiex);
-	csbiex.dwSize.Y--;					// a little fix of scrollbars
-	memcpy(csbiex.ColorTable, palette, 16 * sizeof(COLORREF));
-	SetConsoleScreenBufferInfoEx(hOut, &csbiex);
+	return hWindow.get();
 }
 
 void Window::ConfineCursor() noexcept
 {
 	RECT rekt;
-	GetWindowRect(hWindow, &rekt);
+	GetWindowRect(hWindow.get(), &rekt);
 	rekt.right = rekt.left + 1;
 	ClipCursor(&rekt);
 }
@@ -349,10 +308,6 @@ void Window::HideCursor() noexcept
 void Window::ShowCursor() noexcept
 {
 	while (::ShowCursor(TRUE) < 0);
-}
-bool Window::InFocus() noexcept
-{
-	return inFocus;
 }
 void Window::EnableCursor() noexcept
 {
@@ -371,23 +326,6 @@ bool Window::CursorEnabled() const noexcept
 	return cursorEnabled;
 }
 
-void Window::CatchFocus()
-{
-	DWORD numRecords;
-	DWORD numRecsRecieved;
-	GetNumberOfConsoleInputEvents(hIn, &numRecords);
-	PINPUT_RECORD records = static_cast<INPUT_RECORD*>(_malloca(numRecords * sizeof(INPUT_RECORD)));
-	ReadConsoleInput(hIn, records, numRecords, &numRecsRecieved);
-
-	for (DWORD i = 0; i < numRecsRecieved; i++)
-	{
-		if (records[i].EventType == FOCUS_EVENT && records[i].Event.FocusEvent.bSetFocus)
-		{
-			SetFocus(ControlWindow);
-		}
-	}
-	_freea(records);
-}
 std::optional<WPARAM> Window::ProcessMessages() noexcept
 {
 	MSG msg;
@@ -404,49 +342,3 @@ std::optional<WPARAM> Window::ProcessMessages() noexcept
 	return{};
 }
 
-// Window Exception
-Window::HrException::HrException(int line, const wchar_t* file, HRESULT hr)
-	:WindowException(line, file), hResult(hr)
-{}
-std::wstring Window::WindowException::TranslateErrorCode(HRESULT hr) noexcept
-{
-	wchar_t* pMsgBuf = nullptr;
-	DWORD nMsgLen = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
-		FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&pMsgBuf),
-		0, nullptr);
-
-	if (nMsgLen == 0)
-	{
-		return L"Unknown error";
-	}
-	std::wstring errorString = pMsgBuf;
-	LocalFree(pMsgBuf);
-	return errorString;
-}
-HRESULT Window::HrException::GetErrorCode() const noexcept
-{
-	return hResult;
-}
-std::wstring Window::HrException::GetErrorDescription() const noexcept
-{
-	return WindowException::TranslateErrorCode(hResult);
-}
-const wchar_t* Window::HrException::GetType()const noexcept
-{
-	return L"Vertas Window Exception";
-}
-const wchar_t* Window::HrException::what() const noexcept
-{
-	std::wostringstream oss;
-	oss << GetType() << std::endl
-		<< "[Error Code] 0x" << std::hex << std::uppercase << GetErrorCode()
-		<< std::dec << " (" << (unsigned long)GetErrorCode() << ")" << std::endl
-		<< "[Description] " << GetErrorDescription() << std::endl
-		<< GetOriginString();
-	whatBuffer = oss.str();
-	return whatBuffer.c_str();
-}
-const wchar_t* Window::NoGfxException::GetType() const noexcept
-{
-	return L"Veritas Window Exception [No Graphics]";
-}

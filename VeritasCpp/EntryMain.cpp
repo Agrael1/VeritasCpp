@@ -9,7 +9,7 @@ int APIENTRY WinMain(
 {
 	try
 	{
-		return VeritasEngine{640, 360, 2, 2}.Start();
+		return VeritasEngine{1600, 1050}.Start();
 	}
 	catch (const Exception& e)
 	{

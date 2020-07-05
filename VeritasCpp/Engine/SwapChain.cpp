@@ -1,23 +1,81 @@
 #include "SwapChain.h"
-#include "Window.h"
+#include <Framework\GdiException.h>
+#include <algorithm>
 
-SwapChain::SwapChain(SwapChainDesc desc, Window& Wndref)
-	:rWnd(Wndref),width(desc.width), height(desc.height)
+VSwapChain::VFrame::VFrame(int width, int height, Gdiplus::GpGraphics* in_target)noxnd
+	:target(in_target), frameArea(0, 0, width, height)
 {
-	FrameBuffer.resize((size_t)desc.height * desc.width);
+	GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipCreateBitmapFromGraphics(width,
+		height,
+		target,
+		&image));
+
+	GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipGetImagePixelFormat(image.get(), reinterpret_cast<Gdiplus::PixelFormat*>(&format)));
 }
 
-void SwapChain::Present()
+void VSwapChain::VFrame::LockImage(RenderTargetView& _out_view, Gdiplus::Rect lockArea, Gdiplus::ImageLockMode mode)noxnd
 {
-	rWnd.OutputToScreen(FrameBuffer);
+	GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipBitmapLockBits(
+		image.get(),
+		&lockArea,
+		mode | Gdiplus::ImageLockModeUserInputBuf,
+		format,
+		&_out_view));
+}
+void VSwapChain::VFrame::LockFullImage(RenderTargetView& _out_view, Gdiplus::ImageLockMode mode)noxnd
+{
+	GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipBitmapLockBits(
+		image.get(),
+		&frameArea,
+		mode | Gdiplus::ImageLockModeUserInputBuf,
+		format,
+		&_out_view));
+}
+void VSwapChain::VFrame::UnlockImage(RenderTargetView& view)noxnd
+{
+	GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipBitmapUnlockBits(
+		image.get(),
+		&view));
+}
+void VSwapChain::VFrame::Draw() const noxnd
+{
+	GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipCreateCachedBitmap(
+		image.get(),
+		target,
+		&output
+	));
+
+	GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipDrawCachedBitmap(
+		target,
+		output.get(),
+		0, 0
+	));
+}
+PixelFormat VSwapChain::VFrame::GetPixelFormat() const noexcept
+{
+	return format;
 }
 
-void SwapChain::ClearFrame(ConsoleColor color)
+
+VSwapChain::VSwapChain(int width, int height, VGraphicsDevice& gfx)noxnd
+	:Frame(width, height, gfx.GetRawGraphics())
 {
-	std::fill(FrameBuffer.begin(), FrameBuffer.end(), color);
+	VTEXTURE_DESC vtx;
+	vtx.Width = width;
+	vtx.Height = height;
+	vtx.BindFlags = VBIND_FLAG::RENDER_TARGET;
+	vtx.PixelFormat = Frame.GetPixelFormat();
+
+	wrl::MakeAndInitialize<VTexture>(&RenderBuffer, &vtx);
+	gfx.CreateRenderTargetView(RenderBuffer.Get(), &BackBuffer);
+
+	Frame.LockFullImage(BackBuffer, Gdiplus::ImageLockModeWrite);
 }
 
-void SwapChain::PutPixel(uint16_t x, uint16_t y, ConsoleColor color)
+void VSwapChain::Present()noxnd
 {
-	FrameBuffer[(size_t)y * width + x] = color;
+	Frame.UnlockImage(BackBuffer);
+	Frame.Draw();
+	Frame.LockFullImage(BackBuffer, Gdiplus::ImageLockModeWrite);
 }
+

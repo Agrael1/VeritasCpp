@@ -30,6 +30,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>false</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -43,6 +44,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>false</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -74,6 +76,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <ExtensionsToDeleteOnClean>*.ifc;$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -89,8 +92,9 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Framework\wil\include;$(ProjectDir)Framework\fmt\include;$(ProjectDir)Framework\DirectXMath\Inc</AdditionalIncludeDirectories>
+      <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -99,18 +103,21 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Framework\wil\include;$(ProjectDir)Framework\fmt\include;$(ProjectDir)Framework\DirectXMath\Inc</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <EnableModules>true</EnableModules>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -123,8 +130,9 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Framework\wil\include;$(ProjectDir)Framework\fmt\include;$(ProjectDir)Framework\DirectXMath\Inc</AdditionalIncludeDirectories>
+      <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -143,9 +151,10 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Framework\wil\include;$(ProjectDir)Framework\fmt\include;$(ProjectDir)Framework\DirectXMath\Inc</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -155,28 +164,72 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Context.cpp" />
     <ClCompile Include="Engine\Graphics.cpp" />
     <ClCompile Include="Engine\Keyboard.cpp" />
     <ClCompile Include="Engine\Mouse.cpp" />
-    <ClCompile Include="Engine\SwapChain.cpp" />
+    <ClCompile Include="Engine\SwapChain.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Engine\VeritasEngine.cpp" />
     <ClCompile Include="Engine\Window.cpp" />
     <ClCompile Include="EntryMain.cpp" />
     <ClCompile Include="Framework\Exception.cpp" />
+    <ClCompile Include="Framework\fmt\src\format.cc" />
+    <ClCompile Include="Framework\fmt\src\posix.cc" />
+    <ClCompile Include="Framework\GdiException.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Buffer.h" />
     <ClInclude Include="Engine\Color.h" />
+    <ClInclude Include="Engine\Context.h" />
+    <ClInclude Include="Engine\Descriptors.h" />
     <ClInclude Include="Engine\Graphics.h" />
     <ClInclude Include="Engine\Keyboard.h" />
     <ClInclude Include="Engine\Mouse.h" />
-    <ClInclude Include="Engine\SwapChain.h" />
+    <ClInclude Include="Engine\SwapChain.h">
+      <FileType>CppHeader</FileType>
+      <DeploymentContent>true</DeploymentContent>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </AdditionalOptions>
+    </ClInclude>
     <ClInclude Include="Engine\VeritasEngine.h" />
     <ClInclude Include="Engine\Window.h" />
+    <ClInclude Include="Framework\ConditionalNoexcept.h" />
     <ClInclude Include="Framework\Exception.h" />
+    <ClInclude Include="Framework\fmt\include\fmt\chrono.h" />
+    <ClInclude Include="Framework\fmt\include\fmt\color.h" />
+    <ClInclude Include="Framework\fmt\include\fmt\compile.h" />
+    <ClInclude Include="Framework\fmt\include\fmt\core.h" />
+    <ClInclude Include="Framework\fmt\include\fmt\format-inl.h" />
+    <ClInclude Include="Framework\fmt\include\fmt\format.h" />
+    <ClInclude Include="Framework\fmt\include\fmt\locale.h" />
+    <ClInclude Include="Framework\fmt\include\fmt\ostream.h" />
+    <ClInclude Include="Framework\fmt\include\fmt\posix.h" />
+    <ClInclude Include="Framework\fmt\include\fmt\printf.h" />
+    <ClInclude Include="Framework\fmt\include\fmt\ranges.h" />
+    <ClInclude Include="Framework\fmt\include\fmt\safe-duration-cast.h" />
+    <ClInclude Include="Framework\GdiException.h" />
+    <ClInclude Include="Framework\GDIPlusManager.h" />
     <ClInclude Include="Framework\WinSetup.h" />
-    <ClInclude Include="IndexedTriangleList.h" />
-    <ClInclude Include="PreClipTransform.h" />
-    <ClInclude Include="XMHelpers.h" />
+    <ClInclude Include="RenderTarget.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="TLR.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Framework\GDIPlusManager.cpp" />
+    <ClCompile Include="Framework\GDISetup.h">
+      <FileType>Document</FileType>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

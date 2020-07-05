@@ -1,48 +1,35 @@
 #pragma once
-#include <Framework\WinSetup.h>
 #include <Framework\Exception.h>
 #include <Engine\Mouse.h>
 #include <Engine\Keyboard.h>
 #include <vector>
 #include <optional>
-
+#include <span>
+#include <wil\win32_helpers.h>
+#include "resource.h"
 
 class Window
 {
-	class WindowException : public Exception
+	friend class VGraphicsDevice;
+	class WindowClass
 	{
-		using Exception::Exception;
+		WindowClass()noexcept;
+		~WindowClass();
+		WindowClass(const WindowClass&) = delete;
+		WindowClass& operator=(const WindowClass&) = delete;
 	public:
-		static std::wstring TranslateErrorCode(HRESULT hr)noexcept;
-	};
-	class HrException :public WindowException
-	{
-	public:
-		HrException(int line, const wchar_t* file, HRESULT hr);
-		const wchar_t* what() const noexcept override;
-		const wchar_t* GetType()const noexcept override;
-		HRESULT GetErrorCode() const noexcept;
-		std::wstring GetErrorDescription() const noexcept;
+		static const wchar_t* GetName()noexcept;
+		static HINSTANCE GetInstance()noexcept;
 	private:
-		HRESULT hResult;
-	};
-	class NoGfxException :public WindowException
-	{
-	public:
-		using WindowException::WindowException;
-		const wchar_t* GetType()const noexcept override;
+		wil::unique_hicon appico;
+		HINSTANCE hinst;
+		static WindowClass wndclass;
+		static constexpr const wchar_t* wndClassName = L"Veritas Direct3D Window";
 	};
 public:
-	Window();
-	~Window();
+	Window(uint32_t width, uint32_t height, std::wstring_view name);
 	Window(const Window&) = delete;
-	Window& operator=(const Window&) = delete;
-public:
-	void CreateConsole(WORD width, WORD height, BYTE fontw, BYTE fonth);
-	void SetConsoleCursor(bool value);
-	void SetFont(BYTE fontw, BYTE fonth) const;
-	void OutputToScreen(const std::vector<CHAR_INFO>& buffer);
-	void SetPalette(COLORREF palette[16]);
+	Window& operator=(const Window&) = delete;	
 public:
 	void ConfineCursor() noexcept;
 	void FreeCursor() noexcept;
@@ -51,45 +38,24 @@ public:
 	void DisableCursor() noexcept;
 	bool CursorEnabled() const noexcept;
 	void HideCursor() noexcept;
-	bool InFocus()noexcept;
 public:
-	HINSTANCE GetInstance()
-	{
-		return hInst;
-	}
-public:
-	void CatchFocus();
 	static std::optional<WPARAM> ProcessMessages()noexcept;
 private:
 	LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
+	HWND GetWindowHandle()const noexcept;
 private:
-	static LRESULT WINAPI HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-	static LRESULT WINAPI HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	static LRESULT WINAPI HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)noexcept;
+	static LRESULT WINAPI HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)noexcept;
 private:
-	void Restore();
-private:
-	HANDLE hOut;
-	HANDLE hIn;
-
-	HANDLE hOriginalConsole;
-	HWND hWindow;
-	HWND ControlWindow;
-	HINSTANCE hInst;
-
-	SMALL_RECT rWindowRect{0};
-	COORD cDimentions{0};
-	short width = 0, height = 0;
-
+	uint32_t width, height;
+	wil::unique_hwnd hWindow;
 	std::vector<BYTE> rawBuffer;
 public:
 	Mouse mouse;
 	Keyboard kbd;
 private:
 	bool cursorEnabled = true;
-	bool inFocus = true;
-private:
-	static constexpr LPCWSTR wndClassName = L"Dummy";
 };
 
-#define WND_EXCEPT_AUTO() HrException(__LINE__, __FILEW__, GetLastError())
-#define WND_CALL_INFO(call) if(!(call)) throw(WND_EXCEPT_AUTO())
+#define WND_LAST_EXCEPT() HrException(__LINE__, __FILEW__, GetLastError())
+#define WND_CALL_INFO(call) if(!(call)) throw(WND_LAST_EXCEPT())

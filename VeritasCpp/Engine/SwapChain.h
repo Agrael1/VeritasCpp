@@ -1,27 +1,42 @@
 #pragma once
-#include <Framework\WinSetup.h>
-#include <cstdint>
-#include <vector>
-#include "Color.h"
+#include <Framework\GDIPlusManager.h>
+#include <DirectXPackedVector.h>
+#include <wil\resource.h>
+#include <Framework\ConditionalNoexcept.h>
+#include <Engine\Graphics.h>
+#include <RenderTarget.h>
 
-struct SwapChainDesc
+class VSwapChain
 {
-	uint16_t width;
-	uint16_t height;
-	uint16_t nBuffers;
-};
-
-class SwapChain
-{
+	class VFrame
+	{
+		using unique_image = wil::unique_any<Gdiplus::GpBitmap*, decltype(&Gdiplus::DllExports::GdipDisposeImage), Gdiplus::DllExports::GdipDisposeImage>;
+		using unique_cached_bitmap = wil::unique_any<Gdiplus::GpCachedBitmap*, decltype(&Gdiplus::DllExports::GdipDeleteCachedBitmap), Gdiplus::DllExports::GdipDeleteCachedBitmap>;
+	public:
+		VFrame(int width, int height, Gdiplus::GpGraphics* in_target)noxnd;
+	public:
+		void LockImage(RenderTargetView& _out_view, Gdiplus::Rect lockArea, Gdiplus::ImageLockMode mode)noxnd;
+		void LockFullImage(RenderTargetView& _out_view, Gdiplus::ImageLockMode mode)noxnd;
+		void UnlockImage(RenderTargetView& view)noxnd;
+		void Draw()const noxnd;
+		PixelFormat GetPixelFormat()const noexcept;
+	private:
+		unique_image image;
+		mutable unique_cached_bitmap output;
+		Gdiplus::GpGraphics* target;
+		Gdiplus::Rect frameArea;
+		PixelFormat format;
+	};
 public:
-	SwapChain(SwapChainDesc desc, class Window& Wndref);
+	VSwapChain(int width, int height, VGraphicsDevice& gfx)noxnd;
 public:
-	void Present();
-	void ClearFrame(ConsoleColor color);
-	void PutPixel(uint16_t x, uint16_t y, ConsoleColor color);
+	void Present()noxnd;
+	void GetRenderTarget(uint32_t number, RenderTargetView* _out_buf)
+	{
+		*_out_buf = BackBuffer;
+	}
 private:
-	std::vector<CHAR_INFO> FrameBuffer;
-	uint16_t width;
-	uint16_t height;
-	Window& rWnd;
+	VFrame Frame;
+	RenderTargetView BackBuffer;
+	wrl::ComPtr<VTexture> RenderBuffer;
 };

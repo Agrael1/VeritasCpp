@@ -37,13 +37,16 @@
     <Filter Include="Файлы исходного кода\Engine\Graphics">
       <UniqueIdentifier>{061c7cb5-633f-46da-bb1f-e9af3e2f8329}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\Framework\fmt">
+      <UniqueIdentifier>{941a4732-62a7-44f9-a571-d61b780ca063}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\Framework\fmt">
+      <UniqueIdentifier>{1f162ffa-f744-4e84-bd3e-430d571a66f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Window.cpp">
       <Filter>Файлы исходного кода\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="EntryMain.cpp">
-      <Filter>Файлы исходного кода\Framework</Filter>
     </ClCompile>
     <ClCompile Include="Framework\Exception.cpp">
       <Filter>Файлы исходного кода\Framework</Filter>
@@ -57,11 +60,32 @@
     <ClCompile Include="Engine\Keyboard.cpp">
       <Filter>Файлы исходного кода\Engine\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Graphics.cpp">
-      <Filter>Файлы исходного кода\Engine\Input</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\SwapChain.cpp">
       <Filter>Файлы исходного кода\Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Graphics.cpp">
+      <Filter>Файлы исходного кода\Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\fmt\src\format.cc">
+      <Filter>Файлы исходного кода\Framework\fmt</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\fmt\src\posix.cc">
+      <Filter>Файлы исходного кода\Framework\fmt</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\GDISetup.h">
+      <Filter>Заголовочные файлы\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\GDIPlusManager.cpp">
+      <Filter>Файлы исходного кода\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\GdiException.cpp">
+      <Filter>Файлы исходного кода\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Context.cpp">
+      <Filter>Файлы исходного кода\Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="EntryMain.cpp">
+      <Filter>Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -83,23 +107,87 @@
     <ClInclude Include="Engine\Keyboard.h">
       <Filter>Заголовочные файлы\Engine\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\SwapChain.h">
-      <Filter>Заголовочные файлы\Engine\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Graphics.h">
       <Filter>Заголовочные файлы\Engine\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Color.h">
       <Filter>Заголовочные файлы\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="XMHelpers.h">
+    <ClInclude Include="resource.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\fmt\include\fmt\chrono.h">
+      <Filter>Заголовочные файлы\Framework\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\fmt\include\fmt\color.h">
+      <Filter>Заголовочные файлы\Framework\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\fmt\include\fmt\compile.h">
+      <Filter>Заголовочные файлы\Framework\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\fmt\include\fmt\core.h">
+      <Filter>Заголовочные файлы\Framework\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\fmt\include\fmt\format.h">
+      <Filter>Заголовочные файлы\Framework\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\fmt\include\fmt\format-inl.h">
+      <Filter>Заголовочные файлы\Framework\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\fmt\include\fmt\locale.h">
+      <Filter>Заголовочные файлы\Framework\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\fmt\include\fmt\ostream.h">
+      <Filter>Заголовочные файлы\Framework\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\fmt\include\fmt\posix.h">
+      <Filter>Заголовочные файлы\Framework\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\fmt\include\fmt\printf.h">
+      <Filter>Заголовочные файлы\Framework\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\fmt\include\fmt\ranges.h">
+      <Filter>Заголовочные файлы\Framework\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\fmt\include\fmt\safe-duration-cast.h">
+      <Filter>Заголовочные файлы\Framework\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\SwapChain.h">
       <Filter>Заголовочные файлы\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="IndexedTriangleList.h">
+    <ClInclude Include="Framework\GDIPlusManager.h">
+      <Filter>Заголовочные файлы\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Context.h">
       <Filter>Заголовочные файлы\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="PreClipTransform.h">
+    <ClInclude Include="Framework\GdiException.h">
+      <Filter>Заголовочные файлы\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Buffer.h">
       <Filter>Заголовочные файлы\Engine\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Descriptors.h">
+      <Filter>Заголовочные файлы\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTarget.h">
+      <Filter>Заголовочные файлы\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\ConditionalNoexcept.h">
+      <Filter>Заголовочные файлы\Framework</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="TLR.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc">
+      <Filter>Файлы ресурсов</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>
