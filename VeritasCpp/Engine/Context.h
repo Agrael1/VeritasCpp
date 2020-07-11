@@ -18,6 +18,32 @@ class VContext
 public:
 	VContext();
 public:
+	HRESULT IASetPrimitiveTopology(VPRIMITIVE_TOPOLOGY Topology)
+	{
+		IATopology = Topology;
+	}
+	HRESULT IASetVertexBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppVertexBuffers, const uint32_t* pStrides, const uint32_t* pOffsets)
+	{
+		std::copy_n(pStrides + StartSlot, NumBuffers, IAVBStrides);
+		for (uint32_t i = StartSlot; i < 4; i++)
+		{
+			if (i < NumBuffers + StartSlot)
+			{
+				auto r = static_cast<VBuffer*>(ppVertexBuffers[i])->data;
+				IAVertexBuffers[i] = std::span<uint8_t>{ r.data() + pOffsets[i], r.size() - pOffsets[i] };
+			}
+			IAVertexBuffers[i] = std::span<uint8_t>{};
+			IAVBStrides[i] = 0;
+		}
+		return S_OK;
+	}
+	HRESULT IASetIndexBuffer(IVBuffer* indexBuffer, VFORMAT format, uint32_t offsetBytes)
+	{
+		auto& r = static_cast<VBuffer*>(indexBuffer)->data;
+		IAIndexBuffer = std::span<uint8_t>{ r.data() + offsetBytes, r.size() - offsetBytes };
+		IAIndexFormat = format;
+		return S_OK;
+	}
 	HRESULT RSSetViewports(uint32_t numVPs, const ViewPort* _arr_VPs)
 	{
 		if (numVPs > MaxRenderTargets) return E_INVALIDARG;
@@ -38,4 +64,9 @@ public:
 private:
 	std::array<RenderTargetView, MaxRenderTargets> OMRenderTargets;
 	std::array<ViewPort, MaxViewPorts> RSViewPorts;
+	std::span<uint8_t> IAIndexBuffer;
+	VFORMAT IAIndexFormat;
+	VPRIMITIVE_TOPOLOGY IATopology;
+	std::array<std::span<uint8_t>, 4> IAVertexBuffers;
+	std::array<uint32_t, 4> IAVBStrides;
 };

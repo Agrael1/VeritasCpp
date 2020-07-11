@@ -43,6 +43,21 @@
     <Filter Include="Заголовочные файлы\Framework\fmt">
       <UniqueIdentifier>{1f162ffa-f744-4e84-bd3e-430d571a66f0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Заголовочные файлы\Engine\Primitives">
+      <UniqueIdentifier>{f3c9095e-cd83-4bef-953f-ec02efdd1ee0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Engine\Primitives">
+      <UniqueIdentifier>{a17c974f-54dc-48cd-9468-9be91c5981a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Engine\Architecture">
+      <UniqueIdentifier>{13c81f35-09dc-49f3-a9db-17166277711f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\Engine\Architecture">
+      <UniqueIdentifier>{bfa62e3f-eb5b-4fa2-9558-5c598014d292}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\Test">
+      <UniqueIdentifier>{7a90273c-ad82-4f06-abd1-df849cb54741}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Window.cpp">
@@ -86,6 +101,15 @@
     </ClCompile>
     <ClCompile Include="EntryMain.cpp">
       <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="Bunny.cpp">
+      <Filter>Файлы исходного кода\Engine\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexBuffer.cpp">
+      <Filter>Файлы исходного кода\Engine\Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="XModel.cpp">
+      <Filter>Заголовочные файлы\Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +199,21 @@
     </ClInclude>
     <ClInclude Include="Framework\ConditionalNoexcept.h">
       <Filter>Заголовочные файлы\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Bunny.h">
+      <Filter>Заголовочные файлы\Engine\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexBuffer.h">
+      <Filter>Заголовочные файлы\Engine\Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Arch\Bindable.h">
+      <Filter>Заголовочные файлы\Engine\Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Arch\IndexBuffer.h">
+      <Filter>Заголовочные файлы\Engine\Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="XModel.h">
+      <Filter>Заголовочные файлы\Test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

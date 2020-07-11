@@ -19,6 +19,7 @@ IVBuffer : public IUnknown
 
 class VBuffer : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVBuffer>
 {
+    friend class VContext;
 public:
     HRESULT RuntimeClassInitialize(const VBUFFER_DESC* in_desc, const void* _in_data)
     {

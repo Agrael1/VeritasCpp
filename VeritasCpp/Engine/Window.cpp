@@ -51,7 +51,7 @@ Window::Window(uint32_t width, uint32_t height, std::wstring_view name)
 
 	hWindow.reset(CreateWindow(
 		WindowClass::GetName(), name.data(),
-		WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
+		WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU | WS_MAXIMIZEBOX,
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		rWindow.right - rWindow.left,
 		rWindow.bottom - rWindow.top,
@@ -149,8 +149,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	/*********** END KEYBOARD MESSAGES ***********/
 
 	/************* MOUSE MESSAGES ****************/
-	case WM_MOUSEMOVE:
-	{
+	case WM_MOUSEMOVE: {
 		const POINTS pt = MAKEPOINTS(lParam);
 		// cursorless exclusive gets first dibs
 		if (!cursorEnabled)
@@ -189,8 +188,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 		}
 		break;
 	}
-	case WM_LBUTTONDOWN:
-	{
+	case WM_LBUTTONDOWN: {
 		SetForegroundWindow(hWnd);
 		if (!cursorEnabled)
 		{
@@ -201,14 +199,12 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 		mouse.OnLeftPressed(pt.x, pt.y);
 		break;
 	}
-	case WM_RBUTTONDOWN:
-	{
+	case WM_RBUTTONDOWN: {
 		const POINTS pt = MAKEPOINTS(lParam);
 		mouse.OnRightPressed(pt.x, pt.y);
 		break;
 	}
-	case WM_LBUTTONUP:
-	{
+	case WM_LBUTTONUP: {
 		const POINTS pt = MAKEPOINTS(lParam);
 		mouse.OnLeftReleased(pt.x, pt.y);
 		// release mouse if outside of window
@@ -219,8 +215,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 		}
 		break;
 	}
-	case WM_RBUTTONUP:
-	{
+	case WM_RBUTTONUP: {
 		const POINTS pt = MAKEPOINTS(lParam);
 		mouse.OnRightReleased(pt.x, pt.y);
 		// release mouse if outside of window
@@ -231,8 +226,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 		}
 		break;
 	}
-	case WM_MOUSEWHEEL:
-	{
+	case WM_MOUSEWHEEL: {
 		const POINTS pt = MAKEPOINTS(lParam);
 		const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
 		mouse.OnWheelDelta(pt.x, pt.y, delta);
@@ -241,8 +235,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	/************** END MOUSE MESSAGES **************/
 
 	/************** RAW MOUSE MESSAGES **************/
-	case WM_INPUT:
-	{
+	case WM_INPUT: {
 		if (!mouse.RawEnabled())
 		{
 			break;

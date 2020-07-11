@@ -164,6 +164,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bunny.cpp" />
     <ClCompile Include="Engine\Context.cpp" />
     <ClCompile Include="Engine\Graphics.cpp" />
     <ClCompile Include="Engine\Keyboard.cpp" />
@@ -178,8 +179,13 @@
     <ClCompile Include="Framework\fmt\src\format.cc" />
     <ClCompile Include="Framework\fmt\src\posix.cc" />
     <ClCompile Include="Framework\GdiException.cpp" />
+    <ClCompile Include="VertexBuffer.cpp" />
+    <ClCompile Include="XModel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bunny.h" />
+    <ClInclude Include="Engine\Arch\Bindable.h" />
+    <ClInclude Include="Engine\Arch\IndexBuffer.h" />
     <ClInclude Include="Engine\Buffer.h" />
     <ClInclude Include="Engine\Color.h" />
     <ClInclude Include="Engine\Context.h" />
@@ -214,6 +220,8 @@
     <ClInclude Include="Framework\WinSetup.h" />
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="VertexBuffer.h" />
+    <ClInclude Include="XModel.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="TLR.ico" />

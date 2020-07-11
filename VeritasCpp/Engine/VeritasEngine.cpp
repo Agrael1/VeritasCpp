@@ -53,6 +53,6 @@ void VeritasEngine::ProcessInput(float dt)
 }
 void VeritasEngine::DoFrame(float dt)
 {
-	context.ClearRenderTarget(&rtv, 0xFF0000FF);
+	context.ClearRenderTarget(&rtv, 0xFF00FFFF);
 	swap.Present();
 }

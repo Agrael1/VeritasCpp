@@ -5,8 +5,10 @@
 #include <Engine\Window.h>
 
 
+
 class VeritasEngine
 {
+	friend class Bindable;
 public:
 	VeritasEngine(uint16_t width, uint16_t height);
 public:

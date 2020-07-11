@@ -14,6 +14,21 @@ enum VBIND_FLAG : uint32_t
     DECODER = 0x200L,
     VIDEO_ENCODER = 0x400L
 };
+enum VFORMAT
+{
+    FORMAT_NONE = 0,
+    FORMAT_UINT16 = 2,
+    FORMAT_UINT32 = 4
+};
+enum VPRIMITIVE_TOPOLOGY
+{
+    UNDEFINED = 0,
+    POINTLIST = 1,
+    LINELIST = 2,
+    LINESTRIP = 3,
+    TRIANGLELIST = 4,
+    TRIANGLESTRIP = 5,
+};
 typedef struct VBUFFER_DESC
 {
 	uint32_t        ByteWidth;
