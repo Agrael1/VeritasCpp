@@ -31,6 +31,10 @@ void VGraphicsDevice::CreateRenderTargetView(IVTexture* resource, RenderTargetVi
 {
 	static_cast<VTexture*>(resource)->GetView(_out_rtv);
 }
+void VGraphicsDevice::CreateInputLayout(const VINPUT_ELEMENT* pInputElementDescs, uint32_t NumElements, const void* pShaderBytecodeWithInputSignature, uint32_t BytecodeLength, IVInputLayout** _out_InputLayout)
+{
+	wrl::MakeAndInitialize<VInputLayout>(_out_InputLayout, pInputElementDescs, NumElements);
+}
 
 Gdiplus::GpGraphics* VGraphicsDevice::GetRawGraphics() noexcept
 {

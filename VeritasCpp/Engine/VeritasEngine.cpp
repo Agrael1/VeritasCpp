@@ -2,7 +2,7 @@
 
 VeritasEngine::VeritasEngine(uint16_t width, uint16_t height)
 	:Window(width,height,L"VTest"),
-	gfx(Window), swap(width, height, gfx)
+	gfx(Window), swap(width, height, gfx), xm(*this)
 {
 	swap.GetRenderTarget(0, &rtv);
 	context.OMSetRenderTargets(1, &rtv);

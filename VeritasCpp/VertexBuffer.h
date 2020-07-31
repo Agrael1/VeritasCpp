@@ -1,6 +1,10 @@
 #pragma once
 #include <Engine\Arch\Bindable.h>
+#include "Engine\Descriptors.h"
+#include "Engine\Buffer.h"
 #include <Bunny.h>
+#include "Engine\Context.h"
+#include "Engine\Graphics.h"
 
 
 class VertexBuffer : public Bindable

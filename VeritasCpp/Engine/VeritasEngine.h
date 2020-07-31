@@ -3,6 +3,7 @@
 #include <Engine\SwapChain.h>
 #include <Engine\Context.h>
 #include <Engine\Window.h>
+#include "XModel.h"
 
 
 
@@ -21,5 +22,6 @@ private:
 	VGraphicsDevice gfx;
 	VSwapChain swap;
 	VContext context;
+	XModel xm;
 	RenderTargetView rtv{ 0 };
 };

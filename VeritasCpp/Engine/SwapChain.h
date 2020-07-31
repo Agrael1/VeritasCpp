@@ -19,13 +19,13 @@ class VSwapChain
 		void LockFullImage(RenderTargetView& _out_view, Gdiplus::ImageLockMode mode)noxnd;
 		void UnlockImage(RenderTargetView& view)noxnd;
 		void Draw()const noxnd;
-		PixelFormat GetPixelFormat()const noexcept;
+		VPIXEL_FORMAT GetPixelFormat()const noexcept;
 	private:
 		unique_image image;
 		mutable unique_cached_bitmap output;
 		Gdiplus::GpGraphics* target;
 		Gdiplus::Rect frameArea;
-		PixelFormat format;
+		VPIXEL_FORMAT format;
 	};
 public:
 	VSwapChain(int width, int height, VGraphicsDevice& gfx)noxnd;

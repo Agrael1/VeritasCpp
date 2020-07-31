@@ -111,6 +111,15 @@
     <ClCompile Include="XModel.cpp">
       <Filter>Заголовочные файлы\Test</Filter>
     </ClCompile>
+    <ClCompile Include="VertexShader.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="InputLayout.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Arch\Bindable.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\VeritasEngine.h">
@@ -182,20 +191,8 @@
     <ClInclude Include="Framework\GDIPlusManager.h">
       <Filter>Заголовочные файлы\Framework</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Context.h">
-      <Filter>Заголовочные файлы\Engine\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Framework\GdiException.h">
       <Filter>Заголовочные файлы\Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Buffer.h">
-      <Filter>Заголовочные файлы\Engine\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Descriptors.h">
-      <Filter>Заголовочные файлы\Engine\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderTarget.h">
-      <Filter>Заголовочные файлы\Engine\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Framework\ConditionalNoexcept.h">
       <Filter>Заголовочные файлы\Framework</Filter>
@@ -214,6 +211,12 @@
     </ClInclude>
     <ClInclude Include="XModel.h">
       <Filter>Заголовочные файлы\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexShader.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="InputLayout.h">
+      <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

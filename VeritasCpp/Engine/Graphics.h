@@ -4,6 +4,7 @@
 #include <Framework\ConditionalNoexcept.h>
 #include "Buffer.h"
 #include "RenderTarget.h"
+#include "InputLayout.h"
 
 class VGraphicsDevice
 {
@@ -15,6 +16,8 @@ public:
 	void CreateBuffer(const VBUFFER_DESC* desc, IVBuffer** _out_Bufptr, const void* initialData = nullptr)noxnd;
 	void CreateTexture2D(const VTEXTURE_DESC* desc, IVTexture** _out_texptr, const void* initialData = nullptr)noxnd;
 	void CreateRenderTargetView(IVTexture* resource, RenderTargetView* _out_rtv)noxnd;
+	void CreateInputLayout(const VINPUT_ELEMENT* pInputElementDescs, uint32_t NumElements,
+		const void* pShaderBytecodeWithInputSignature, uint32_t BytecodeLength, IVInputLayout** _out_InputLayout);
 private:
 	Gdiplus::GpGraphics* GetRawGraphics()noexcept;
 private:
