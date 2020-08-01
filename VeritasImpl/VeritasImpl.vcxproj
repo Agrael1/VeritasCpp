@@ -21,15 +21,20 @@
   <ItemGroup>
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Context.cpp" />
+    <ClCompile Include="Device.cpp" />
     <ClCompile Include="InputLayout.cpp" />
+    <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="VGIFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Shared\Descriptors.h" />
     <ClInclude Include="..\Shared\Interfaces.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Context.h" />
+    <ClInclude Include="Device.h" />
     <ClInclude Include="InputLayout.h" />
+    <ClInclude Include="SwapChain.h" />
     <ClInclude Include="Texture.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

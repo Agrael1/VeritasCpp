@@ -1,9 +1,6 @@
 #pragma once
 #include <Engine\Arch\Bindable.h>
-#include "Engine\Descriptors.h"
 #include <vector>
-#include <wrl.h>
-#include <Engine\InputLayout.h>
 
 class InputLayout : public Bindable
 {

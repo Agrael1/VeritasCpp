@@ -1,11 +1,9 @@
 #pragma once
-#include <Engine\Graphics.h>
-#include <Engine\SwapChain.h>
-#include <Engine\Context.h>
+#include <Interfaces.h>
 #include <Engine\Window.h>
 #include "XModel.h"
 
-
+using RenderTargetView = VRTV_DESC;
 
 class VeritasEngine
 {
@@ -19,9 +17,8 @@ private:
 	void DoFrame(float dt);
 private:
 	Window Window;
-	VGraphicsDevice gfx;
-	VSwapChain swap;
-	VContext context;
-	XModel xm;
+	wrl::ComPtr<IVDevice> pGfx;
+	wrl::ComPtr<IVContext> pContext;
+	wrl::ComPtr<IVSwapChain> pSwap;
 	RenderTargetView rtv{ 0 };
 };

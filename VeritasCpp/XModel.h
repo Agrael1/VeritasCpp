@@ -1,6 +1,8 @@
 #pragma once
 #include <Engine\Arch\IndexBuffer.h>
-#include "VertexBuffer.h"
+#include <memory>
+#include <vector>
+#include "Engine\Arch\VertexBuffer.h"
 #include "VertexShader.h"
 
 
@@ -15,9 +17,9 @@ public:
 	}
 public:
 	virtual void Bind(class VeritasEngine& in) {};
-	void Draw(VeritasEngine& vin)noxnd
+	void Draw(VeritasEngine& vin)
 	{
-		GetContext(vin).IASetPrimitiveTopology(VPRIMITIVE_TOPOLOGY::TRIANGLELIST);
+		GetContext(vin)->IASetPrimitiveTopology(VPRIMITIVE_TOPOLOGY::TRIANGLELIST);
 		for (auto& b : bindables)
 		{
 			b->Bind(vin);

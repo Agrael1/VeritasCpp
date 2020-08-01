@@ -100,3 +100,11 @@ typedef struct VRTV_DESC
 	void* Scan0;
 	size_t Reserved;
 }VRTV_DESC;
+typedef struct VSWAP_CHAIN_DESC
+{
+	uint32_t Width;
+	uint32_t Height;
+	uint32_t BufferCount;
+	void* OutputWindow;
+	int32_t Windowed;
+}VSWAP_CHAIN_DESC;

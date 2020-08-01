@@ -1,17 +1,15 @@
 #include "Bindable.h"
 #include "Engine\VeritasEngine.h"
 
-inline VContext& Bindable::GetContext(VeritasEngine& in)
+IVContext* Bindable::GetContext(VeritasEngine& in)
 {
-	return in.context;
+	return in.pContext.Get();
 }
-
-inline VGraphicsDevice& Bindable::GetDevice(VeritasEngine& in)
+IVDevice* Bindable::GetDevice(VeritasEngine& in)
 {
-	return in.gfx;
+	return in.pGfx.Get();
 }
-
-inline VSwapChain& Bindable::GetSwapChain(VeritasEngine& in)
+IVSwapChain* Bindable::GetSwapChain(VeritasEngine& in)
 {
-	return in.swap;
+	return in.pSwap.Get();
 }

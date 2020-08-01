@@ -1,11 +1,19 @@
 #include "VeritasEngine.h" 
 
 VeritasEngine::VeritasEngine(uint16_t width, uint16_t height)
-	:Window(width,height,L"VTest"),
-	gfx(Window), swap(width, height, gfx), xm(*this)
+	:Window(width,height,L"VTest")
 {
-	swap.GetRenderTarget(0, &rtv);
-	context.OMSetRenderTargets(1, &rtv);
+	VSWAP_CHAIN_DESC sd;
+	sd.BufferCount = 1;
+	sd.Height = height;
+	sd.Width = width;
+	sd.OutputWindow = 0;
+	sd.Windowed = TRUE;
+
+	VFCreateDevice(Window.GetWindowHandle(), &pGfx, &pContext);
+	VFCreateSwapChain(&sd, pGfx.Get(), &pSwap);
+	pSwap->GetRenderTarget(0, &rtv);
+	pContext->OMSetRenderTargets(1, &rtv);
 }
 
 int VeritasEngine::Start()
@@ -53,6 +61,6 @@ void VeritasEngine::ProcessInput(float dt)
 }
 void VeritasEngine::DoFrame(float dt)
 {
-	context.ClearRenderTarget(&rtv, 0xFF00FFFF);
-	swap.Present();
+	pContext->ClearRenderTarget(&rtv, 0xFF00FFFF);
+	pSwap->Present();
 }

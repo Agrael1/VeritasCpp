@@ -1,11 +1,12 @@
 #pragma once
 #include <Framework\Exception.h>
-#include <Engine\Mouse.h>
-#include <Engine\Keyboard.h>
+#include <Framework\wil\include\wil\win32_helpers.h>
+#include "Mouse.h"
+#include "Keyboard.h"
 #include <vector>
 #include <optional>
 #include <span>
-#include <wil\win32_helpers.h>
+
 #include "resource.h"
 
 class Window
@@ -38,11 +39,11 @@ public:
 	void DisableCursor() noexcept;
 	bool CursorEnabled() const noexcept;
 	void HideCursor() noexcept;
+	HWND GetWindowHandle()const noexcept;
 public:
 	static std::optional<WPARAM> ProcessMessages()noexcept;
 private:
 	LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
-	HWND GetWindowHandle()const noexcept;
 private:
 	static LRESULT WINAPI HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)noexcept;
 	static LRESULT WINAPI HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)noexcept;

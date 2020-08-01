@@ -35,6 +35,20 @@ IVTexture : public IUnknown
 };
 
 
+// {0085FC95-F47C-47A2-99CE-A92E13471C05}
+DEFINE_GUID(IID_VDevice,
+	0x85fc95, 0xf47c, 0x47a2, 0x99, 0xce, 0xa9, 0x2e, 0x13, 0x47, 0x1c, 0x5);
+
+MIDL_INTERFACE("0085FC95-F47C-47A2-99CE-A92E13471C05")
+IVDevice : public IUnknown
+{
+	virtual HRESULT __stdcall CreateBuffer(const VBUFFER_DESC* desc, IVBuffer** _out_Bufptr, const void* initialData = nullptr) = 0;
+	virtual HRESULT __stdcall CreateTexture2D(const VTEXTURE_DESC* desc, IVTexture** _out_texptr, const void* initialData = nullptr) = 0;
+	virtual HRESULT __stdcall CreateRenderTargetView(IVTexture* resource, VRTV_DESC* _out_rtv) = 0;
+	virtual HRESULT __stdcall CreateInputLayout(const VINPUT_ELEMENT* pInputElementDescs, uint32_t NumElements,
+		const void* pShaderBytecodeWithInputSignature, uint32_t BytecodeLength, IVInputLayout** _out_InputLayout) = 0;
+};
+
 // {2CBC26A3-8408-4EF8-8B77-54CD55178D6F}
 DEFINE_GUID(IID_VContext,
 	0x2cbc26a3, 0x8408, 0x4ef8, 0x8b, 0x77, 0x54, 0xcd, 0x55, 0x17, 0x8d, 0x6f);
@@ -51,3 +65,18 @@ IVContext : public IUnknown
 	virtual HRESULT __stdcall ClearRenderTarget(VRTV_DESC* rtv, uint32_t col) = 0;
 };
 
+
+// {33B6E20B-3C6F-412A-AB6A-42580B911D2B}
+DEFINE_GUID(IID_VSwapChain,
+	0x33b6e20b, 0x3c6f, 0x412a, 0xab, 0x6a, 0x42, 0x58, 0xb, 0x91, 0x1d, 0x2b);
+
+MIDL_INTERFACE("33B6E20B-3C6F-412A-AB6A-42580B911D2B")
+IVSwapChain : public IUnknown
+{
+	virtual void __stdcall Present() = 0;
+	virtual void __stdcall GetRenderTarget(uint32_t number, VRTV_DESC* _out_buf) = 0;
+};
+
+
+extern "C" HRESULT __stdcall VFCreateDevice(HWND window, IVDevice **_out_device, IVContext **_out_context);
+extern "C" HRESULT __stdcall VFCreateSwapChain(VSWAP_CHAIN_DESC * descriptor, IVDevice * device, IVSwapChain * *_out_swapchain);

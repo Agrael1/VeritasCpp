@@ -1,6 +1,7 @@
+#include "Device.h"
+#include "GdiException.h"
 #include "SwapChain.h"
-#include <Framework\GdiException.h>
-#include <algorithm>
+
 
 VSwapChain::VFrame::VFrame(int width, int height, Gdiplus::GpGraphics* in_target)noxnd
 	:target(in_target), frameArea(0, 0, width, height)
@@ -13,29 +14,30 @@ VSwapChain::VFrame::VFrame(int width, int height, Gdiplus::GpGraphics* in_target
 	GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipGetImagePixelFormat(image.get(), reinterpret_cast<Gdiplus::PixelFormat*>(&format)));
 }
 
-void VSwapChain::VFrame::LockImage(RenderTargetView& _out_view, Gdiplus::Rect lockArea, Gdiplus::ImageLockMode mode)noxnd
+
+void VSwapChain::VFrame::LockImage(VRTV_DESC& _out_view, Gdiplus::Rect lockArea, Gdiplus::ImageLockMode mode)noxnd
 {
 	GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipBitmapLockBits(
 		image.get(),
 		&lockArea,
 		mode | Gdiplus::ImageLockModeUserInputBuf,
 		format,
-		&_out_view));
+		(Gdiplus::BitmapData*)&_out_view));
 }
-void VSwapChain::VFrame::LockFullImage(RenderTargetView& _out_view, Gdiplus::ImageLockMode mode)noxnd
+void VSwapChain::VFrame::LockFullImage(VRTV_DESC& _out_view, Gdiplus::ImageLockMode mode)noxnd
 {
 	GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipBitmapLockBits(
 		image.get(),
 		&frameArea,
 		mode | Gdiplus::ImageLockModeUserInputBuf,
 		format,
-		&_out_view));
+		(Gdiplus::BitmapData*) &_out_view));
 }
-void VSwapChain::VFrame::UnlockImage(RenderTargetView& view)noxnd
+void VSwapChain::VFrame::UnlockImage(VRTV_DESC& view)noxnd
 {
 	GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipBitmapUnlockBits(
 		image.get(),
-		&view));
+		(Gdiplus::BitmapData*) &view));
 }
 void VSwapChain::VFrame::Draw() const noxnd
 {
@@ -51,31 +53,36 @@ void VSwapChain::VFrame::Draw() const noxnd
 		0, 0
 	));
 }
-PixelFormat VSwapChain::VFrame::GetPixelFormat() const noexcept
+VPIXEL_FORMAT VSwapChain::VFrame::GetPixelFormat() const noexcept
 {
 	return format;
 }
 
 
-VSwapChain::VSwapChain(int width, int height, VGraphicsDevice& gfx)noxnd
-	:Frame(width, height, gfx.GetRawGraphics())
+HRESULT VSwapChain::RuntimeClassInitialize(VSWAP_CHAIN_DESC* desc, IVDevice* gfx)
 {
+	Frame.emplace(desc->Width, desc->Height, static_cast<VGraphicsDevice*>(gfx)->GetRawGraphics());
+
 	VTEXTURE_DESC vtx;
-	vtx.Width = width;
-	vtx.Height = height;
+	vtx.Width = desc->Width;
+	vtx.Height = desc->Height;
 	vtx.BindFlags = VBIND_FLAG::RENDER_TARGET;
-	vtx.PixelFormat = Frame.GetPixelFormat();
+	vtx.PixelFormat = Frame->GetPixelFormat();
 
 	wrl::MakeAndInitialize<VTexture>(&RenderBuffer, &vtx);
-	gfx.CreateRenderTargetView(RenderBuffer.Get(), &BackBuffer);
+	gfx->CreateRenderTargetView(RenderBuffer.Get(), &BackBuffer);
 
-	Frame.LockFullImage(BackBuffer, Gdiplus::ImageLockModeWrite);
+	Frame->LockFullImage(BackBuffer, Gdiplus::ImageLockModeWrite);
+	return S_OK;
 }
 
-void VSwapChain::Present()noxnd
+void VSwapChain::GetRenderTarget(uint32_t number, VRTV_DESC* _out_buf)
 {
-	Frame.UnlockImage(BackBuffer);
-	Frame.Draw();
-	Frame.LockFullImage(BackBuffer, Gdiplus::ImageLockModeWrite);
+	*_out_buf = BackBuffer;
 }
-
+void VSwapChain::Present()
+{
+	Frame->UnlockImage(BackBuffer);
+	Frame->Draw();
+	Frame->LockFullImage(BackBuffer, Gdiplus::ImageLockModeWrite);
+}
