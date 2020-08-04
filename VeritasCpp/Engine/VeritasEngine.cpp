@@ -14,6 +14,8 @@ VeritasEngine::VeritasEngine(uint16_t width, uint16_t height)
 	VFCreateSwapChain(&sd, pGfx.Get(), &pSwap);
 	pSwap->GetRenderTarget(0, &rtv);
 	pContext->OMSetRenderTargets(1, &rtv);
+
+	model.emplace(*this);
 }
 
 int VeritasEngine::Start()
@@ -61,6 +63,7 @@ void VeritasEngine::ProcessInput(float dt)
 }
 void VeritasEngine::DoFrame(float dt)
 {
+
 	pContext->ClearRenderTarget(&rtv, 0xFF00FFFF);
 	pSwap->Present();
 }

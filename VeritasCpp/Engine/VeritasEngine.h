@@ -1,6 +1,7 @@
 #pragma once
-#include <Interfaces.h>
 #include <Engine\Window.h>
+#include <Interfaces.h>
+#include <optional>
 #include "XModel.h"
 
 using RenderTargetView = VRTV_DESC;
@@ -20,5 +21,6 @@ private:
 	wrl::ComPtr<IVDevice> pGfx;
 	wrl::ComPtr<IVContext> pContext;
 	wrl::ComPtr<IVSwapChain> pSwap;
+	std::optional<XModel> model;
 	RenderTargetView rtv{ 0 };
 };

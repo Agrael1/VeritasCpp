@@ -1,5 +1,6 @@
-#include "Bindable.h"
 #include "Engine\VeritasEngine.h"
+#include "Bindable.h"
+
 
 IVContext* Bindable::GetContext(VeritasEngine& in)
 {
