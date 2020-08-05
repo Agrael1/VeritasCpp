@@ -140,9 +140,6 @@
     <ClInclude Include="XModel.h">
       <Filter>Заголовочные файлы\Test</Filter>
     </ClInclude>
-    <ClInclude Include="VertexShader.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Arch\InputLayout.h">
       <Filter>Заголовочные файлы\Engine\Architecture</Filter>
     </ClInclude>
@@ -274,6 +271,12 @@
     </ClInclude>
     <ClInclude Include="..\Shared\Framework\fmt\include\fmt\safe-duration-cast.h">
       <Filter>Заголовочные файлы\Shared\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleVS.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexShader.h">
+      <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

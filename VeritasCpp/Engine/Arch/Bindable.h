@@ -4,7 +4,7 @@
 class Bindable
 {
 public:
-	~Bindable() = default;
+	virtual ~Bindable() = default;
 	virtual void Bind(class VeritasEngine& in) = 0;
 protected:
 	static IVContext* GetContext(VeritasEngine& in);

@@ -110,7 +110,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)Shared\Framework\wil\include;$(SolutionDir)Shared\Framework\fmt\include;$(SolutionDir)Shared\Framework\DirectXMath\Inc;$(SolutionDir)Shared</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <EnableModules>true</EnableModules>
+      <EnableModules>false</EnableModules>
       <CompileAs>CompileAsCpp</CompileAs>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
@@ -235,8 +235,9 @@
     <ClInclude Include="Engine\Mouse.h" />
     <ClInclude Include="Engine\VeritasEngine.h" />
     <ClInclude Include="Engine\Window.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="VertexShader.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="SimpleVS.h" />
     <ClInclude Include="XModel.h" />
   </ItemGroup>
   <ItemGroup>

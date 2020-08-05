@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 #include "Engine\Arch\VertexBuffer.h"
-#include "VertexShader.h"
+#include "SimpleVS.h"
 
 
 class XModel : public Bindable
