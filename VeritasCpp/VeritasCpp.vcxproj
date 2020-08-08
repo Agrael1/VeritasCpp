@@ -99,6 +99,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);$(OutDir)VeritasImpl.lib;$(OutDir)ShaderTech.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -117,7 +118,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>gdiplus.lib;%(AdditionalDependencies);$(OutDir)VeritasImpl.lib;$(OutDir)VeritasImpl.lib</AdditionalDependencies>
+      <AdditionalDependencies>gdiplus.lib;%(AdditionalDependencies);$(OutDir)VeritasImpl.lib;$(OutDir)ShaderTech.lib;$(OutDir)VeritasImpl.lib;$(OutDir)ShaderTech.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -139,6 +140,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);$(OutDir)VeritasImpl.lib;$(OutDir)ShaderTech.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -161,7 +163,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);$(OutDir)VeritasImpl.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);$(OutDir)VeritasImpl.lib;$(OutDir)VeritasImpl.lib;$(OutDir)ShaderTech.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -175,12 +177,12 @@
     <ClCompile Include="Engine\Arch\IndexBuffer.cpp" />
     <ClCompile Include="Engine\Arch\InputLayout.cpp" />
     <ClCompile Include="Engine\Arch\VertexBuffer.cpp" />
+    <ClCompile Include="Engine\Arch\VertexShader.cpp" />
     <ClCompile Include="Engine\Keyboard.cpp" />
     <ClCompile Include="Engine\Mouse.cpp" />
     <ClCompile Include="Engine\VeritasEngine.cpp" />
     <ClCompile Include="Engine\Window.cpp" />
     <ClCompile Include="EntryMain.cpp" />
-    <ClCompile Include="VertexShader.cpp" />
     <ClCompile Include="XModel.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -231,13 +233,12 @@
     <ClInclude Include="Engine\Arch\IndexBuffer.h" />
     <ClInclude Include="Engine\Arch\InputLayout.h" />
     <ClInclude Include="Engine\Arch\VertexBuffer.h" />
+    <ClInclude Include="Engine\Arch\VertexShader.h" />
     <ClInclude Include="Engine\Keyboard.h" />
     <ClInclude Include="Engine\Mouse.h" />
     <ClInclude Include="Engine\VeritasEngine.h" />
     <ClInclude Include="Engine\Window.h" />
-    <ClInclude Include="VertexShader.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="SimpleVS.h" />
     <ClInclude Include="XModel.h" />
   </ItemGroup>
   <ItemGroup>

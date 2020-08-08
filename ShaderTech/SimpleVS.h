@@ -1,5 +1,5 @@
 #pragma once
-#include <VertexShader.h>
+#include "VertexShader.h"
 
 class SimpleVS : public VertexShader<SimpleVS>
 {
@@ -29,9 +29,9 @@ public:
 	}
 public:
 	using RQVSOutT = VSOut;
-	void UpdateConstants(std::span<uint8_t> constants)override
+	void UpdateConstants(uint8_t*const* constants)override
 	{
-		std::copy(constants.begin(), constants.end(), (uint8_t*)&cbuf);
+		std::copy(constants[0], constants[0] + sizeof(CBuffer), (uint8_t*)&cbuf);
 	};
 };
 

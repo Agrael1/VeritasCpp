@@ -81,9 +81,6 @@
     <ClCompile Include="XModel.cpp">
       <Filter>Заголовочные файлы\Test</Filter>
     </ClCompile>
-    <ClCompile Include="VertexShader.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Arch\IndexBuffer.cpp">
       <Filter>Файлы исходного кода\Engine\Architecture</Filter>
     </ClCompile>
@@ -110,6 +107,9 @@
     </ClCompile>
     <ClCompile Include="..\Shared\Framework\fmt\src\posix.cc">
       <Filter>Файлы исходного кода\Shared\fmt</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Arch\VertexShader.cpp">
+      <Filter>Файлы исходного кода\Engine\Architecture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -272,11 +272,8 @@
     <ClInclude Include="..\Shared\Framework\fmt\include\fmt\safe-duration-cast.h">
       <Filter>Заголовочные файлы\Shared\fmt</Filter>
     </ClInclude>
-    <ClInclude Include="SimpleVS.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexShader.h">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="Engine\Arch\VertexShader.h">
+      <Filter>Заголовочные файлы\Engine\Architecture</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

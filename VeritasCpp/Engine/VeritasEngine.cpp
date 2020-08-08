@@ -65,5 +65,7 @@ void VeritasEngine::DoFrame(float dt)
 {
 
 	pContext->ClearRenderTarget(&rtv, 0xFF00FFFF);
+
+	model->Draw(*this);
 	pSwap->Present();
 }

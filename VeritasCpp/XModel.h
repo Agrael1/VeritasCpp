@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 #include "Engine\Arch\VertexBuffer.h"
-#include "SimpleVS.h"
+#include "Engine\Arch\VertexShader.h"
 
 
 class XModel : public Bindable
@@ -13,7 +13,7 @@ public:
 	{
 		//bindables.emplace_back(std::make_unique<IndexBuffer>(vin, bunnyIndices));
 		//bindables.emplace_back(std::make_unique<VertexBuffer>(vin, bunnyVertices));
-		SimpleVS v;
+		bindables.emplace_back(std::make_unique<VertexShader>("SimpleVS"));
 	}
 public:
 	virtual void Bind(class VeritasEngine& in) {};

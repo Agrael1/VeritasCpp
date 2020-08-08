@@ -2,8 +2,9 @@
 #include <string>
 #include <tuple>
 #include <span>
-#include <concepts>
-#include <DirectXMath.h>
+#include "ShaderCommon.h"
+
+#include <Framework/DirectXMath/Inc/DirectXMath.h>
 
 
 namespace dx = DirectX;
@@ -165,11 +166,22 @@ constexpr std::tuple<Formats...> as_tuple(types<Formats...>, std::span<const dx:
 
 
 
-struct VertexShaderBase
+struct VertexShaderBase : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVVertexShader>
 {
-	virtual ~VertexShaderBase() = default;
-	virtual void UpdateConstants(std::span<uint8_t> constants) {};
+
+	virtual void __stdcall UpdateConstants(uint8_t* constants)override {};
 	virtual void Invoke(const DumbVertex& in, DumbVSOut& out) = 0;
+	virtual void __stdcall Invoke(const void* vs_in, void* _out_vertex)override
+	{
+		Invoke(*static_cast<const DumbVertex*>(vs_in), *static_cast<DumbVSOut*>(_out_vertex));
+	}
+	virtual void __stdcall GetByteCode(const char** _out_bytecode)override
+	{
+		*_out_bytecode = ByteCode.c_str();
+	};
+
+	virtual ~VertexShaderBase() = default;
+	
 protected:
 	std::string ByteCode;
 };
