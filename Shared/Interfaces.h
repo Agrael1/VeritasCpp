@@ -61,7 +61,7 @@ IVContext : public IUnknown
 	virtual HRESULT __stdcall IASetVertexBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppVertexBuffers, const uint32_t* pStrides, const uint32_t* pOffsets) = 0;
 	virtual HRESULT __stdcall IASetIndexBuffer(IVBuffer* indexBuffer, VFORMAT format, uint32_t offsetBytes) = 0;
 	virtual HRESULT __stdcall IASetInputLayout(IVInputLayout* pInputLayout) = 0;
-	virtual HRESULT __stdcall VSSetShader(IVVertexShader* pVertexShader) = 0;
+	virtual HRESULT __stdcall VSSetShader(IVShader* pVertexShader) = 0;
 	virtual HRESULT __stdcall VSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers) = 0;
 	virtual HRESULT __stdcall RSSetViewports(uint32_t numVPs, const VVIEWPORT_DESC* _arr_VPs) = 0;
 	virtual HRESULT __stdcall OMSetRenderTargets(uint32_t numViews, const VRTV_DESC* const _arr_RTVs) = 0;

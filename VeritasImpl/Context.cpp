@@ -33,14 +33,16 @@ HRESULT __stdcall VContext::IASetInputLayout(IVInputLayout* pInputLayout)
 	IAInputLayout = static_cast<VInputLayout*>(pInputLayout);
 	return S_OK;
 }
-HRESULT __stdcall VContext::VSSetShader(IVVertexShader* pVertexShader)
+HRESULT __stdcall VContext::VSSetShader(IVShader* pVertexShader)
 {
 	VSVertexShader = pVertexShader;
 	return S_OK;
 }
 HRESULT __stdcall VContext::VSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers)
 {
-	VSConstantBuffers.insert(VSConstantBuffers.begin() + StartSlot, ppConstantBuffers[0], ppConstantBuffers[NumBuffers - 1]);
+	std::span<IVBuffer* const> x{ ppConstantBuffers, NumBuffers };
+	VSConstantBuffers.insert(VSConstantBuffers.begin() + StartSlot, x.begin(), x.end());
+	return S_OK;
 }
 HRESULT __stdcall VContext::RSSetViewports(uint32_t numVPs, const VVIEWPORT_DESC* _arr_VPs)
 {

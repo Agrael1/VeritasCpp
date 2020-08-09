@@ -16,6 +16,6 @@ public:
 		GetContext(in)->VSSetShader(vs.Get());
 	}
 private:
-	wrl::ComPtr<IVVertexShader> vs;
+	wrl::ComPtr<IVShader> vs;
 };
 

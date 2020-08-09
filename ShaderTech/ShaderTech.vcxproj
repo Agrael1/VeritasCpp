@@ -160,12 +160,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ShaderCommon.h" />
+    <ClInclude Include="SimplePS.h" />
     <ClInclude Include="SimpleVS.h" />
-    <ClInclude Include="VertexShader.h" />
+    <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ShaderCommon.cpp" />
-    <ClCompile Include="VertexShader.cpp" />
+    <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

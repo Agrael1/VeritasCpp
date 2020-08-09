@@ -4,12 +4,87 @@
 #include <span>
 #include "ShaderCommon.h"
 
-#include <Framework/DirectXMath/Inc/DirectXMath.h>
+#include <Framework/DirectXMath/Inc/DirectXPackedVector.h>
 
 
 namespace dx = DirectX;
 using matrix = dx::XMMATRIX;
 using SV_VertexID = uint32_t;
+
+struct float1U
+{
+	float1U() = default;
+	float1U(const dx::XMVECTOR in)
+	{
+		dx::XMStoreFloat(&x, in);
+	}
+	float1U operator=(const dx::XMVECTOR in)
+	{
+		dx::XMStoreFloat(&x, in);
+		return *this;
+	}
+	operator dx::XMVECTOR()const
+	{
+		return dx::XMLoadFloat(&x);
+	}
+	operator float()const
+	{
+		return x;
+	}
+public:
+	float x;
+};
+struct float2U : public dx::XMFLOAT2
+{
+	float2U() = default;
+	float2U(const dx::XMVECTOR in)
+	{
+		dx::XMStoreFloat2(this, in);
+	}
+	float2U operator=(const dx::XMVECTOR in)
+	{
+		dx::XMStoreFloat2(this, in);
+		return *this;
+	}
+	operator dx::XMVECTOR()const
+	{
+		return dx::XMLoadFloat2(this);
+	}
+};
+struct float3U : public dx::XMFLOAT3
+{
+	float3U() = default;
+	float3U(const dx::XMVECTOR in)
+	{
+		dx::XMStoreFloat3(this, in);
+	}
+	float3U operator=(const dx::XMVECTOR in)
+	{
+		dx::XMStoreFloat3(this, in);
+		return *this;
+	}
+	operator dx::XMVECTOR()const
+	{
+		return dx::XMLoadFloat3(this);
+	}
+};
+struct float4U : public dx::XMFLOAT4
+{
+	float4U() = default;
+	float4U(const dx::XMVECTOR in)
+	{
+		dx::XMStoreFloat4(this, in);
+	}
+	float4U operator=(const dx::XMVECTOR in)
+	{
+		dx::XMStoreFloat4(this, in);
+		return *this;
+	}
+	operator dx::XMVECTOR()const
+	{
+		return dx::XMLoadFloat4(this);
+	}
+};
 
 XM_ALIGNED_STRUCT(16) float1
 {
@@ -63,6 +138,10 @@ struct float3 : public dx::XMFLOAT3A
 	{
 		return dx::XMLoadFloat3A(this);
 	}
+	constexpr operator float3U()const
+	{
+		return (float3U&)*this;
+	}
 };
 struct float4 : public dx::XMFLOAT4A
 {
@@ -82,8 +161,6 @@ struct float4 : public dx::XMFLOAT4A
 	}
 };
 
-#define float float1
-
 struct DumbVertex
 {
 	dx::XMVECTOR data[16];
@@ -94,13 +171,20 @@ struct DumbVSOut
 	dx::XMVECTOR attributes[16];
 	uint32_t SV_PosCoord;
 };
+struct DumbPSOut
+{
+	uint32_t SV_Target;
+};
 
-template<class...>struct types { using type = types; };
+template<class...>struct types { using type = types;};
+template<class out, class...Args>struct xtypes { using type = typename types<Args...>; using Out_t = out; };
 template<class Sig> struct args;
 
 template<class Out, class M, class...Args>
-struct args<Out(M::*)(Args...)> :types<Args...> {};
+struct args<Out(M::*)(Args...)> :xtypes<Out, Args...> {};
+
 template<class Sig> using args_t = typename args<Sig>::type;
+template<class Sig> using out_t = typename args<Sig>::Out_t;
 
 template<typename T>
 struct map
@@ -159,29 +243,19 @@ constexpr std::tuple<Formats...> as_tuple(std::span<const dx::XMVECTOR, N> arr, 
 	return std::make_tuple(std::forward<Formats>(determine<Formats, SV_VertexID>(arr[Is], vid))...);
 }
 template <class... Formats, size_t N>
-constexpr std::tuple<Formats...> as_tuple(types<Formats...>, std::span<const dx::XMVECTOR, N> arr, SV_VertexID vid)
+constexpr std::tuple<Formats...> as_tuple(types<Formats...>, std::span<const dx::XMVECTOR, N> arr, SV_VertexID vid = 0)
 {
 	return as_tuple<Formats...>(arr, vid, std::make_index_sequence<sizeof...(Formats)>{});
 }
 
 
-
-struct VertexShaderBase : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVVertexShader>
+struct VertexShaderBase : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVShader>
 {
 
-	virtual void __stdcall UpdateConstants(uint8_t* constants)override {};
+	virtual void __stdcall UpdateConstants(uint8_t* const* constants)override;
 	virtual void Invoke(const DumbVertex& in, DumbVSOut& out) = 0;
-	virtual void __stdcall Invoke(const void* vs_in, void* _out_vertex)override
-	{
-		Invoke(*static_cast<const DumbVertex*>(vs_in), *static_cast<DumbVSOut*>(_out_vertex));
-	}
-	virtual void __stdcall GetByteCode(const char** _out_bytecode)override
-	{
-		*_out_bytecode = ByteCode.c_str();
-	};
-
-	virtual ~VertexShaderBase() = default;
-	
+	virtual void __stdcall Invoke(const void* vs_in, void* _out_vertex)override;
+	virtual void __stdcall GetByteCode(const char** _out_bytecode)override;
 protected:
 	std::string ByteCode;
 };
@@ -195,13 +269,46 @@ struct VertexShader : public VertexShaderBase
 	}
 	void Invoke(const DumbVertex& in, DumbVSOut& out)override
 	{
-		static_assert(sizeof(T::RQVSOutT::SV_Position) == sizeof(float4));
+		using RQVSOutT = out_t<decltype(&T::main)>;
+		static_assert(sizeof(RQVSOutT::SV_Position) == sizeof(float4));
 
-		typename T::RQVSOutT x = std::apply(&T::main,
+		RQVSOutT x = std::apply(&T::main,
 			std::tuple_cat(std::make_tuple(reinterpret_cast<T*>(this)), as_tuple(args_t<decltype(&T::main)>{}, std::span(in.data), in.SV_VertexID)));
 
-		out.SV_PosCoord = offsetof(typename T::RQVSOutT, SV_Position) / 16;
+		out.SV_PosCoord = offsetof(RQVSOutT, SV_Position) / 16;
 		std::copy((char*)&x, (char*)&x + sizeof(x), (char*)&out.attributes);
 	}
-
 };
+
+
+struct PixelShaderBase : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVShader>
+{
+	virtual void __stdcall UpdateConstants(uint8_t* const* constants)override;
+	virtual void Invoke(const DumbVSOut& in, DumbPSOut& out) = 0;
+	virtual void __stdcall Invoke(const void* vs_in, void* _out_vertex)override;
+	virtual void __stdcall GetByteCode(const char** _out_bytecode)override;
+protected:
+	std::string ByteCode;
+};
+
+template<class T>
+struct PixelShader : public PixelShaderBase
+{
+	PixelShader()
+	{
+		MakeBytecode(args_t<decltype(&T::main)>{}, ByteCode);
+	}
+	void Invoke(const DumbVSOut& in, DumbPSOut& out)override
+	{
+		using RQPSOutT = out_t<decltype(&T::main)>;
+		static_assert(sizeof(RQPSOutT) == sizeof(float4));
+
+		RQPSOutT x = std::apply(&T::main,
+			std::tuple_cat(std::make_tuple(reinterpret_cast<T*>(this)), as_tuple(args_t<decltype(&T::main)>{}, std::span(in.attributes))));
+
+		dx::PackedVector::XMStoreColor((dx::PackedVector::XMCOLOR*)&out.SV_Target, x );
+	}
+};
+
+#undef max
+#undef min
