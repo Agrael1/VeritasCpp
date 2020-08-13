@@ -252,7 +252,7 @@ constexpr std::tuple<Formats...> as_tuple(types<Formats...>, std::span<const dx:
 struct VertexShaderBase : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVShader>
 {
 
-	virtual void __stdcall UpdateConstants(uint8_t* const* constants)override;
+	virtual void __stdcall UpdateConstants(void* const* constants)override;
 	virtual void Invoke(const DumbVertex& in, DumbVSOut& out) = 0;
 	virtual void __stdcall Invoke(const void* vs_in, void* _out_vertex)override;
 	virtual void __stdcall GetByteCode(const char** _out_bytecode)override;
@@ -283,7 +283,7 @@ struct VertexShader : public VertexShaderBase
 
 struct PixelShaderBase : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVShader>
 {
-	virtual void __stdcall UpdateConstants(uint8_t* const* constants)override;
+	virtual void __stdcall UpdateConstants(void* const* constants)override;
 	virtual void Invoke(const DumbVSOut& in, DumbPSOut& out) = 0;
 	virtual void __stdcall Invoke(const void* vs_in, void* _out_vertex)override;
 	virtual void __stdcall GetByteCode(const char** _out_bytecode)override;

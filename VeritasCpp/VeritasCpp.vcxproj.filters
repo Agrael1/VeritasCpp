@@ -111,6 +111,9 @@
     <ClCompile Include="Engine\Arch\VertexShader.cpp">
       <Filter>Файлы исходного кода\Engine\Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Arch\DepthStencil.cpp">
+      <Filter>Файлы исходного кода\Engine\Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\VeritasEngine.h">
@@ -273,6 +276,9 @@
       <Filter>Заголовочные файлы\Shared\fmt</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Arch\VertexShader.h">
+      <Filter>Заголовочные файлы\Engine\Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Arch\DepthStencil.h">
       <Filter>Заголовочные файлы\Engine\Architecture</Filter>
     </ClInclude>
   </ItemGroup>

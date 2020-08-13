@@ -99,7 +99,8 @@ typedef struct VRTV_DESC
 	VPIXEL_FORMAT PixelFormat;
 	void* Scan0;
 	size_t Reserved;
-}VRTV_DESC;
+}VRTV_DESC, VDSV_DESC;
+
 typedef struct VSWAP_CHAIN_DESC
 {
 	uint32_t Width;

@@ -17,6 +17,6 @@ private:
 	void GetView(VRTV_DESC* in)noexcept;
 private:
 	VTEXTURE_DESC desc{ 0 };
-	std::unique_ptr<DirectX::PackedVector::XMCOLOR[]> data{ 0 };
+	std::unique_ptr<uint8_t[]> data{ 0 };
 };
 

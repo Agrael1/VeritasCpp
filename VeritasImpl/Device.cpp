@@ -23,15 +23,20 @@ HRESULT VGraphicsDevice::RuntimeClassInitialize(HWND window, bool ICCColorAdjust
 	return S_OK;
 }
 
-HRESULT __stdcall VGraphicsDevice::CreateBuffer(const VBUFFER_DESC* desc, IVBuffer** _out_Bufptr, const void* initialData) noexcept(!_DEBUG)
+HRESULT __stdcall VGraphicsDevice::CreateBuffer(const VBUFFER_DESC* desc, IVBuffer** _out_Bufptr, const void* initialData)
 {
 	return wrl::MakeAndInitialize<VBuffer>(_out_Bufptr, desc, initialData);
 }
-HRESULT __stdcall VGraphicsDevice::CreateTexture2D(const VTEXTURE_DESC* desc, IVTexture** _out_texptr, const void* initialData) noexcept(!_DEBUG)
+HRESULT __stdcall VGraphicsDevice::CreateTexture2D(const VTEXTURE_DESC* desc, IVTexture** _out_texptr, const void* initialData)
 {
 	return wrl::MakeAndInitialize<VTexture>(_out_texptr, desc, initialData);
 }
-HRESULT __stdcall VGraphicsDevice::CreateRenderTargetView(IVTexture* resource, VRTV_DESC* _out_rtv) noexcept(!_DEBUG)
+HRESULT __stdcall VGraphicsDevice::CreateRenderTargetView(IVTexture* resource, VRTV_DESC* _out_rtv) 
+{
+	static_cast<VTexture*>(resource)->GetView(_out_rtv);
+	return S_OK;
+}
+HRESULT __stdcall VGraphicsDevice::CreateDepthStencilView(IVTexture* resource, VDSV_DESC* _out_rtv) 
 {
 	static_cast<VTexture*>(resource)->GetView(_out_rtv);
 	return S_OK;

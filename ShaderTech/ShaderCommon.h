@@ -11,7 +11,7 @@ DEFINE_GUID(IID_VShader,
 MIDL_INTERFACE("238B3FF9-0BCB-4706-9237-E4632DA5E5C9")
 IVShader : public IUnknown
 {
-	virtual void __stdcall UpdateConstants(uint8_t* const* constants) = 0;
+	virtual void __stdcall UpdateConstants(void* const* constants) = 0;
 	virtual void __stdcall Invoke(const void* vs_in, void* _out_vertex) = 0;
 	virtual void __stdcall GetByteCode(const char** _out_bytecode) = 0;
 };

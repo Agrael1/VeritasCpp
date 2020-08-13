@@ -92,8 +92,9 @@ public:
 		return dx::XMVectorSetW(dx::XMVectorSaturate((diffuse + light.ambient) * cbuf.materialColor + specular), 1.0f);
 	}
 public:
-	void UpdateConstants(uint8_t* const* constants)override
+	void UpdateConstants(void* const* constants)override
 	{
-		std::copy(constants[0], constants[0] + sizeof(CBuffer), (uint8_t*)&cbuf);
+		cbuf = *static_cast<const CBuffer*>(constants[0]);
+		light = *static_cast<const PointLightCBuf*>(constants[1]);
 	};
 };

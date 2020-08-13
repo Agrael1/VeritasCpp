@@ -46,6 +46,7 @@ IVDevice : public IUnknown
 	virtual HRESULT __stdcall CreateBuffer(const VBUFFER_DESC* desc, IVBuffer** _out_Bufptr, const void* initialData = nullptr) = 0;
 	virtual HRESULT __stdcall CreateTexture2D(const VTEXTURE_DESC* desc, IVTexture** _out_texptr, const void* initialData = nullptr) = 0;
 	virtual HRESULT __stdcall CreateRenderTargetView(IVTexture* resource, VRTV_DESC* _out_rtv) = 0;
+	virtual HRESULT __stdcall CreateDepthStencilView(IVTexture* resource, VDSV_DESC* _out_rtv) = 0;
 	virtual HRESULT __stdcall CreateInputLayout(const VINPUT_ELEMENT* pInputElementDescs, uint32_t NumElements,
 		const void* pShaderBytecodeWithInputSignature, uint32_t BytecodeLength, IVInputLayout** _out_InputLayout) = 0;
 };
@@ -63,9 +64,14 @@ IVContext : public IUnknown
 	virtual HRESULT __stdcall IASetInputLayout(IVInputLayout* pInputLayout) = 0;
 	virtual HRESULT __stdcall VSSetShader(IVShader* pVertexShader) = 0;
 	virtual HRESULT __stdcall VSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers) = 0;
+	virtual HRESULT __stdcall PSSetShader(IVShader* pVertexShader) = 0;
+	virtual HRESULT __stdcall PSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers) = 0;
 	virtual HRESULT __stdcall RSSetViewports(uint32_t numVPs, const VVIEWPORT_DESC* _arr_VPs) = 0;
 	virtual HRESULT __stdcall OMSetRenderTargets(uint32_t numViews, const VRTV_DESC* const _arr_RTVs) = 0;
+	virtual HRESULT __stdcall OMSetDepthStencil(const VDSV_DESC* DSV) = 0;
 	virtual HRESULT __stdcall ClearRenderTarget(VRTV_DESC* rtv, uint32_t col) = 0;
+	virtual void __stdcall DrawIndexed(uint32_t nofVertices) = 0;
+	virtual void __stdcall Draw(uint32_t nofVertices) = 0;
 };
 
 

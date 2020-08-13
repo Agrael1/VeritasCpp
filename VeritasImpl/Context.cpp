@@ -8,31 +8,17 @@ HRESULT __stdcall VContext::IASetPrimitiveTopology(VPRIMITIVE_TOPOLOGY Topology)
 }
 HRESULT __stdcall VContext::IASetVertexBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppVertexBuffers, const uint32_t* pStrides, const uint32_t* pOffsets)
 {
-	std::copy_n(pStrides + StartSlot, NumBuffers, IAVBStrides.begin());
-	for (uint32_t i = StartSlot; i < 4; i++)
-	{
-		if (i < NumBuffers + StartSlot)
-		{
-			auto r = static_cast<VBuffer*>(ppVertexBuffers[i])->data;
-			IAVertexBuffers[i] = std::span<uint8_t>{ r.data() + pOffsets[i], r.size() - pOffsets[i] };
-		}
-		IAVertexBuffers[i] = std::span<uint8_t>{};
-		IAVBStrides[i] = 0;
-	}
-	return S_OK;
+	return IAStage.SetVertexBuffers(StartSlot, NumBuffers, ppVertexBuffers, pStrides, pOffsets);
 }
 HRESULT __stdcall VContext::IASetIndexBuffer(IVBuffer* indexBuffer, VFORMAT format, uint32_t offsetBytes)
 {
-	auto& r = static_cast<VBuffer*>(indexBuffer)->data;
-	IAIndexBuffer = std::span<uint8_t>{ r.data() + offsetBytes, r.size() - offsetBytes };
-	IAIndexFormat = format;
-	return S_OK;
+	return IAStage.SetIndexBuffer(indexBuffer, format, offsetBytes);
 }
 HRESULT __stdcall VContext::IASetInputLayout(IVInputLayout* pInputLayout)
 {
-	IAInputLayout = static_cast<VInputLayout*>(pInputLayout);
-	return S_OK;
+	return IAStage.SetInputLayout(pInputLayout);
 }
+
 HRESULT __stdcall VContext::VSSetShader(IVShader* pVertexShader)
 {
 	VSVertexShader = pVertexShader;
@@ -40,8 +26,19 @@ HRESULT __stdcall VContext::VSSetShader(IVShader* pVertexShader)
 }
 HRESULT __stdcall VContext::VSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers)
 {
-	std::span<IVBuffer* const> x{ ppConstantBuffers, NumBuffers };
+	std::span<VBuffer* const> x{ (VBuffer* const*)ppConstantBuffers, NumBuffers };
 	VSConstantBuffers.insert(VSConstantBuffers.begin() + StartSlot, x.begin(), x.end());
+	return S_OK;
+}
+HRESULT __stdcall VContext::PSSetShader(IVShader* pPixelShader)
+{
+	PSPixelShader = pPixelShader;
+	return S_OK;
+}
+HRESULT __stdcall VContext::PSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers)
+{
+	std::span<VBuffer*const> x{ (VBuffer*const*)ppConstantBuffers, NumBuffers };
+	PSConstantBuffers.insert(PSConstantBuffers.begin() + StartSlot, x.begin(), x.end());
 	return S_OK;
 }
 HRESULT __stdcall VContext::RSSetViewports(uint32_t numVPs, const VVIEWPORT_DESC* _arr_VPs)
@@ -56,6 +53,14 @@ HRESULT __stdcall VContext::OMSetRenderTargets(uint32_t numViews, const VRTV_DES
 	std::copy_n(_arr_RTVs, numViews, OMRenderTargets.begin());
 	return S_OK;
 }
+HRESULT __stdcall VContext::OMSetDepthStencil(const VDSV_DESC* DSV)
+{
+	if (DSV)
+		OMRenderDepth = *DSV;
+	else
+		OMRenderDepth.Scan0 = nullptr;
+	return S_OK;
+}
 HRESULT __stdcall VContext::ClearRenderTarget(VRTV_DESC* rtv, uint32_t col)
 {
 	std::fill((DirectX::PackedVector::XMCOLOR*)rtv->Scan0, (DirectX::PackedVector::XMCOLOR*)rtv->Scan0 + size_t(rtv->Width) * rtv->Height, col);
@@ -63,3 +68,33 @@ HRESULT __stdcall VContext::ClearRenderTarget(VRTV_DESC* rtv, uint32_t col)
 }
 
 
+HRESULT InputAssembler::SetIndexBuffer(IVBuffer* indexBuffer, VFORMAT format, uint32_t offsetBytes)
+{
+	IAIndexFormat = format;
+	if (format)
+	{
+		IAIndexBuffer = indexBuffer;
+		IAIndexOffset = offsetBytes;
+	}
+	else
+	{
+		IAIndexBuffer = nullptr;
+	}
+}
+HRESULT InputAssembler::SetVertexBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppVertexBuffers, const uint32_t* pStrides, const uint32_t* pOffsets)
+{
+	if (StartSlot + NumBuffers > 4 || !ppVertexBuffers) return E_INVALIDARG;
+	std::copy_n(pStrides + StartSlot, NumBuffers, IABufferStrides.begin());
+	std::copy_n(pOffsets + StartSlot, NumBuffers, IABufferOffsets.begin());
+
+	for (uint32_t i = StartSlot; i < StartSlot + NumBuffers; i++)
+	{
+		IAVertexBuffers[i] = ppVertexBuffers[i];
+	}
+	return S_OK;
+}
+HRESULT InputAssembler::SetInputLayout(IVInputLayout* pInputLayout)
+{
+	IAInputLayout = pInputLayout;
+	return S_OK;
+}

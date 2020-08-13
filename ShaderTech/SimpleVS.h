@@ -26,9 +26,9 @@ public:
 		return vso;
 	}
 public:
-	void UpdateConstants(uint8_t*const* constants)override
+	void UpdateConstants(void*const* constants)override
 	{
-		std::copy(constants[0], constants[0] + sizeof(CBuffer), (uint8_t*)&cbuf);
+		cbuf = *static_cast<const CBuffer*>(constants[0]);
 	};
 };
 

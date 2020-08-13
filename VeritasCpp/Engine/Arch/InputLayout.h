@@ -5,8 +5,7 @@
 class InputLayout : public Bindable
 {
 public:
-	InputLayout(VeritasEngine& gfx,
-		const std::vector<VINPUT_ELEMENT>& layout);
+	InputLayout(VeritasEngine& gfx, const std::vector<VINPUT_ELEMENT>& layout);
 	void Bind(VeritasEngine& gfx) noexcept override;
 protected:
 	Microsoft::WRL::ComPtr<IVInputLayout> pInputLayout;
