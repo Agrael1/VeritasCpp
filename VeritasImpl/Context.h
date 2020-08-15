@@ -13,6 +13,24 @@
 
 namespace dx = DirectX;
 
+struct float4 : public dx::XMFLOAT4A
+{
+    float4() = default;
+    float4(const dx::XMVECTOR in)
+    {
+        dx::XMStoreFloat4A(this, in);
+    }
+    float4 operator=(const dx::XMVECTOR in)
+    {
+        dx::XMStoreFloat4A(this, in);
+        return *this;
+    }
+    operator dx::XMVECTOR()const
+    {
+        return dx::XMLoadFloat4A(this);
+    }
+};
+
 struct XMVertex
 {
     dx::XMVECTOR data[16];
@@ -20,13 +38,28 @@ struct XMVertex
 };
 struct XMVSOut
 {
-    dx::XMVECTOR attributes[16];
+public:
+    float4 attributes[16];
     uint32_t SV_PosCoord;
 };
 struct PSOut
 {
     uint32_t SV_Target;
 };
+
+inline XMVSOut VSOutInterpolate(const XMVSOut& v0, const XMVSOut& v1, float alpha, size_t voSize)
+{
+    using namespace DirectX;
+    XMVSOut out;
+
+    for (size_t i = 0; i < voSize; i++)
+    {
+        out.attributes[i] = XMVectorLerp(v0.attributes[i], v1.attributes[i], alpha);
+    }
+
+    return out;
+}
+
 
 class InputAssembler
 {
@@ -37,20 +70,83 @@ public:
     HRESULT SetVertexBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppVertexBuffers, const uint32_t* pStrides, const uint32_t* pOffsets);
     HRESULT SetInputLayout(IVInputLayout* pInputLayout);
 public:
-    std::vector<XMVertex> MakeVertices()
+    std::vector<XMVertex> MakeVertices(uint32_t NumVertices)const
     {
-        size_t vertsS = IAIndexBuffer->data.size() / IAIndexFormat;
-        assert(vertsS % 3 == 0);
+        assert(NumVertices % 3 == 0);
         std::vector<XMVertex> out;
-        out.reserve(vertsS);
+        out.reserve(NumVertices);
         
-        for (auto& v : out)
+        for (size_t vtx = 0; auto& v : out)
         {
-            for (auto& x : IAInputLayout->il)
+            for (size_t i = 0; const auto& x : IAInputLayout->il)
             {
-                
+                size_t index = vtx * IABufferStrides[x.InputSlot] + IABufferOffsets[x.InputSlot] + x.AlignedByteOffset;
+                auto* data = &IAVertexBuffers[x.InputSlot]->data[index];
+
+                switch (x.Format)
+                {
+                case FORMAT_R32G32B32A32_FLOAT:
+                    v.data[i] = dx::XMLoadFloat4(reinterpret_cast<dx::XMFLOAT4*>(data));
+                    break;
+                case FORMAT_R32G32B32_FLOAT:
+                    v.data[i] = dx::XMLoadFloat3(reinterpret_cast<dx::XMFLOAT3*>(data));
+                    break;
+                case FORMAT_R32G32_FLOAT:
+                    v.data[i] = dx::XMLoadFloat2(reinterpret_cast<dx::XMFLOAT2*>(data));
+                    break;
+                case FORMAT_R32_FLOAT:
+                    v.data[i] = dx::XMLoadFloat(reinterpret_cast<float*>(data));
+                    break;
+                default:
+                    break;
+                }
+                i++;
+            }
+            v.SV_VertexID = vtx++;
+        }
+        return std::move(out);
+    }
+    std::vector<XMVertex> MakeVerticesIndexed(uint32_t NumIndices)const
+    {
+        assert(NumIndices % 3 == 0);
+        assert(IAIndexBuffer);
+        std::vector<XMVertex> out;
+        out.reserve(NumIndices);
+        auto* indexPtr = &IAIndexBuffer->data[0];
+
+        for (size_t idx = 0; auto& v : out)
+        {
+            for (size_t i = 0; const auto& x : IAInputLayout->il)
+            {
+                v.SV_VertexID = (*((uint32_t*)indexPtr) & ((1u << IAIndexFormat * CHAR_BIT) - 1));
+                indexPtr += IAIndexFormat;
+                size_t index = v.SV_VertexID * IABufferStrides[x.InputSlot] + IABufferOffsets[x.InputSlot] + x.AlignedByteOffset;
+                auto* data = &IAVertexBuffers[x.InputSlot]->data[index];
+
+                switch (x.Format)
+                {
+                case FORMAT_R32G32B32A32_FLOAT:
+                    v.data[i] = dx::XMLoadFloat4(reinterpret_cast<dx::XMFLOAT4*>(&IAVertexBuffers[x.InputSlot]->data[x.AlignedByteOffset]));
+                    break;
+                case FORMAT_R32G32B32_FLOAT:
+                    v.data[i] = dx::XMLoadFloat3(reinterpret_cast<dx::XMFLOAT3*>(&IAVertexBuffers[x.InputSlot]->data[x.AlignedByteOffset]));
+                    break;
+                case FORMAT_R32G32_FLOAT:
+                    v.data[i] = dx::XMLoadFloat2(reinterpret_cast<dx::XMFLOAT2*>(&IAVertexBuffers[x.InputSlot]->data[x.AlignedByteOffset]));
+                    break;
+                case FORMAT_R32_FLOAT:
+                    v.data[i] = dx::XMLoadFloat(reinterpret_cast<float*>(&IAVertexBuffers[x.InputSlot]->data[x.AlignedByteOffset]));
+                    break;
+                default:
+                    break;
+                }
+                i++;
             }
         }
+    }
+    uint32_t GetMonotonicSize()const
+    {
+        return IAInputLayout->il.size();
     }
 private:
     wrl::ComPtr<VInputLayout> IAInputLayout;
@@ -88,8 +184,16 @@ public:
     }
     void __stdcall DrawIndexed(uint32_t nofVertices)override
     {
-    }
+        auto verts = IAStage.MakeVerticesIndexed(nofVertices);
+        std::vector<XMVSOut> VSOut;
+        VSOut.reserve(verts.size());
 
+        for (uint32_t i = 0; auto& v : verts)
+        {
+            VSVertexShader->Invoke(&v, &VSOut[i]);
+        }
+        AssembleTriangles(VSOut);
+    }
 private:
     void AssembleTriangles(std::vector<XMVSOut>& VSOut)
     {
@@ -104,14 +208,14 @@ private:
     }
     void ClipCullTriangles(XMVSOut& v0, XMVSOut& v1, XMVSOut& v2)
     {
+        uint32_t vosize = IAStage.GetMonotonicSize();
+        uint32_t idx = v0.SV_PosCoord;
+
         using namespace DirectX;
-        const auto Clip1V = [this](XMVSOut& v0, XMVSOut& v1, XMVSOut& v2)
+        const auto Clip1V = [=](XMVSOut& v0, XMVSOut& v1, XMVSOut& v2)
         {
-            auto vosize = activeSP->GetMonotonicSize();
-
-            const float alphaA = (-v0.dx.SV_Position.f[3] - v0.dx.SV_Position.f[2]) / (v1.dx.SV_Position.f[3] - v0.dx.SV_Position.f[3] + v1.dx.SV_Position.f[2] - v0.dx.SV_Position.f[2]);
-            const float alphaB = (-v0.dx.SV_Position.f[3] - v0.dx.SV_Position.f[2]) / (v2.dx.SV_Position.f[3] - v0.dx.SV_Position.f[3] + v2.dx.SV_Position.f[2] - v0.dx.SV_Position.f[2]);
-
+            const float alphaA = (-v0.attributes[idx].z) / (v1.attributes[idx].z - v0.attributes[idx].z);
+            const float alphaB = (-v0.attributes[idx].z) / (v2.attributes[idx].z - v0.attributes[idx].z);
             // interpolate to get v0a and v0b
             auto v0a = VSOutInterpolate(v0, v1, alphaA, vosize);
             auto v0b = VSOutInterpolate(v0, v2, alphaB, vosize);
@@ -121,12 +225,11 @@ private:
             PostProcessTriangle(v0a, v1, v2);
             PostProcessTriangle(v0b, v0a2, v2b);
         };
-        const auto Clip2V = [this](XMVSOut& v0, XMVSOut& v1, XMVSOut& v2)
+        const auto Clip2V = [=](XMVSOut& v0, XMVSOut& v1, XMVSOut& v2)
         {
-            auto vosize = activeSP->GetMonotonicSize();
             // calculate alpha values for getting adjusted vertices
-            const float alpha0 = (-v0.dx.SV_Position.f[3] - v0.dx.SV_Position.f[2]) / (v2.dx.SV_Position.f[3] - v0.dx.SV_Position.f[3] + v2.dx.SV_Position.f[2] - v0.dx.SV_Position.f[2]);
-            const float alpha1 = (-v1.dx.SV_Position.f[3] - v1.dx.SV_Position.f[2]) / (v2.dx.SV_Position.f[3] - v1.dx.SV_Position.f[3] + v2.dx.SV_Position.f[2] - v1.dx.SV_Position.f[2]);
+            const float alpha0 = (-v0.attributes[idx].z) / (v2.attributes[idx].z - v0.attributes[idx].z);
+            const float alpha1 = (-v1.attributes[idx].z) / (v2.attributes[idx].z - v1.attributes[idx].z);
             // interpolate to get v0a and v0b
 
             v0 = VSOutInterpolate(v0, v2, alpha0, vosize);
@@ -135,9 +238,9 @@ private:
             PostProcessTriangle(v0, v1, v2);
         };
 
-        VMFLOAT32A V0 = v0.dx.SV_Position;
-        VMFLOAT32A V1 = v1.dx.SV_Position;
-        VMFLOAT32A V2 = v2.dx.SV_Position;
+        float4 V0 = v0.attributes[idx];
+        float4 V1 = v1.attributes[idx];
+        float4 V2 = v2.attributes[idx];
 
         // Compare againgst W value
         XMVECTOR CT0 = XMVectorSplatW(V0);
@@ -179,17 +282,18 @@ private:
     void PostProcessTriangle(XMVSOut& v0, XMVSOut& v1, XMVSOut& v2)
     {
         using namespace DirectX;
+        uint32_t idx = v0.SV_PosCoord;
         // homo -> NDC space transformation
-        XMVECTOR wInv = XMVectorReciprocal(_mm_shuffle_ps(XMVectorMergeZW(v0.dx.SV_Position, v1.dx.SV_Position), v2.dx.SV_Position, _MM_SHUFFLE(3, 3, 3, 2)));
+        XMVECTOR wInv = XMVectorReciprocal(_mm_shuffle_ps(XMVectorMergeZW(v0.attributes[idx], v1.attributes[idx]), v2.attributes[idx], _MM_SHUFFLE(3, 3, 3, 2)));
         XMMATRIX X;
         X.r[0] = XMVectorSplatX(wInv); // 1/w0
         X.r[1] = XMVectorSplatY(wInv); // 1/w1
         X.r[2] = XMVectorSplatZ(wInv); // 1/w2
 
         //Screen space transform, 1/w is stored in W
-        v0.dx.SV_Position = XMVectorMultiplyAdd(XMVectorMultiply(v0.dx.SV_Position, X.r[0]), Scale, Offset); XMStoreFloat(&v0.dx.SV_Position.f[3], X.r[0]);
-        v1.dx.SV_Position = XMVectorMultiplyAdd(XMVectorMultiply(v1.dx.SV_Position, X.r[1]), Scale, Offset); XMStoreFloat(&v1.dx.SV_Position.f[3], X.r[1]);
-        v2.dx.SV_Position = XMVectorMultiplyAdd(XMVectorMultiply(v2.dx.SV_Position, X.r[2]), Scale, Offset); XMStoreFloat(&v2.dx.SV_Position.f[3], X.r[2]);
+        v0.attributes[idx] = XMVectorMultiplyAdd(XMVectorMultiply(v0.attributes[idx], X.r[0]), Scale, Offset); XMStoreFloat(&v0.attributes[idx].w, X.r[0]);
+        v1.attributes[idx] = XMVectorMultiplyAdd(XMVectorMultiply(v1.attributes[idx], X.r[1]), Scale, Offset); XMStoreFloat(&v1.attributes[idx].w, X.r[1]);
+        v2.attributes[idx] = XMVectorMultiplyAdd(XMVectorMultiply(v2.attributes[idx], X.r[2]), Scale, Offset); XMStoreFloat(&v2.attributes[idx].w, X.r[2]);
 
         //cull backfaces
         if (VMVector3Cross((v1.dx.SV_Position.v - v0.dx.SV_Position.v), (v2.dx.SV_Position.v - v0.dx.SV_Position.v)).f[2] < 0.0f)
@@ -380,9 +484,6 @@ private:
 	std::array<VRTV_DESC, MaxRenderTargets> OMRenderTargets;
     VDSV_DESC OMRenderDepth;
 	std::array<VVIEWPORT_DESC, MaxViewPorts> RSViewPorts;
-	VFORMAT IAIndexFormat;
-	VPRIMITIVE_TOPOLOGY IATopology;
-	VInputLayout* IAInputLayout;
 	wrl::ComPtr<IVShader> VSVertexShader;
 	wrl::ComPtr<IVShader> PSPixelShader;
 	std::vector<wrl::ComPtr<VBuffer>> VSConstantBuffers;
