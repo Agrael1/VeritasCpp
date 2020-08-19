@@ -66,7 +66,7 @@ IVContext : public IUnknown
 	virtual HRESULT __stdcall VSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers) = 0;
 	virtual HRESULT __stdcall PSSetShader(IVShader* pVertexShader) = 0;
 	virtual HRESULT __stdcall PSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers) = 0;
-	virtual HRESULT __stdcall RSSetViewports(uint32_t numVPs, const VVIEWPORT_DESC* _arr_VPs) = 0;
+	virtual HRESULT __stdcall RSSetViewport(uint32_t numVPs, const VVIEWPORT_DESC* pVP) = 0;
 	virtual HRESULT __stdcall OMSetRenderTargets(uint32_t numViews, const VRTV_DESC* const _arr_RTVs) = 0;
 	virtual HRESULT __stdcall OMSetDepthStencil(const VDSV_DESC* DSV) = 0;
 	virtual HRESULT __stdcall ClearRenderTarget(VRTV_DESC* rtv, uint32_t col) = 0;

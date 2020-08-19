@@ -41,11 +41,13 @@ HRESULT __stdcall VContext::PSSetConstantBuffers(uint32_t StartSlot, uint32_t Nu
 	PSConstantBuffers.insert(PSConstantBuffers.begin() + StartSlot, x.begin(), x.end());
 	return S_OK;
 }
-HRESULT __stdcall VContext::RSSetViewports(uint32_t numVPs, const VVIEWPORT_DESC* _arr_VPs)
+HRESULT __stdcall VContext::RSSetViewport(uint32_t numVPs, const VVIEWPORT_DESC* in)
 {
-	if (numVPs > MaxRenderTargets) return E_INVALIDARG;
-	std::copy_n(_arr_VPs, numVPs, RSViewPorts.begin());
-	return S_OK;
+	RSViewPort = *in;
+	const float HalfViewportWidth = RSViewPort.Width * 0.5f;
+	const float HalfViewportHeight = RSViewPort.Height * 0.5f;
+	RSVPScale = dx::XMVectorSet(HalfViewportWidth, -HalfViewportHeight, 1.0f, 0.0f);
+	RSVPOffset = dx::XMVectorSet(HalfViewportWidth, HalfViewportHeight, 1.0f, 0.0f);
 }
 HRESULT __stdcall VContext::OMSetRenderTargets(uint32_t numViews, const VRTV_DESC* const _arr_RTVs)
 {

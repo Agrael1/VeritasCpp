@@ -39,12 +39,45 @@ struct XMVertex
 struct XMVSOut
 {
 public:
+    float4& Position()
+    {
+        return attributes[SV_PosCoord];
+    }
+    const float4& Position()const
+    {
+        return attributes[SV_PosCoord];
+    }
+    void Scale(const float4& factor, uint32_t attrsize)
+    {
+        using namespace DirectX;
+        while (attrsize--)
+        {
+            attributes[attrsize] = attributes[attrsize] * factor;
+        }
+    }
+public:
+    float4& operator[](uint32_t sz)
+    {
+        return attributes[sz];
+    }
+    constexpr const float4& operator[](uint32_t sz)const
+    {
+        return attributes[sz];
+    }
+public:
+    static XMVSOut Subtract(const XMVSOut& from, const XMVSOut& what, uint32_t attrsize)
+    {
+        XMVSOut out;
+        out.SV_PosCoord = from.SV_PosCoord;
+        while (attrsize--)
+        {
+            out[attrsize] = from[attrsize] - what[attrsize];
+        }
+        return out;
+    }
+public:
     float4 attributes[16];
     uint32_t SV_PosCoord;
-};
-struct PSOut
-{
-    uint32_t SV_Target;
 };
 
 inline XMVSOut VSOutInterpolate(const XMVSOut& v0, const XMVSOut& v1, float alpha, size_t voSize)
@@ -174,7 +207,7 @@ public:
 	HRESULT __stdcall VSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers)override;
 	HRESULT __stdcall PSSetShader(IVShader* pPixelShader)override;
 	HRESULT __stdcall PSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers)override;
-	HRESULT __stdcall RSSetViewports(uint32_t numVPs, const VVIEWPORT_DESC* _arr_VPs)override;
+    HRESULT __stdcall RSSetViewport(uint32_t numVPs, const VVIEWPORT_DESC* in)override;
 	HRESULT __stdcall OMSetRenderTargets(uint32_t numViews, const VRTV_DESC* const _arr_RTVs)override;
     HRESULT __stdcall OMSetDepthStencil(const VDSV_DESC* DSV)override;
 	HRESULT __stdcall ClearRenderTarget(VRTV_DESC* rtv, uint32_t col)override;
@@ -197,18 +230,18 @@ public:
 private:
     void AssembleTriangles(std::vector<XMVSOut>& VSOut)
     {
+        auto vosize = IAStage.GetMonotonicSize();
         for (size_t it = 0u; it < VSOut.size(); it += 3)
         {
             auto& v0 = VSOut[it];
             auto& v1 = VSOut[it + 1];
             auto& v2 = VSOut[it + 2];
 
-            ClipCullTriangles(v0, v1, v2);
+            RSClipCullTriangles(v0, v1, v2, vosize);
         }
     }
-    void ClipCullTriangles(XMVSOut& v0, XMVSOut& v1, XMVSOut& v2)
+    void RSClipCullTriangles(XMVSOut& v0, XMVSOut& v1, XMVSOut& v2, uint32_t vosize)
     {
-        uint32_t vosize = IAStage.GetMonotonicSize();
         uint32_t idx = v0.SV_PosCoord;
 
         using namespace DirectX;
@@ -222,8 +255,8 @@ private:
             auto v0a2 = v0a;
             auto v2b = v2;
             // draw triangles
-            PostProcessTriangle(v0a, v1, v2);
-            PostProcessTriangle(v0b, v0a2, v2b);
+            RSPostProcessTriangle(v0a, v1, v2, vosize);
+            RSPostProcessTriangle(v0b, v0a2, v2b, vosize);
         };
         const auto Clip2V = [=](XMVSOut& v0, XMVSOut& v1, XMVSOut& v2)
         {
@@ -235,7 +268,7 @@ private:
             v0 = VSOutInterpolate(v0, v2, alpha0, vosize);
             v1 = VSOutInterpolate(v1, v2, alpha1, vosize);
             // draw triangles
-            PostProcessTriangle(v0, v1, v2);
+            RSPostProcessTriangle(v0, v1, v2, vosize);
         };
 
         float4 V0 = v0.attributes[idx];
@@ -270,7 +303,7 @@ private:
         int selector = _mm_movemask_ps(RR2) & 7;
         switch (selector)
         {
-        case 0: PostProcessTriangle(v0, v1, v2); break;
+        case 0: RSPostProcessTriangle(v0, v1, v2, vosize); break;
         case 1: Clip1V(v0, v1, v2); break;
         case 2: Clip1V(v1, v2, v0); break;
         case 3: Clip2V(v0, v1, v2); break;
@@ -279,10 +312,10 @@ private:
         case 6: Clip2V(v1, v2, v0); break;
         }
     }
-    void PostProcessTriangle(XMVSOut& v0, XMVSOut& v1, XMVSOut& v2)
+    void RSPostProcessTriangle(XMVSOut& v0, XMVSOut& v1, XMVSOut& v2, uint32_t attrsize)
     {
         using namespace DirectX;
-        uint32_t idx = v0.SV_PosCoord;
+        const uint32_t idx = v0.SV_PosCoord;
         // homo -> NDC space transformation
         XMVECTOR wInv = XMVectorReciprocal(_mm_shuffle_ps(XMVectorMergeZW(v0.attributes[idx], v1.attributes[idx]), v2.attributes[idx], _MM_SHUFFLE(3, 3, 3, 2)));
         XMMATRIX X;
@@ -291,173 +324,171 @@ private:
         X.r[2] = XMVectorSplatZ(wInv); // 1/w2
 
         //Screen space transform, 1/w is stored in W
-        v0.attributes[idx] = XMVectorMultiplyAdd(XMVectorMultiply(v0.attributes[idx], X.r[0]), Scale, Offset); XMStoreFloat(&v0.attributes[idx].w, X.r[0]);
-        v1.attributes[idx] = XMVectorMultiplyAdd(XMVectorMultiply(v1.attributes[idx], X.r[1]), Scale, Offset); XMStoreFloat(&v1.attributes[idx].w, X.r[1]);
-        v2.attributes[idx] = XMVectorMultiplyAdd(XMVectorMultiply(v2.attributes[idx], X.r[2]), Scale, Offset); XMStoreFloat(&v2.attributes[idx].w, X.r[2]);
+        v0[idx] = XMVectorMultiplyAdd(v0[idx]* X.r[0], RSVPScale, RSVPOffset); XMStoreFloat(&v0[idx].w, X.r[0]);
+        v1[idx] = XMVectorMultiplyAdd(v1[idx]* X.r[1], RSVPScale, RSVPOffset); XMStoreFloat(&v1[idx].w, X.r[1]);
+        v2[idx] = XMVectorMultiplyAdd(v2[idx]* X.r[2], RSVPScale, RSVPOffset); XMStoreFloat(&v2[idx].w, X.r[2]);
 
         //cull backfaces
-        if (VMVector3Cross((v1.dx.SV_Position.v - v0.dx.SV_Position.v), (v2.dx.SV_Position.v - v0.dx.SV_Position.v)).f[2] < 0.0f)
+        if (float4(XMVector3Cross((v1[idx] - v0[idx]), (v2[idx] - v0[idx]))).z < 0.0f)
             return;
 
-        auto vosize = activeSP->GetMonotonicSize();
-        for (unsigned i = 0; i < vosize; i++)
+        for (unsigned i = 0; i < attrsize; i++)
         {
-            v0.dx.attributes[i].v = v0.dx.attributes[i].v * X.r[0];
-            v1.dx.attributes[i].v = v1.dx.attributes[i].v * X.r[1];
-            v2.dx.attributes[i].v = v2.dx.attributes[i].v * X.r[2];
+            if (i == idx) continue;
+            v0.attributes[i] = v0.attributes[i] * X.r[0];
+            v1.attributes[i] = v1.attributes[i] * X.r[1];
+            v2.attributes[i] = v2.attributes[i] * X.r[2];
         }
-        DrawTriangle(v0, v1, v2);
+        DrawTriangle(v0, v1, v2, attrsize);
     }
 
-    void DrawTriangle(const XMVSOut& Vo0, const XMVSOut& Vo1, const XMVSOut& Vo2)
+    void DrawTriangle(const XMVSOut& Vo0, const XMVSOut& Vo1, const XMVSOut& Vo2, uint32_t attrsize)
     {
+        const uint32_t idx = Vo0.SV_PosCoord;
         // using pointers so we can swap (for sorting purposes)
         const auto* pv0 = &Vo0;
         const auto* pv1 = &Vo1;
         const auto* pv2 = &Vo2;
 
         // sorting vertices by y
-        if (pv1->dx.SV_Position.f[1] < pv0->dx.SV_Position.f[1]) std::swap(pv0, pv1);
-        if (pv2->dx.SV_Position.f[1] < pv1->dx.SV_Position.f[1]) std::swap(pv1, pv2);
-        if (pv1->dx.SV_Position.f[1] < pv0->dx.SV_Position.f[1]) std::swap(pv0, pv1);
+        if (pv1->attributes[idx].y < pv0->attributes[idx].y) std::swap(pv0, pv1);
+        if (pv2->attributes[idx].y < pv1->attributes[idx].y) std::swap(pv1, pv2);
+        if (pv1->attributes[idx].y < pv0->attributes[idx].y) std::swap(pv0, pv1);
 
-        if (pv0->dx.SV_Position.f[1] == pv1->dx.SV_Position.f[1]) // natural flat top
+        if (pv0->attributes[idx].y == pv1->attributes[idx].y) // natural flat top
         {
             // sorting top vertices by x
-            if (pv1->dx.SV_Position.f[0] < pv0->dx.SV_Position.f[0]) std::swap(pv0, pv1);
+            if (pv1->attributes[idx].x < pv0->attributes[idx].x) std::swap(pv0, pv1);
 
-            DrawFlatTopTriangle(*pv0, *pv1, *pv2);
+            DrawFlatTopTriangle(*pv0, *pv1, *pv2, attrsize);
         }
-        else if (pv1->dx.SV_Position.f[1] == pv2->dx.SV_Position.f[1]) // natural flat bottom
+        else if (pv1->attributes[idx].y == pv2->attributes[idx].y) // natural flat bottom
         {
             // sorting bottom vertices by x
-            if (pv2->dx.SV_Position.f[0] < pv1->dx.SV_Position.f[0]) std::swap(pv1, pv2);
+            if (pv2->attributes[idx].x < pv1->attributes[idx].x) std::swap(pv1, pv2);
 
-            DrawFlatBottomTriangle(*pv0, *pv1, *pv2);
+            DrawFlatBottomTriangle(*pv0, *pv1, *pv2, attrsize);
         }
         else // general triangle
         {
             // find splitting vertex interpolant
             const float alphaSplit =
-                (pv1->dx.SV_Position.f[1] - pv0->dx.SV_Position.f[1]) /
-                (pv2->dx.SV_Position.f[1] - pv0->dx.SV_Position.f[1]);
-            const auto vi = VSOutInterpolate(*pv0, *pv2, alphaSplit, activeSP->GetMonotonicSize());
+                (pv1->attributes[idx].y - pv0->attributes[idx].y) /
+                (pv2->attributes[idx].y - pv0->attributes[idx].y);
+            const auto vi = VSOutInterpolate(*pv0, *pv2, alphaSplit, attrsize);
 
-            if (pv1->dx.SV_Position.f[0] < vi.dx.SV_Position.f[0]) // major right
+            if (pv1->attributes[idx].x < vi.attributes[idx].x) // major right
             {
-                DrawFlatBottomTriangle(*pv0, *pv1, vi);
-                DrawFlatTopTriangle(*pv1, vi, *pv2);
+                DrawFlatBottomTriangle(*pv0, *pv1, vi, attrsize);
+                DrawFlatTopTriangle(*pv1, vi, *pv2, attrsize);
             }
             else // major left
             {
-                DrawFlatBottomTriangle(*pv0, vi, *pv1);
-                DrawFlatTopTriangle(vi, *pv1, *pv2);
+                DrawFlatBottomTriangle(*pv0, vi, *pv1, attrsize);
+                DrawFlatTopTriangle(vi, *pv1, *pv2, attrsize);
             }
         }
     }
-    void DrawFlatTopTriangle(const XMVSOut& Vo0, const XMVSOut& Vo1, const XMVSOut& Vo2)
+    void DrawFlatTopTriangle(const XMVSOut& Vo0, const XMVSOut& Vo1, const XMVSOut& Vo2, uint32_t attrsize)
     {
         using namespace DirectX;
-        auto vosize = activeSP->GetMonotonicSize();
         XMVSOut InterpolantEdge = Vo1;
         // calulcate dVertex / dy
         // change in interpolant for every 1 change in y
-        auto dv0 = XMVSOut::Subtract(Vo2, Vo0, vosize);
-        auto dv1 = XMVSOut::Subtract(Vo2, Vo1, vosize);
-        FXMVECTOR delta_Y = XMVectorSplatY(XMVectorReciprocal(dv0.dx.SV_Position));
+        auto dv0 = XMVSOut::Subtract(Vo2, Vo0, attrsize);
+        auto dv1 = XMVSOut::Subtract(Vo2, Vo1, attrsize);
+        FXMVECTOR delta_Y = XMVectorSplatY(XMVectorReciprocal(dv0.Position()));
 
         // delta over 0 and 1 resp
-        dv0.Scale(delta_Y, vosize);
-        dv1.Scale(delta_Y, vosize);
+        dv0.Scale(delta_Y, attrsize);
+        dv1.Scale(delta_Y, attrsize);
 
         // call the flat triangle render routine, right edge interpolant is it1
-        DrawFlatTriangle(Vo0, Vo2, dv0, dv1, InterpolantEdge);
+        DrawFlatTriangle(Vo0, Vo2, dv0, dv1, InterpolantEdge, attrsize);
     }
-    void DrawFlatBottomTriangle(const XMVSOut& Vo0, const XMVSOut& Vo1, const XMVSOut& Vo2)
+    void DrawFlatBottomTriangle(const XMVSOut& Vo0, const XMVSOut& Vo1, const XMVSOut& Vo2, uint32_t attrsize)
     {
         using namespace DirectX;
-        auto vosize = activeSP->GetMonotonicSize();
         XMVSOut InterpolantEdge = Vo0;
 
         // calulcate dVertex / dy
         // change in interpolant for every 1 change in y
-        auto dv0 = XMVSOut::Subtract(Vo1, Vo0, vosize);
-        auto dv1 = XMVSOut::Subtract(Vo2, Vo0, vosize);
-        FXMVECTOR delta_Y = XMVectorReciprocal(XMVectorSplatY(dv0.dx.SV_Position)); // minimize div (reciprocalEst is not good enough)
+        auto dv0 = XMVSOut::Subtract(Vo1, Vo0, attrsize);
+        auto dv1 = XMVSOut::Subtract(Vo2, Vo0, attrsize);
+        FXMVECTOR delta_Y = XMVectorReciprocal(XMVectorSplatY(dv0.Position())); // minimize div (reciprocalEst is not good enough)
 
         // delta over 1 and 2 resp
-        dv0.Scale(delta_Y, vosize);
-        dv1.Scale(delta_Y, vosize);
+        dv0.Scale(delta_Y, attrsize);
+        dv1.Scale(delta_Y, attrsize);
 
         // call the flat triangle render routine, right edge interpolant is it0
-        DrawFlatTriangle(Vo0, Vo2, dv0, dv1, InterpolantEdge);
+        DrawFlatTriangle(Vo0, Vo2, dv0, dv1, InterpolantEdge, attrsize);
     }
 
     void DrawFlatTriangle(const XMVSOut& it0,
         const XMVSOut& it2,
         const XMVSOut& dv0,
         const XMVSOut& dv1,
-        XMVSOut& itEdge1)
+        XMVSOut& itEdge1, uint32_t attrsize)
     {
         using namespace DirectX;
-        const size_t Size = activeSP->GetMonotonicSize();
 
         // create edge interpolant for left edge (always v0)
         XMVSOut itEdge0 = it0;
         XMVSOut iLine;
         XMVSOut diLine;
-        XMInPixel _P;
+        XMVSOut _P;
 
         // calculate start and end scanlines (AABB)
-        const int yStart = std::max((int)ceil(it0.dx.SV_Position.f[1] - 0.5f), 0);
-        const int yEnd = std::min((int)ceil(it2.dx.SV_Position.f[1] - 0.5f), (int)height); // the scanline AFTER the last line drawn
+        const int yStart = std::max((int)ceil(it0.Position().y - 0.5f), 0);
+        const int yEnd = std::min((int)ceil(it2.Position().y - 0.5f), (int)RSViewPort.Height); // the scanline AFTER the last line drawn
 
         // do interpolant prestep
-        FXMVECTOR step = XMVectorReplicate(((float)yStart + 0.5f - it0.dx.SV_Position.f[1]));
+        FXMVECTOR step = XMVectorReplicate(((float)yStart + 0.5f - it0.Position().y));
 
-        for (unsigned i = 0; i < Size; i++)
+        for (unsigned i = 0; i < attrsize; i++)
         {
-            itEdge0.dx.attributes[i].v = XMVectorMultiplyAdd(dv0.dx.attributes[i], step, itEdge0.dx.attributes[i]);
-            itEdge1.dx.attributes[i].v = XMVectorMultiplyAdd(dv1.dx.attributes[i], step, itEdge1.dx.attributes[i]);
+            itEdge0[i] = XMVectorMultiplyAdd(dv0[i], step, itEdge0[i]);
+            itEdge1[i] = XMVectorMultiplyAdd(dv1[i], step, itEdge1[i]);
         }
-        itEdge0.dx.SV_Position.v = XMVectorMultiplyAdd(dv0.dx.SV_Position, step, itEdge0.dx.SV_Position);
-        itEdge1.dx.SV_Position.v = XMVectorMultiplyAdd(dv1.dx.SV_Position, step, itEdge1.dx.SV_Position);
 
-        for (int y = yStart; y < yEnd; y++, itEdge0.Increase(dv0, Size), itEdge1.Increase(dv1, Size))
+        for (int y = yStart; y < yEnd; y++, itEdge0.Increase(dv0, attrsize), itEdge1.Increase(dv1, attrsize))
         {
             // calculate start and end pixels
-            const int xStart = std::max((int)ceil(itEdge0.dx.SV_Position.f[0] - 0.5f), 0);
-            const int xEnd = std::min((int)ceil(itEdge1.dx.SV_Position.f[0] - 0.5f), (int)width); // the pixel AFTER the last pixel drawn
+            const int xStart = std::max((int)ceil(itEdge0.Position().x - 0.5f), 0);
+            const int xEnd = std::min((int)ceil(itEdge1.Position().x - 0.5f), (int)RSViewPort.Width); // the pixel AFTER the last pixel drawn
 
             // create scanline interpolant startpoint
             // (some waste for interpolating x,y,z, but makes life easier not having
             //  to split them off, and z will be needed in the future anyways...)
 
             iLine = itEdge0;
-            FXMVECTOR step2 = XMVectorReplicate((float)xStart + 0.5f - itEdge0.dx.SV_Position.f[0]);
-            FXMVECTOR Delta_X = XMVectorReciprocal(XMVectorSplatX(itEdge1.dx.SV_Position.v - itEdge0.dx.SV_Position.v));
-            diLine = XMVSOut::Multiply(XMVSOut::Subtract(itEdge1, iLine, Size), Delta_X, Size);
-            iLine += XMVSOut::Multiply(diLine, step2, Size);
+            FXMVECTOR step2 = XMVectorReplicate((float)xStart + 0.5f - itEdge0.Position().x);
+            FXMVECTOR Delta_X = XMVectorReciprocal(XMVectorSplatX(itEdge1.Position() - itEdge0.Position()));
+            diLine = XMVSOut::Multiply(XMVSOut::Subtract(itEdge1, iLine, attrsize), Delta_X, attrsize);
+            iLine += XMVSOut::Multiply(diLine, step2, attrsize);
 
-            const size_t premulI = y * size_t(width);
+            const size_t premulI = y * size_t(RSViewPort.Width);
 
 
-            for (int x = xStart; x < xEnd; x++, iLine.Increase(diLine, Size))
+            for (int x = xStart; x < xEnd; x++, iLine.Increase(diLine, attrsize))
             {
-                if (auto [pass, zv] = DepthTest(x, premulI, iLine.dx.SV_Position.f[2]); pass)
+                if (auto [pass, zv] = DepthTest(x, premulI, iLine.Position().z); pass)
                 {
                     // recover interpolated z from interpolated 1/z
-                    FXMVECTOR w = XMVectorReciprocalEst(XMVectorSplatW(iLine.dx.SV_Position));
-                    for (unsigned i = 0; i < Size; i++)
-                        _P.dx.dx.attributes[i].v = iLine.dx.attributes[i].v * w;
-                    _P.dx.dx.SV_Position.v = iLine.dx.SV_Position;
+                    FXMVECTOR w = XMVectorReciprocalEst(XMVectorSplatW(iLine.Position()));
+                    for (unsigned i = 0; i < attrsize; i++)
+                        _P[i] = iLine[i] * w;
                     // invoke pixel shader with interpolated vertex attributes
                     // and use result to set the pixel color on the screen
-                    DirectX::PackedVector::XMCOLOR col;
-                    XMStoreColor2(&col, activeSP->InvokePS(_P.gl).SV_Target);
-                    if (zv == DepthStencil[premulI + x]) //afxmt sanity check for data races
+                    XMVECTOR col;
+                    PSPixelShader->Invoke(&_P, &col);
+                    PackedVector::XMCOLOR xcol;
+
+                    XMStoreColor(&xcol, col);
+                    if (zv == ((float*)OMRenderDepth.Scan0)[premulI + x]) //afxmt sanity check for data races
                     {
-                        FrameBuffer[premulI + x] = col;
+                        ((uint32_t*)OMRenderTargets[0].Scan0)[premulI + x] = xcol;
                     }
 
                 }
@@ -480,12 +511,14 @@ private:
 
 private:
     InputAssembler IAStage;
+    wrl::ComPtr<IVShader> VSVertexShader;
+    wrl::ComPtr<IVShader> PSPixelShader;
+    std::vector<wrl::ComPtr<VBuffer>> VSConstantBuffers;
+	std::vector<wrl::ComPtr<VBuffer>> PSConstantBuffers;
+    VVIEWPORT_DESC RSViewPort;
+    dx::XMVECTOR RSVPScale;
+    dx::XMVECTOR RSVPOffset;
 
 	std::array<VRTV_DESC, MaxRenderTargets> OMRenderTargets;
     VDSV_DESC OMRenderDepth;
-	std::array<VVIEWPORT_DESC, MaxViewPorts> RSViewPorts;
-	wrl::ComPtr<IVShader> VSVertexShader;
-	wrl::ComPtr<IVShader> PSPixelShader;
-	std::vector<wrl::ComPtr<VBuffer>> VSConstantBuffers;
-	std::vector<wrl::ComPtr<VBuffer>> PSConstantBuffers;
 };
