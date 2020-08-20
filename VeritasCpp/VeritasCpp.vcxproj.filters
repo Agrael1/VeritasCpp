@@ -281,6 +281,9 @@
     <ClInclude Include="Engine\Arch\DepthStencil.h">
       <Filter>Заголовочные файлы\Engine\Architecture</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Arch\PixelShader.h">
+      <Filter>Заголовочные файлы\Engine\Architecture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="TLR.ico">

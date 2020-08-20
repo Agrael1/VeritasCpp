@@ -234,6 +234,7 @@
     <ClInclude Include="Engine\Arch\DepthStencil.h" />
     <ClInclude Include="Engine\Arch\IndexBuffer.h" />
     <ClInclude Include="Engine\Arch\InputLayout.h" />
+    <ClInclude Include="Engine\Arch\PixelShader.h" />
     <ClInclude Include="Engine\Arch\VertexBuffer.h" />
     <ClInclude Include="Engine\Arch\VertexShader.h" />
     <ClInclude Include="Engine\Keyboard.h" />

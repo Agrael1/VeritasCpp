@@ -6,7 +6,7 @@
 class VertexBuffer : public Bindable
 {
 public:
-	VertexBuffer(VeritasEngine& vin, void* vertices_in);
+	VertexBuffer(VeritasEngine& vin,const void* vertices_in);
 public:
 	void Bind(VeritasEngine& vin)override;
 private:

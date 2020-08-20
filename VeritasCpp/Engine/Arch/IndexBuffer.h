@@ -6,7 +6,7 @@
 class IndexBuffer : public Bindable
 {
 public:
-	IndexBuffer(VeritasEngine& vin, void* vertices_in);
+	IndexBuffer(VeritasEngine& vin,const void* vertices_in);
 public:
 	void Bind(VeritasEngine& vin) override;
 private:

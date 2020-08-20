@@ -3,7 +3,7 @@
 
 HRESULT __stdcall VContext::IASetPrimitiveTopology(VPRIMITIVE_TOPOLOGY Topology)
 {
-	IATopology = Topology;
+	//IATopology = Topology;
 	return S_OK;
 }
 HRESULT __stdcall VContext::IASetVertexBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppVertexBuffers, const uint32_t* pStrides, const uint32_t* pOffsets)
@@ -48,6 +48,7 @@ HRESULT __stdcall VContext::RSSetViewport(uint32_t numVPs, const VVIEWPORT_DESC*
 	const float HalfViewportHeight = RSViewPort.Height * 0.5f;
 	RSVPScale = dx::XMVectorSet(HalfViewportWidth, -HalfViewportHeight, 1.0f, 0.0f);
 	RSVPOffset = dx::XMVectorSet(HalfViewportWidth, HalfViewportHeight, 1.0f, 0.0f);
+	return S_OK;
 }
 HRESULT __stdcall VContext::OMSetRenderTargets(uint32_t numViews, const VRTV_DESC* const _arr_RTVs)
 {
@@ -75,13 +76,14 @@ HRESULT InputAssembler::SetIndexBuffer(IVBuffer* indexBuffer, VFORMAT format, ui
 	IAIndexFormat = format;
 	if (format)
 	{
-		IAIndexBuffer = indexBuffer;
+		IAIndexBuffer = dynamic_cast<VBuffer*>(indexBuffer);
 		IAIndexOffset = offsetBytes;
 	}
 	else
 	{
 		IAIndexBuffer = nullptr;
 	}
+	return S_OK;
 }
 HRESULT InputAssembler::SetVertexBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppVertexBuffers, const uint32_t* pStrides, const uint32_t* pOffsets)
 {
@@ -91,12 +93,12 @@ HRESULT InputAssembler::SetVertexBuffers(uint32_t StartSlot, uint32_t NumBuffers
 
 	for (uint32_t i = StartSlot; i < StartSlot + NumBuffers; i++)
 	{
-		IAVertexBuffers[i] = ppVertexBuffers[i];
+		IAVertexBuffers[i] = dynamic_cast<VBuffer*>(ppVertexBuffers[i]);
 	}
 	return S_OK;
 }
 HRESULT InputAssembler::SetInputLayout(IVInputLayout* pInputLayout)
 {
-	IAInputLayout = pInputLayout;
+	IAInputLayout = dynamic_cast<VInputLayout*>(pInputLayout);
 	return S_OK;
 }

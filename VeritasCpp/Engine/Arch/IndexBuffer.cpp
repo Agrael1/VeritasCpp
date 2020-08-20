@@ -1,6 +1,6 @@
 #include "IndexBuffer.h"
 
-IndexBuffer::IndexBuffer(VeritasEngine& vin, void* vertices_in)
+IndexBuffer::IndexBuffer(VeritasEngine& vin,const void* vertices_in)
 {
 	VBUFFER_DESC bufdesc;
 	bufdesc.BindFlags = VBIND_FLAG::INDEX_BUFFER;

@@ -55,6 +55,13 @@ public:
             attributes[attrsize] = attributes[attrsize] * factor;
         }
     }
+    void Increase(const XMVSOut& other, uint32_t size)
+    {
+        for (uint32_t i = 0; i < size; i++)
+        {
+            attributes[i] = attributes[i] + other[i];
+        }
+    }
 public:
     float4& operator[](uint32_t sz)
     {
@@ -72,6 +79,16 @@ public:
         while (attrsize--)
         {
             out[attrsize] = from[attrsize] - what[attrsize];
+        }
+        return out;
+    }
+    static XMVSOut Multiply(const XMVSOut& lhs, DirectX::FXMVECTOR rhs, uint32_t size)
+    {
+        using namespace DirectX;
+        XMVSOut out;
+        for (uint32_t i = 0; i < size; i++)
+        {
+            out[i] = lhs[i] * rhs;
         }
         return out;
     }
@@ -109,9 +126,9 @@ public:
         std::vector<XMVertex> out;
         out.reserve(NumVertices);
         
-        for (size_t vtx = 0; auto& v : out)
+        for (uint32_t vtx = 0; auto& v : out)
         {
-            for (size_t i = 0; const auto& x : IAInputLayout->il)
+            for (uint32_t i = 0; const auto& x : IAInputLayout->il)
             {
                 size_t index = vtx * IABufferStrides[x.InputSlot] + IABufferOffsets[x.InputSlot] + x.AlignedByteOffset;
                 auto* data = &IAVertexBuffers[x.InputSlot]->data[index];
@@ -147,9 +164,9 @@ public:
         out.reserve(NumIndices);
         auto* indexPtr = &IAIndexBuffer->data[0];
 
-        for (size_t idx = 0; auto& v : out)
+        for (uint32_t idx = 0; auto& v : out)
         {
-            for (size_t i = 0; const auto& x : IAInputLayout->il)
+            for (uint32_t i = 0; const auto& x : IAInputLayout->il)
             {
                 v.SV_VertexID = (*((uint32_t*)indexPtr) & ((1u << IAIndexFormat * CHAR_BIT) - 1));
                 indexPtr += IAIndexFormat;
@@ -176,22 +193,23 @@ public:
                 i++;
             }
         }
+        return out;
     }
     uint32_t GetMonotonicSize()const
     {
-        return IAInputLayout->il.size();
+        return (uint32_t)IAInputLayout->il.size();
     }
 private:
     wrl::ComPtr<VInputLayout> IAInputLayout;
     wrl::ComPtr<VBuffer> IAIndexBuffer;
-    VFORMAT IAIndexFormat;
-    uint32_t IAIndexOffset;
-    std::array<wrl::ComPtr<VBuffer>, 4> IAVertexBuffers;
-    std::array<uint32_t, 4> IABufferStrides;
-    std::array<uint32_t, 4> IABufferOffsets;
+    VFORMAT IAIndexFormat = FORMAT_NONE;
+    uint32_t IAIndexOffset = 0;
+    std::array<wrl::ComPtr<VBuffer>, 4> IAVertexBuffers{0};
+    std::array<uint32_t, 4> IABufferStrides{0};
+    std::array<uint32_t, 4> IABufferOffsets{0};
 
 
-    VPRIMITIVE_TOPOLOGY IATopology; //TODO: make topology
+    //VPRIMITIVE_TOPOLOGY IATopology; //TODO: make topology
 };
 
 class VContext: public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVContext>
@@ -466,7 +484,7 @@ private:
             FXMVECTOR step2 = XMVectorReplicate((float)xStart + 0.5f - itEdge0.Position().x);
             FXMVECTOR Delta_X = XMVectorReciprocal(XMVectorSplatX(itEdge1.Position() - itEdge0.Position()));
             diLine = XMVSOut::Multiply(XMVSOut::Subtract(itEdge1, iLine, attrsize), Delta_X, attrsize);
-            iLine += XMVSOut::Multiply(diLine, step2, attrsize);
+            iLine.Increase(XMVSOut::Multiply(diLine, step2, attrsize), attrsize);
 
             const size_t premulI = y * size_t(RSViewPort.Width);
 
@@ -515,10 +533,10 @@ private:
     wrl::ComPtr<IVShader> PSPixelShader;
     std::vector<wrl::ComPtr<VBuffer>> VSConstantBuffers;
 	std::vector<wrl::ComPtr<VBuffer>> PSConstantBuffers;
-    VVIEWPORT_DESC RSViewPort;
-    dx::XMVECTOR RSVPScale;
-    dx::XMVECTOR RSVPOffset;
+    VVIEWPORT_DESC RSViewPort{ 0 };
+    dx::XMVECTOR RSVPScale{ 0 };
+    dx::XMVECTOR RSVPOffset{ 0 };
 
-	std::array<VRTV_DESC, MaxRenderTargets> OMRenderTargets;
-    VDSV_DESC OMRenderDepth;
+    std::array<VRTV_DESC, MaxRenderTargets> OMRenderTargets{ 0 };
+    VDSV_DESC OMRenderDepth{ 0 };
 };

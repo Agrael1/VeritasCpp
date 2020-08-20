@@ -4,6 +4,7 @@
 #include <vector>
 #include "Engine\Arch\VertexBuffer.h"
 #include "Engine\Arch\VertexShader.h"
+#include "Engine\Arch\PixelShader.h"
 
 
 class XModel : public Bindable
@@ -11,9 +12,10 @@ class XModel : public Bindable
 public:
 	XModel(VeritasEngine& vin)
 	{
-		//bindables.emplace_back(std::make_unique<IndexBuffer>(vin, bunnyIndices));
-		//bindables.emplace_back(std::make_unique<VertexBuffer>(vin, bunnyVertices));
+		bindables.emplace_back(std::make_unique<IndexBuffer>(vin, bunnyIndices));
+		bindables.emplace_back(std::make_unique<VertexBuffer>(vin, bunnyVertices));
 		bindables.emplace_back(std::make_unique<VertexShader>("SimpleVS"));
+		bindables.emplace_back(std::make_unique<PixelShader>("SimplePS"));
 	}
 public:
 	virtual void Bind(class VeritasEngine& in) {};
@@ -24,6 +26,7 @@ public:
 		{
 			b->Bind(vin);
 		}
+		GetContext(vin)->DrawIndexed(2092 * 3);
 	}
 private:
 	std::vector<std::unique_ptr<Bindable>> bindables;

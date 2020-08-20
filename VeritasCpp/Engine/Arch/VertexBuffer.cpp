@@ -1,6 +1,6 @@
 #include "VertexBuffer.h"
 
-VertexBuffer::VertexBuffer(VeritasEngine& vin, void* vertices_in)
+VertexBuffer::VertexBuffer(VeritasEngine& vin, const void* vertices_in)
 {
 	VBUFFER_DESC bufdesc;
 	bufdesc.BindFlags = VBIND_FLAG::VERTEX_BUFFER;
