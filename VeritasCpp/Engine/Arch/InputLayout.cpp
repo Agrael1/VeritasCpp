@@ -1,19 +1,12 @@
 #include "InputLayout.h"
 
 InputLayout::InputLayout(VeritasEngine& gfx,
-	const std::vector<VINPUT_ELEMENT>& layout)
+	std::span<VINPUT_ELEMENT> layout)
 {
-	//INFOMAN(gfx);
-
-	//GFX_THROW_INFO(GetDevice(gfx).CreateInputLayout(
-	//	layout.data(), (UINT)layout.size(),
-	//	pVertexShaderBytecode->GetBufferPointer(),
-	//	pVertexShaderBytecode->GetBufferSize(),
-	//	&pInputLayout
-	//));
+	GetDevice(gfx)->CreateInputLayout(layout.data(), layout.size(), nullptr, 0, &pInputLayout);
 }
 
 void InputLayout::Bind(VeritasEngine& gfx) noexcept
 {
-	/*GetContext(gfx).IASetInputLayout(pInputLayout.Get());*/
+	GetContext(gfx)->IASetInputLayout(pInputLayout.Get());
 }

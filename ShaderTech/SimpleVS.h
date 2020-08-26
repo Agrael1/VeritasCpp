@@ -28,7 +28,7 @@ public:
 public:
 	void UpdateConstants(void*const* constants)override
 	{
-		cbuf = *static_cast<const CBuffer*>(constants[0]);
+		cbuf = constants[0] ? *static_cast<const CBuffer*>(constants[0]) : CBuffer{};
 	};
 };
 

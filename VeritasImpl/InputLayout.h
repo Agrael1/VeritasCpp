@@ -1,7 +1,6 @@
 #pragma once
 #include <Interfaces.h>
-#include <vector>
-#include <algorithm>
+#include <array>
 
 class VInputLayout : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVInputLayout>
 {
@@ -11,5 +10,6 @@ public:
 public:
     VInputLayout() = default;
 private:
-    std::vector<VINPUT_ELEMENT> il;
+    std::array<VINPUT_ELEMENT, 16> il;
+    uint32_t monotonicSize = 0;
 };

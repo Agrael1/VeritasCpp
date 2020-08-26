@@ -94,7 +94,7 @@ public:
 public:
 	void UpdateConstants(void* const* constants)override
 	{
-		cbuf = *static_cast<const CBuffer*>(constants[0]);
-		light = *static_cast<const PointLightCBuf*>(constants[1]);
+		cbuf = constants[0] ? *static_cast<const CBuffer*>(constants[0]) : CBuffer{};
+		light = constants[1] ? *static_cast<const PointLightCBuf*>(constants[1]) : PointLightCBuf{};
 	};
 };

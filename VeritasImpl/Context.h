@@ -124,12 +124,13 @@ public:
     {
         assert(NumVertices % 3 == 0);
         std::vector<XMVertex> out;
-        out.reserve(NumVertices);
+        out.resize(NumVertices);
         
         for (uint32_t vtx = 0; auto& v : out)
         {
-            for (uint32_t i = 0; const auto& x : IAInputLayout->il)
+            for (uint32_t i = 0; i < GetMonotonicSize(); i++)
             {
+                auto& x = IAInputLayout->il[i];
                 size_t index = vtx * IABufferStrides[x.InputSlot] + IABufferOffsets[x.InputSlot] + x.AlignedByteOffset;
                 auto* data = &IAVertexBuffers[x.InputSlot]->data[index];
 
@@ -150,7 +151,6 @@ public:
                 default:
                     break;
                 }
-                i++;
             }
             v.SV_VertexID = vtx++;
         }
@@ -161,43 +161,45 @@ public:
         assert(NumIndices % 3 == 0);
         assert(IAIndexBuffer);
         std::vector<XMVertex> out;
-        out.reserve(NumIndices);
+        out.resize(NumIndices);
         auto* indexPtr = &IAIndexBuffer->data[0];
 
-        for (uint32_t idx = 0; auto& v : out)
+        for (uint32_t idx = 0; auto & v : out)
         {
-            for (uint32_t i = 0; const auto& x : IAInputLayout->il)
+            
+            v.SV_VertexID = (*((uint32_t*)indexPtr)) & ((1ull << IAIndexFormat * CHAR_BIT) - 1);
+            indexPtr += IAIndexFormat;
+            for (uint32_t i = 0; i < GetMonotonicSize(); i++)
             {
-                v.SV_VertexID = (*((uint32_t*)indexPtr) & ((1u << IAIndexFormat * CHAR_BIT) - 1));
-                indexPtr += IAIndexFormat;
+                auto& x = IAInputLayout->il[i];
+                
                 size_t index = v.SV_VertexID * IABufferStrides[x.InputSlot] + IABufferOffsets[x.InputSlot] + x.AlignedByteOffset;
                 auto* data = &IAVertexBuffers[x.InputSlot]->data[index];
 
                 switch (x.Format)
                 {
                 case FORMAT_R32G32B32A32_FLOAT:
-                    v.data[i] = dx::XMLoadFloat4(reinterpret_cast<dx::XMFLOAT4*>(&IAVertexBuffers[x.InputSlot]->data[x.AlignedByteOffset]));
+                    v.data[i] = dx::XMLoadFloat4(reinterpret_cast<dx::XMFLOAT4*>(data));
                     break;
                 case FORMAT_R32G32B32_FLOAT:
-                    v.data[i] = dx::XMLoadFloat3(reinterpret_cast<dx::XMFLOAT3*>(&IAVertexBuffers[x.InputSlot]->data[x.AlignedByteOffset]));
+                    v.data[i] = dx::XMLoadFloat3(reinterpret_cast<dx::XMFLOAT3*>(data));
                     break;
                 case FORMAT_R32G32_FLOAT:
-                    v.data[i] = dx::XMLoadFloat2(reinterpret_cast<dx::XMFLOAT2*>(&IAVertexBuffers[x.InputSlot]->data[x.AlignedByteOffset]));
+                    v.data[i] = dx::XMLoadFloat2(reinterpret_cast<dx::XMFLOAT2*>(data));
                     break;
                 case FORMAT_R32_FLOAT:
-                    v.data[i] = dx::XMLoadFloat(reinterpret_cast<float*>(&IAVertexBuffers[x.InputSlot]->data[x.AlignedByteOffset]));
+                    v.data[i] = dx::XMLoadFloat(reinterpret_cast<float*>(data));
                     break;
                 default:
                     break;
                 }
-                i++;
             }
         }
         return out;
     }
     uint32_t GetMonotonicSize()const
     {
-        return (uint32_t)IAInputLayout->il.size();
+        return (uint32_t)IAInputLayout->monotonicSize;
     }
 private:
     wrl::ComPtr<VInputLayout> IAInputLayout;
@@ -236,8 +238,22 @@ public:
     void __stdcall DrawIndexed(uint32_t nofVertices)override
     {
         auto verts = IAStage.MakeVerticesIndexed(nofVertices);
+
+        std::array<void*, 4> x{};
+        for (size_t i = 0; i<4; i++)
+        {
+            x[i] = VSConstantBuffers[i]?VSConstantBuffers[i]->data.data():nullptr;
+        }
+        VSVertexShader->UpdateConstants(x.data());
+
+        for (size_t i = 0; i < 4; i++)
+        {
+            x[i] = PSConstantBuffers[i]?PSConstantBuffers[i]->data.data():nullptr;
+        }
+        PSPixelShader->UpdateConstants(x.data());
+
         std::vector<XMVSOut> VSOut;
-        VSOut.reserve(verts.size());
+        VSOut.resize(verts.size());
 
         for (uint32_t i = 0; auto& v : verts)
         {
@@ -531,8 +547,8 @@ private:
     InputAssembler IAStage;
     wrl::ComPtr<IVShader> VSVertexShader;
     wrl::ComPtr<IVShader> PSPixelShader;
-    std::vector<wrl::ComPtr<VBuffer>> VSConstantBuffers;
-	std::vector<wrl::ComPtr<VBuffer>> PSConstantBuffers;
+    std::array<wrl::ComPtr<VBuffer>,4> VSConstantBuffers;
+	std::array<wrl::ComPtr<VBuffer>,4> PSConstantBuffers;
     VVIEWPORT_DESC RSViewPort{ 0 };
     dx::XMVECTOR RSVPScale{ 0 };
     dx::XMVECTOR RSVPOffset{ 0 };

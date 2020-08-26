@@ -270,13 +270,22 @@ struct VertexShader : public VertexShaderBase
 	void Invoke(const DumbVertex& in, DumbVSOut& out)override
 	{
 		using RQVSOutT = out_t<decltype(&T::main)>;
-		static_assert(sizeof(RQVSOutT::SV_Position) == sizeof(float4));
 
 		RQVSOutT x = std::apply(&T::main,
 			std::tuple_cat(std::make_tuple(reinterpret_cast<T*>(this)), as_tuple(args_t<decltype(&T::main)>{}, std::span(in.data), in.SV_VertexID)));
 
-		out.SV_PosCoord = offsetof(RQVSOutT, SV_Position) / 16;
-		std::copy((char*)&x, (char*)&x + sizeof(x), (char*)&out.attributes);
+
+		if constexpr (sizeof(RQVSOutT) == sizeof(float4))
+		{
+			out.SV_PosCoord = 0;
+			std::copy((char*)&x, (char*)&x + sizeof(x), (char*)&out.attributes);
+		}
+		else
+		{
+			static_assert(sizeof(RQVSOutT::SV_Position) == sizeof(float4));
+			out.SV_PosCoord = offsetof(RQVSOutT, SV_Position) / 16;
+			std::copy((char*)&x, (char*)&x + sizeof(x), (char*)&out.attributes);
+		}
 	}
 };
 

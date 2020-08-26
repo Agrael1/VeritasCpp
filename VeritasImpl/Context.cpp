@@ -27,7 +27,7 @@ HRESULT __stdcall VContext::VSSetShader(IVShader* pVertexShader)
 HRESULT __stdcall VContext::VSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers)
 {
 	std::span<VBuffer* const> x{ (VBuffer* const*)ppConstantBuffers, NumBuffers };
-	VSConstantBuffers.insert(VSConstantBuffers.begin() + StartSlot, x.begin(), x.end());
+	std::copy(x.begin(), x.end(), VSConstantBuffers.begin() + StartSlot);
 	return S_OK;
 }
 HRESULT __stdcall VContext::PSSetShader(IVShader* pPixelShader)
@@ -37,8 +37,8 @@ HRESULT __stdcall VContext::PSSetShader(IVShader* pPixelShader)
 }
 HRESULT __stdcall VContext::PSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers)
 {
-	std::span<VBuffer*const> x{ (VBuffer*const*)ppConstantBuffers, NumBuffers };
-	PSConstantBuffers.insert(PSConstantBuffers.begin() + StartSlot, x.begin(), x.end());
+	std::span<VBuffer*const> x{ (VBuffer*const*)ppConstantBuffers, NumBuffers }; 
+	std::copy(x.begin(), x.end(), PSConstantBuffers.begin() + StartSlot);
 	return S_OK;
 }
 HRESULT __stdcall VContext::RSSetViewport(uint32_t numVPs, const VVIEWPORT_DESC* in)
