@@ -9,21 +9,22 @@
 #include "Engine\Arch\ConstantBuffer.h"
 #include "Engine\Arch\Drawable.h"
 
+#include "Plane.h"
 
 class XModel : public Drawable
 {
 public:
 	XModel(VeritasEngine& vin)
 	{
-		pIndices = std::make_unique<IndexBuffer>(vin, bunnyIndices);
-		pVertices = std::make_unique<VertexBuffer>(vin, bunnyVertices);
+		pIndices = std::make_unique<IndexBuffer>(vin, Plane::Indices().data(), 4,6);
+		pVertices = std::make_unique<VertexBuffer>(vin, Plane::Vertices().data(), 16, 4);
 
 		binds.emplace_back(std::make_unique<VertexShader>("SimpleVS"));
 		binds.emplace_back(std::make_unique<PixelShader>("SimplePS"));
 
-		VINPUT_ELEMENT x[2] = {
+		VINPUT_ELEMENT x[1] = {
 			{VFORMAT::FORMAT_R32G32B32_FLOAT, 0, 0},
-			{VFORMAT::FORMAT_R32G32B32_FLOAT, 0, offsetof(BunnyVertex, normal)}
+			//{VFORMAT::FORMAT_R32G32B32_FLOAT, 0, offsetof(BunnyVertex, normal)}
 		};
 
 		binds.emplace_back(std::make_unique<InputLayout>(vin, x));

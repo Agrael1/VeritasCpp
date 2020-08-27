@@ -2,6 +2,7 @@
 #include "Engine\VeritasEngine.h"
 #include "Camera.h"
 #include "XModel.h"
+#include "Plane.h"
 
 class App
 {

@@ -311,6 +311,9 @@
     <ClInclude Include="Camera.h">
       <Filter>Заголовочные файлы\Engine\Objects</Filter>
     </ClInclude>
+    <ClInclude Include="Plane.h">
+      <Filter>Заголовочные файлы\Engine\Primitives</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="TLR.ico">

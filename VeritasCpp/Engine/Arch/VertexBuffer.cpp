@@ -9,6 +9,15 @@ VertexBuffer::VertexBuffer(VeritasEngine& vin, const void* vertices_in)
 
 	GetDevice(vin)->CreateBuffer(&bufdesc, &pVBuf, vertices_in);
 }
+VertexBuffer::VertexBuffer(VeritasEngine& vin, const void* vertices_in, size_t VertSz, size_t VertCnt)
+{
+	VBUFFER_DESC bufdesc;
+	bufdesc.BindFlags = VBIND_FLAG::INDEX_BUFFER;
+	bufdesc.StructureByteStride = stride = VertSz;
+	bufdesc.ByteWidth = VertCnt * VertSz;
+
+	GetDevice(vin)->CreateBuffer(&bufdesc, &pVBuf, vertices_in);
+}
 
 void VertexBuffer::Bind(VeritasEngine& vin)
 {

@@ -10,10 +10,18 @@ VeritasEngine::VeritasEngine(uint16_t width, uint16_t height)
 	sd.OutputWindow = 0;
 	sd.Windowed = TRUE;
 
+	VVIEWPORT_DESC vp;
+	vp.Height = height;
+	vp.Width = width;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	
+
 	VFCreateDevice(window.GetWindowHandle(), &pGfx, &pContext);
 	VFCreateSwapChain(&sd, pGfx.Get(), &pSwap);
 	pSwap->GetRenderTarget(0, &rtv);
 	pContext->OMSetRenderTargets(1, &rtv);
+	pContext->RSSetViewport(1, &vp);
 }
 
 Window& VeritasEngine::Wnd()

@@ -248,6 +248,7 @@
     <ClInclude Include="Engine\VeritasEngine.h" />
     <ClInclude Include="Engine\Window.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Plane.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="XModel.h" />
   </ItemGroup>

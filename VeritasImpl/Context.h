@@ -106,6 +106,7 @@ inline XMVSOut VSOutInterpolate(const XMVSOut& v0, const XMVSOut& v1, float alph
     {
         out.attributes[i] = XMVectorLerp(v0.attributes[i], v1.attributes[i], alpha);
     }
+    out.SV_PosCoord = v0.SV_PosCoord;
 
     return out;
 }
