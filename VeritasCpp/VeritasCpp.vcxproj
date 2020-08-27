@@ -174,7 +174,9 @@
     <ClCompile Include="..\Shared\Framework\GDIPlusManager.cpp" />
     <ClCompile Include="Bunny.cpp" />
     <ClCompile Include="Engine\Arch\Bindable.cpp" />
+    <ClCompile Include="Engine\Arch\ConstantBuffer.cpp" />
     <ClCompile Include="Engine\Arch\DepthStencil.cpp" />
+    <ClCompile Include="Engine\Arch\Drawable.cpp" />
     <ClCompile Include="Engine\Arch\IndexBuffer.cpp" />
     <ClCompile Include="Engine\Arch\InputLayout.cpp" />
     <ClCompile Include="Engine\Arch\VertexBuffer.cpp" />
@@ -229,9 +231,12 @@
     <ClInclude Include="..\Shared\Framework\wil\include\wil\wistd_type_traits.h" />
     <ClInclude Include="..\Shared\Framework\wil\include\wil\wrl.h" />
     <ClInclude Include="..\Shared\Framework\WinSetup.h" />
+    <ClInclude Include="App.h" />
     <ClInclude Include="Bunny.h" />
     <ClInclude Include="Engine\Arch\Bindable.h" />
+    <ClInclude Include="Engine\Arch\ConstantBuffer.h" />
     <ClInclude Include="Engine\Arch\DepthStencil.h" />
+    <ClInclude Include="Engine\Arch\Drawable.h" />
     <ClInclude Include="Engine\Arch\IndexBuffer.h" />
     <ClInclude Include="Engine\Arch\InputLayout.h" />
     <ClInclude Include="Engine\Arch\PixelShader.h" />

@@ -1,8 +1,7 @@
 #pragma once
 #include <Engine\Window.h>
 #include <Interfaces.h>
-#include <optional>
-#include "XModel.h"
+#include <Framework\DirectXMath\Inc\DirectXPackedVector.h>
 
 using RenderTargetView = VRTV_DESC;
 
@@ -12,15 +11,23 @@ class VeritasEngine
 public:
 	VeritasEngine(uint16_t width, uint16_t height);
 public:
-	int Start();
+	Window& Wnd();
+	void BeginFrame(float r, float g, float b)noexcept;
+	void EndFrame();
+	DirectX::XMMATRIX GetCamera()const noexcept;
+	void SetCamera(DirectX::XMMATRIX Camera)noexcept;
+	void DrawIndexed(uint32_t count)noexcept;
+	DirectX::XMMATRIX GetProjection() const noexcept;
+	void SetProjection(DirectX::FXMMATRIX proj) noexcept;
+	uint16_t GetWidth() const noexcept;
+	uint16_t GetHeight() const noexcept;
 private:
-	void ProcessInput(float dt);
-	void DoFrame(float dt);
-private:
-	Window Window;
+	DirectX::XMMATRIX projection;
+	DirectX::XMMATRIX camera;
+
+	Window window;
 	wrl::ComPtr<IVDevice> pGfx;
 	wrl::ComPtr<IVContext> pContext;
 	wrl::ComPtr<IVSwapChain> pSwap;
-	std::optional<XModel> model;
 	RenderTargetView rtv{ 0 };
 };

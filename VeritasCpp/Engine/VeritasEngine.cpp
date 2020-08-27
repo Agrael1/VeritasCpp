@@ -1,7 +1,7 @@
 #include "VeritasEngine.h" 
 
 VeritasEngine::VeritasEngine(uint16_t width, uint16_t height)
-	:Window(width,height,L"VTest")
+	:window(width,height,L"VTest")
 {
 	VSWAP_CHAIN_DESC sd;
 	sd.BufferCount = 1;
@@ -10,62 +10,57 @@ VeritasEngine::VeritasEngine(uint16_t width, uint16_t height)
 	sd.OutputWindow = 0;
 	sd.Windowed = TRUE;
 
-	VFCreateDevice(Window.GetWindowHandle(), &pGfx, &pContext);
+	VFCreateDevice(window.GetWindowHandle(), &pGfx, &pContext);
 	VFCreateSwapChain(&sd, pGfx.Get(), &pSwap);
 	pSwap->GetRenderTarget(0, &rtv);
 	pContext->OMSetRenderTargets(1, &rtv);
-
-	model.emplace(*this);
 }
 
-int VeritasEngine::Start()
+Window& VeritasEngine::Wnd()
 {
-	float dt = 0.005f;
-	while (true)
-	{
-		const auto a = Window::ProcessMessages();
-		if (a)
-		{
-			return (int)a.value();
-		}
-		ProcessInput(dt);
-		DoFrame(dt);
-	}
+	return window;
 }
 
-void VeritasEngine::ProcessInput(float dt)
-{
-	while (const auto e = Window.kbd.ReadKey())
-	{
-		if (!e->IsPress())
-		{
-			continue;
-		}
 
-		switch (e->GetCode())
-		{
-		case VK_INSERT:
-			if (Window.CursorEnabled())
-			{
-				Window.DisableCursor();
-				Window.mouse.EnableRaw();
-			}
-			else
-			{
-				Window.EnableCursor();
-				Window.mouse.DisableRaw();
-			}
-			break;
-		case VK_ESCAPE:
-			PostQuitMessage(0);
-		}
-	}
+
+void VeritasEngine::BeginFrame(float r, float g, float b) noexcept
+{
+	DirectX::PackedVector::XMCOLOR col(r,g,b,1.f);
+	pContext->ClearRenderTarget(&rtv, col);
+	//pContext->ClearDepthStencil(pDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
 }
-void VeritasEngine::DoFrame(float dt)
+
+void VeritasEngine::EndFrame()
 {
-
-	pContext->ClearRenderTarget(&rtv, 0xFF00FFFF);
-
-	model->Draw(*this);
 	pSwap->Present();
 }
+
+DirectX::XMMATRIX VeritasEngine::GetCamera() const noexcept
+{
+	return camera;
+}
+void VeritasEngine::SetCamera(DirectX::XMMATRIX Camera)noexcept
+{
+	camera = Camera;
+}
+void VeritasEngine::SetProjection(DirectX::FXMMATRIX proj) noexcept
+{
+	projection = proj;
+}
+DirectX::XMMATRIX VeritasEngine::GetProjection() const noexcept
+{
+	return projection;
+}
+void VeritasEngine::DrawIndexed(uint32_t count) noexcept
+{
+	pContext->DrawIndexed(count);
+}
+uint16_t VeritasEngine::GetWidth() const noexcept
+{
+	return (uint16_t)rtv.Width;
+}
+uint16_t VeritasEngine::GetHeight() const noexcept
+{
+	return (uint16_t)rtv.Height;
+}
+

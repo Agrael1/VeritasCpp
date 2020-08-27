@@ -230,37 +230,15 @@ public:
     HRESULT __stdcall RSSetViewport(uint32_t numVPs, const VVIEWPORT_DESC* in)override;
 	HRESULT __stdcall OMSetRenderTargets(uint32_t numViews, const VRTV_DESC* const _arr_RTVs)override;
     HRESULT __stdcall OMSetDepthStencil(const VDSV_DESC* DSV)override;
+
 	HRESULT __stdcall ClearRenderTarget(VRTV_DESC* rtv, uint32_t col)override;
+    HRESULT __stdcall Map(IVBuffer* pResource, VMAPPED_SUBRESOURCE* _out_pMappedResource)override;
+    HRESULT __stdcall Unmap(IVBuffer* pResource)override;
 
     void __stdcall Draw(uint32_t nofVertices)override
     {
     }
-    void __stdcall DrawIndexed(uint32_t nofVertices)override
-    {
-        auto verts = IAStage.MakeVerticesIndexed(nofVertices);
-
-        std::array<void*, 4> x{};
-        for (size_t i = 0; i<4; i++)
-        {
-            x[i] = VSConstantBuffers[i]?VSConstantBuffers[i]->data.data():nullptr;
-        }
-        VSVertexShader->UpdateConstants(x.data());
-
-        for (size_t i = 0; i < 4; i++)
-        {
-            x[i] = PSConstantBuffers[i]?PSConstantBuffers[i]->data.data():nullptr;
-        }
-        PSPixelShader->UpdateConstants(x.data());
-
-        std::vector<XMVSOut> VSOut;
-        VSOut.resize(verts.size());
-
-        for (uint32_t i = 0; auto& v : verts)
-        {
-            VSVertexShader->Invoke(&v, &VSOut[i]);
-        }
-        AssembleTriangles(VSOut);
-    }
+    void __stdcall DrawIndexed(uint32_t nofVertices)override;
 private:
     void AssembleTriangles(std::vector<XMVSOut>& VSOut)
     {
@@ -547,8 +525,8 @@ private:
     InputAssembler IAStage;
     wrl::ComPtr<IVShader> VSVertexShader;
     wrl::ComPtr<IVShader> PSPixelShader;
-    std::array<wrl::ComPtr<VBuffer>,4> VSConstantBuffers;
-	std::array<wrl::ComPtr<VBuffer>,4> PSConstantBuffers;
+    std::array<wrl::ComPtr<VBuffer>, 4> VSConstantBuffers;
+	std::array<wrl::ComPtr<VBuffer>, 4> PSConstantBuffers;
     VVIEWPORT_DESC RSViewPort{ 0 };
     dx::XMVECTOR RSVPScale{ 0 };
     dx::XMVECTOR RSVPOffset{ 0 };

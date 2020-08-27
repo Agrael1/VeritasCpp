@@ -114,6 +114,12 @@
     <ClCompile Include="Engine\Arch\DepthStencil.cpp">
       <Filter>Файлы исходного кода\Engine\Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Arch\ConstantBuffer.cpp">
+      <Filter>Файлы исходного кода\Engine\Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Arch\Drawable.cpp">
+      <Filter>Файлы исходного кода\Engine\Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\VeritasEngine.h">
@@ -283,6 +289,15 @@
     </ClInclude>
     <ClInclude Include="Engine\Arch\PixelShader.h">
       <Filter>Заголовочные файлы\Engine\Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Arch\ConstantBuffer.h">
+      <Filter>Заголовочные файлы\Engine\Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Arch\Drawable.h">
+      <Filter>Заголовочные файлы\Engine\Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="App.h">
+      <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -70,6 +70,51 @@ HRESULT __stdcall VContext::ClearRenderTarget(VRTV_DESC* rtv, uint32_t col)
 	return S_OK;
 }
 
+HRESULT __stdcall VContext::Map(IVBuffer* pResource, VMAPPED_SUBRESOURCE* _out_pMappedResource)
+{
+	auto* x = dynamic_cast<VBuffer*>(pResource);
+	if (!x) return E_POINTER;
+
+	_out_pMappedResource->pData = x->data.data();
+	_out_pMappedResource->RowPitch = x->desc.StructureByteStride;
+	_out_pMappedResource->DepthPitch = x->desc.ByteWidth;
+
+	return S_OK;
+}
+
+HRESULT __stdcall VContext::Unmap(IVBuffer* pResource)
+{
+	// may be used for multithreading for unlocking buffer for gpu thread 
+	return E_NOTIMPL;
+}
+
+void __stdcall VContext::DrawIndexed(uint32_t nofVertices)
+{
+	auto verts = IAStage.MakeVerticesIndexed(nofVertices);
+
+	std::array<void*, 4> x{};
+	for (size_t i = 0; i<4; i++)
+	{
+		x[i] = VSConstantBuffers[i] ? VSConstantBuffers[i]->data.data() : nullptr;
+	}
+	VSVertexShader->UpdateConstants(x.data());
+
+	for (size_t i = 0; i < 4; i++)
+	{
+		x[i] = PSConstantBuffers[i] ? PSConstantBuffers[i]->data.data() : nullptr;
+	}
+	PSPixelShader->UpdateConstants(x.data());
+
+	std::vector<XMVSOut> VSOut;
+	VSOut.resize(verts.size());
+
+	for (uint32_t i = 0; auto & v : verts)
+	{
+		VSVertexShader->Invoke(&v, &VSOut[i]);
+	}
+	AssembleTriangles(VSOut);
+}
+
 
 HRESULT InputAssembler::SetIndexBuffer(IVBuffer* indexBuffer, VFORMAT format, uint32_t offsetBytes)
 {

@@ -1,4 +1,4 @@
-#include <Engine\VeritasEngine.h>
+#include "App.h"
 
 int APIENTRY WinMain(
 	HINSTANCE hInstance,
@@ -9,7 +9,7 @@ int APIENTRY WinMain(
 {
 	try
 	{
-		return VeritasEngine{1600, 1050}.Start();
+		return App{1600, 1050}.Start();
 	}
 	catch (const Exception& e)
 	{

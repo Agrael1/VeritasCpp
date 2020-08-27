@@ -66,10 +66,9 @@ enum VPIXEL_FORMAT
 typedef struct VBUFFER_DESC
 {
 	uint32_t        ByteWidth;
-	//enum usage Usage; //will be in next release
 	uint32_t        BindFlags;
-	//UINT        CPUAccessFlags;
 	uint32_t        StructureByteStride;
+	uint32_t		Reserved;
 } VBUFFER_DESC;
 typedef struct VINPUT_ELEMENT
 {
@@ -113,3 +112,10 @@ typedef struct VSWAP_CHAIN_DESC
 	void* OutputWindow;
 	int32_t Windowed;
 }VSWAP_CHAIN_DESC;
+
+typedef struct VMAPPED_SUBRESOURCE
+{
+	void* pData;
+	int32_t RowPitch;
+	int32_t DepthPitch; //unused for now, acts as padding
+}VMAPPED_SUBRESOURCE;
