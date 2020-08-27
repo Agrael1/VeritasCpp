@@ -1,6 +1,6 @@
 #pragma once
 #include "Engine\VeritasEngine.h"
-#include <optional>
+#include "Camera.h"
 #include "XModel.h"
 
 class App
@@ -58,13 +58,14 @@ private:
 	}
 	void DoFrame(float dt)
 	{
-		engine.BeginFrame(0.5, 0.5, 0.5);
-
+		engine.BeginFrame(0.0, 1.0, 0.0);
+		engine.SetCamera(cam.GetViewMatrix());
 
 		model.Draw(engine);
 		engine.EndFrame();
 	}
 private:
 	VeritasEngine engine;
+	Camera cam;
 	XModel model;
 };

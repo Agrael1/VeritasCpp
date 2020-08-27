@@ -1,0 +1,18 @@
+#pragma once
+#include <Engine/VeritasEngine.h>
+
+class Camera
+{
+public:
+	Camera()noexcept;
+public:
+	DirectX::XMMATRIX GetViewMatrix()const noexcept;
+	void Reset()noexcept;
+	void Rotate(float dx, float dy)noexcept;
+	void Translate(DirectX::XMFLOAT3A translation)noexcept;
+private:
+	DirectX::XMFLOAT3A pos;
+	DirectX::XMFLOAT2A rot;
+	static constexpr const float travelSpeed = 12.0f;
+	static constexpr const float rotationSpeed = 0.004f;
+};

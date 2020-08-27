@@ -30,7 +30,7 @@ public:
 	{
 		VMAPPED_SUBRESOURCE msr = {};
 		GetContext(gfx)->Map(pConstantBuffer.Get(), &msr);
-		memcpy_s(msr.pData, msr.RowPitch, &consts, sizeof(consts));
+		memcpy_s(msr.pData, msr.DepthPitch, &consts, sizeof(consts));
 		GetContext(gfx)->Unmap(pConstantBuffer.Get());
 	}
 protected:

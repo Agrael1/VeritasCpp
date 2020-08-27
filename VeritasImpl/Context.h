@@ -283,9 +283,9 @@ private:
             RSPostProcessTriangle(v0, v1, v2, vosize);
         };
 
-        float4 V0 = v0.attributes[idx];
-        float4 V1 = v1.attributes[idx];
-        float4 V2 = v2.attributes[idx];
+        XMVECTOR V0 = v0.attributes[idx];
+        XMVECTOR V1 = v1.attributes[idx];
+        XMVECTOR V2 = v2.attributes[idx];
 
         // Compare againgst W value
         XMVECTOR CT0 = XMVectorSplatW(V0);

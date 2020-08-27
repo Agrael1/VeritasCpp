@@ -110,7 +110,7 @@ void __stdcall VContext::DrawIndexed(uint32_t nofVertices)
 
 	for (uint32_t i = 0; auto & v : verts)
 	{
-		VSVertexShader->Invoke(&v, &VSOut[i]);
+		VSVertexShader->Invoke(&v, &VSOut[i++]);
 	}
 	AssembleTriangles(VSOut);
 }

@@ -58,6 +58,12 @@
     <Filter Include="Заголовочные файлы\Shared\fmt">
       <UniqueIdentifier>{e8750125-17e2-4b06-bf6e-3224444ac687}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\Engine\Objects">
+      <UniqueIdentifier>{2de5cde7-c8ba-4df7-8175-32e194c63f91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\Engine\Objects">
+      <UniqueIdentifier>{5a441f9b-1f0f-4ad2-a330-2a981c06cf25}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Window.cpp">
@@ -119,6 +125,9 @@
     </ClCompile>
     <ClCompile Include="Engine\Arch\Drawable.cpp">
       <Filter>Файлы исходного кода\Engine\Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Файлы исходного кода\Engine\Objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -298,6 +307,9 @@
     </ClInclude>
     <ClInclude Include="App.h">
       <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Заголовочные файлы\Engine\Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
