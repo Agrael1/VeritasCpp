@@ -61,6 +61,7 @@ enum VPIXEL_FORMAT
 	, PARGB64bpp = (14 | (64 << 8) | Alpha | PAlpha | Extended)
 	, CMYK32bpp = (15 | (32 << 8))
 	, Max = 16
+	, FLOAT32bpp = ARGB32bpp
 };
 
 typedef struct VBUFFER_DESC

@@ -8,7 +8,7 @@ IVContext* Bindable::GetContext(VeritasEngine& in)
 }
 IVDevice* Bindable::GetDevice(VeritasEngine& in)
 {
-	return in.pGfx.Get();
+	return in.pDevice.Get();
 }
 IVSwapChain* Bindable::GetSwapChain(VeritasEngine& in)
 {

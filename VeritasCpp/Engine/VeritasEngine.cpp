@@ -1,5 +1,6 @@
 #include "VeritasEngine.h" 
 
+
 VeritasEngine::VeritasEngine(uint16_t width, uint16_t height)
 	:window(width,height,L"VTest")
 {
@@ -8,20 +9,34 @@ VeritasEngine::VeritasEngine(uint16_t width, uint16_t height)
 	sd.Height = height;
 	sd.Width = width;
 	sd.OutputWindow = 0;
-	sd.Windowed = TRUE;
+	sd.Windowed = TRUE;	
+
+	
+	VFCreateDevice(window.GetWindowHandle(), &pDevice, &pContext);
+	VFCreateSwapChain(&sd, pDevice.Get(), &pSwap);
+	pSwap->GetRenderTarget(0, &rtv);
+	pContext->OMSetRenderTargets(1, &rtv);
+
 
 	VVIEWPORT_DESC vp;
 	vp.Height = height;
 	vp.Width = width;
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
-	
 
-	VFCreateDevice(window.GetWindowHandle(), &pGfx, &pContext);
-	VFCreateSwapChain(&sd, pGfx.Get(), &pSwap);
-	pSwap->GetRenderTarget(0, &rtv);
-	pContext->OMSetRenderTargets(1, &rtv);
 	pContext->RSSetViewport(1, &vp);
+
+	VTEXTURE_DESC ds;
+	ds.BindFlags = VBIND_FLAG::DEPTH_STENCIL;
+	ds.Height = height;
+	ds.Width = width;
+	ds.PixelFormat = VPIXEL_FORMAT::FLOAT32bpp;
+	pDevice->CreateTexture2D(&ds, &pDepthStencil);
+
+	VDSV_DESC dsv;
+	pDevice->CreateDepthStencilView(pDepthStencil.Get(), &dsv);
+
+	pContext->OMSetDepthStencil(&dsv);
 }
 
 Window& VeritasEngine::Wnd()
@@ -35,7 +50,7 @@ void VeritasEngine::BeginFrame(float r, float g, float b) noexcept
 {
 	DirectX::PackedVector::XMCOLOR col(r,g,b,1.f);
 	pContext->ClearRenderTarget(&rtv, col);
-	//pContext->ClearDepthStencil(pDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
+	pContext->ClearDepthStencil(pDSV.Get(), 1.0f);
 }
 
 void VeritasEngine::EndFrame()

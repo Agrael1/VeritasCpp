@@ -26,8 +26,9 @@ private:
 	DirectX::XMMATRIX camera;
 
 	Window window;
-	wrl::ComPtr<IVDevice> pGfx;
+	wrl::ComPtr<IVDevice> pDevice;
 	wrl::ComPtr<IVContext> pContext;
 	wrl::ComPtr<IVSwapChain> pSwap;
+	wrl::ComPtr<IVTexture> pDepthStencil;
 	RenderTargetView rtv{ 0 };
 };
