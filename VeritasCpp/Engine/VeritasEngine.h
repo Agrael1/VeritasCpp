@@ -4,6 +4,7 @@
 #include <Framework\DirectXMath\Inc\DirectXPackedVector.h>
 
 using RenderTargetView = VRTV_DESC;
+using DepthStencilView = VDSV_DESC;
 
 class VeritasEngine
 {
@@ -30,5 +31,7 @@ private:
 	wrl::ComPtr<IVContext> pContext;
 	wrl::ComPtr<IVSwapChain> pSwap;
 	wrl::ComPtr<IVTexture> pDepthStencil;
+public:
 	RenderTargetView rtv{ 0 };
+	DepthStencilView dsv{ 0 };
 };

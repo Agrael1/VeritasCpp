@@ -233,17 +233,45 @@ public:
     HRESULT __stdcall OMSetDepthStencil(const VDSV_DESC* DSV)override;
 
 	HRESULT __stdcall ClearRenderTarget(VRTV_DESC* rtv, uint32_t col)override;
+    HRESULT __stdcall ClearDepthStencil(VDSV_DESC* dsv, float value)override;
     HRESULT __stdcall Map(IVBuffer* pResource, VMAPPED_SUBRESOURCE* _out_pMappedResource)override;
     HRESULT __stdcall Unmap(IVBuffer* pResource)override;
 
     void __stdcall Draw(uint32_t nofVertices)override
     {
+
     }
-    void __stdcall DrawIndexed(uint32_t nofVertices)override;
+    void __stdcall DrawIndexed(uint32_t nofVertices)override
+    {
+        auto verts = IAStage.MakeVerticesIndexed(nofVertices);
+
+        std::array<void*, 4> x{};
+        for (size_t i = 0; i<4; i++)
+        {
+            x[i] = VSConstantBuffers[i] ? VSConstantBuffers[i]->data.data() : nullptr;
+        }
+        VSVertexShader->UpdateConstants(x.data());
+
+        for (size_t i = 0; i < 4; i++)
+        {
+            x[i] = PSConstantBuffers[i] ? PSConstantBuffers[i]->data.data() : nullptr;
+        }
+        PSPixelShader->UpdateConstants(x.data());
+
+        std::vector<XMVSOut> VSOut;
+        VSOut.resize(verts.size());
+
+        for (uint32_t i = 0; auto & v : verts)
+        {
+            VSVertexShader->Invoke(&v, &VSOut[i++]);
+        }
+        AssembleTriangles(VSOut);
+    }
 private:
     void AssembleTriangles(std::vector<XMVSOut>& VSOut)
     {
-        auto vosize = IAStage.GetMonotonicSize();
+        uint32_t vosize = 0;
+        VSVertexShader->GetMonotonicSize(&vosize);
         for (size_t it = 0u; it < VSOut.size(); it += 3)
         {
             auto& v0 = VSOut[it];
@@ -256,6 +284,8 @@ private:
     void RSClipCullTriangles(XMVSOut& v0, XMVSOut& v1, XMVSOut& v2, uint32_t vosize)
     {
         uint32_t idx = v0.SV_PosCoord;
+        constexpr dx::XMVECTORI32 preor = {0x80000000, 0x80000000, 0x00000000, 0x00000000 };
+        constexpr dx::XMVECTORI32 preand = { 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF };
 
         using namespace DirectX;
         const auto Clip1V = [=](XMVSOut& v0, XMVSOut& v1, XMVSOut& v2)
@@ -300,9 +330,9 @@ private:
         XMVECTOR RR1 = XMVectorAndInt(XMVectorAndInt(R01, R11), R21);
         if (_mm_movemask_ps(RR1) != 0) return;
 
-        CT0 = XMVectorNegate(CT0);
-        CT1 = XMVectorNegate(CT1);
-        CT2 = XMVectorNegate(CT2);
+        CT0 = _mm_and_ps(_mm_or_ps(CT0, preor), preand);
+        CT1 = _mm_and_ps(_mm_or_ps(CT1, preor), preand);
+        CT2 = _mm_and_ps(_mm_or_ps(CT2, preor), preand);
 
         XMVECTOR R02 = XMVectorLess(V0, CT0);
         XMVECTOR R12 = XMVectorLess(V1, CT1);
@@ -494,14 +524,12 @@ private:
                         _P[i] = iLine[i] * w;
                     // invoke pixel shader with interpolated vertex attributes
                     // and use result to set the pixel color on the screen
-                    XMVECTOR col;
+                    PackedVector::XMCOLOR col;
                     PSPixelShader->Invoke(&_P, &col);
-                    PackedVector::XMCOLOR xcol;
 
-                    XMStoreColor(&xcol, col);
                     if (zv == ((float*)OMRenderDepth.Scan0)[premulI + x]) //afxmt sanity check for data races
                     {
-                        ((uint32_t*)OMRenderTargets[0].Scan0)[premulI + x] = xcol;
+                        ((uint32_t*)OMRenderTargets[0].Scan0)[premulI + x] = col;
                     }
 
                 }

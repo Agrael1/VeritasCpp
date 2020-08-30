@@ -5,21 +5,26 @@
 
 struct Plane
 {
-	static constexpr std::array<DirectX::XMFLOAT3A, 4> Vertices()
+	struct PVtx
 	{
-		return std::array<DirectX::XMFLOAT3A, 4>
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 normal;
+	};
+	static constexpr std::array<PVtx, 4> Vertices()
+	{
+		return std::array<PVtx, 4>
 		{
-			DirectX::XMFLOAT3A{ 0.5f, 0.5f, 0.5f },
-				DirectX::XMFLOAT3A{ -0.5f, 0.5f, 0.5f },
-				DirectX::XMFLOAT3A{ 0.5f, -0.5f, 0.5f },
-				DirectX::XMFLOAT3A{ -0.5f, -0.5f, 0.5f },
+			PVtx{ DirectX::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, DirectX::XMFLOAT3{ 0.0f, 0.0f, -1.0f } },
+			PVtx{ DirectX::XMFLOAT3{ -0.5f, 0.5f, 0.5f },DirectX::XMFLOAT3{ 0.0f, 0.0f, -1.0f } },
+			PVtx{ DirectX::XMFLOAT3{ 0.5f, -0.5f, 0.5f },DirectX::XMFLOAT3{ 0.0f, 0.0f, -1.0f } },
+			PVtx{ DirectX::XMFLOAT3{ -0.5f, -0.5f, 0.5f},DirectX::XMFLOAT3{ 0.0f, 0.0f, -1.0f } },
 		};
 	}
 	static constexpr std::array<unsigned, 6> Indices()
 	{
 		return std::array<unsigned, 6>
 		{
-			1,2,3, 2,0,3
+			1,2,3, 1,0,2
 		};
 	}
 };

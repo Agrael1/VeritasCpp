@@ -251,7 +251,6 @@ constexpr std::tuple<Formats...> as_tuple(types<Formats...>, std::span<const dx:
 
 struct VertexShaderBase : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVShader>
 {
-
 	virtual void __stdcall UpdateConstants(void* const* constants)override;
 	virtual void Invoke(const DumbVertex& in, DumbVSOut& out) = 0;
 	virtual void __stdcall Invoke(const void* vs_in, void* _out_vertex)override;
@@ -287,6 +286,10 @@ struct VertexShader : public VertexShaderBase
 			std::copy((char*)&x, (char*)&x + sizeof(x), (char*)&out.attributes);
 		}
 	}
+	constexpr virtual void __stdcall GetMonotonicSize(uint32_t* _out_vsize)override
+	{
+		*_out_vsize = sizeof(out_t<decltype(&T::main)>) / 16;
+	}
 };
 
 
@@ -316,6 +319,10 @@ struct PixelShader : public PixelShaderBase
 			std::tuple_cat(std::make_tuple(reinterpret_cast<T*>(this)), as_tuple(args_t<decltype(&T::main)>{}, std::span(in.attributes))));
 
 		dx::PackedVector::XMStoreColor((dx::PackedVector::XMCOLOR*)&out.SV_Target, x );
+	}
+	constexpr virtual void __stdcall GetMonotonicSize(uint32_t* _out_vsize)override
+	{
+		*_out_vsize = 1; //hardcoded for now
 	}
 };
 

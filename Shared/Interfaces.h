@@ -71,6 +71,7 @@ IVContext : public IUnknown
 	virtual HRESULT __stdcall OMSetDepthStencil(const VDSV_DESC* DSV) = 0;
 
 	virtual HRESULT __stdcall ClearRenderTarget(VRTV_DESC* rtv, uint32_t col) = 0;
+	virtual HRESULT __stdcall ClearDepthStencil(VDSV_DESC* dsv, float value) = 0;
 	virtual HRESULT __stdcall Map(IVBuffer* pResource, VMAPPED_SUBRESOURCE* _out_pMappedResource) = 0;
 	virtual HRESULT __stdcall Unmap(IVBuffer* pResource) = 0;
 

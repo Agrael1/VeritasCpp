@@ -30,11 +30,8 @@ TransformCbuf::Transforms TransformCbuf::GetTransforms(VeritasEngine& gfx) noexc
 {
 	assert(pParent != nullptr);
 	const auto modelView = pParent->GetTransformXM() * gfx.GetCamera();
-	return {
-		DirectX::XMMatrixTranspose(modelView),
-		DirectX::XMMatrixTranspose(
+	return { modelView,
 			modelView *
 			gfx.GetProjection()
-		)
 	};
 }

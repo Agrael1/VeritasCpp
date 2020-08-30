@@ -33,9 +33,7 @@ VeritasEngine::VeritasEngine(uint16_t width, uint16_t height)
 	ds.PixelFormat = VPIXEL_FORMAT::FLOAT32bpp;
 	pDevice->CreateTexture2D(&ds, &pDepthStencil);
 
-	VDSV_DESC dsv;
 	pDevice->CreateDepthStencilView(pDepthStencil.Get(), &dsv);
-
 	pContext->OMSetDepthStencil(&dsv);
 }
 
@@ -50,7 +48,7 @@ void VeritasEngine::BeginFrame(float r, float g, float b) noexcept
 {
 	DirectX::PackedVector::XMCOLOR col(r,g,b,1.f);
 	pContext->ClearRenderTarget(&rtv, col);
-	pContext->ClearDepthStencil(pDSV.Get(), 1.0f);
+	pContext->ClearDepthStencil(&dsv, INFINITY);
 }
 
 void VeritasEngine::EndFrame()

@@ -9,7 +9,7 @@ int APIENTRY WinMain(
 {
 	try
 	{
-		return App{1600, 1050}.Start();
+		return App{1000, 500}.Start();
 	}
 	catch (const Exception& e)
 	{

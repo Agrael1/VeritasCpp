@@ -26,6 +26,6 @@ void VTexture::GetView(VRTV_DESC* in) noexcept
 	(in)->Width = desc.Width;
 	(in)->Height = desc.Height;
 	(in)->PixelFormat = desc.PixelFormat;
-	(in)->Stride = sizeof(DirectX::PackedVector::XMCOLOR);
+	(in)->Stride = sizeof(DirectX::PackedVector::XMCOLOR)* desc.Width;
 	(in)->Scan0 = data.get();
 }

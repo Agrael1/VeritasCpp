@@ -84,5 +84,11 @@ void VSwapChain::Present()
 {
 	Frame->UnlockImage(BackBuffer);
 	Frame->Draw();
+	Gdiplus::Rect frameArea;
+	frameArea.X = 100;
+	frameArea.Y = 0;
+	frameArea.Width = 1600-600;
+	frameArea.Height = 1050 - 100;
+
 	Frame->LockFullImage(BackBuffer, Gdiplus::ImageLockModeWrite);
 }

@@ -10,7 +10,7 @@ public:
 	App(uint16_t width, uint16_t height):
 		engine(width, height), model(engine)
 	{
-		engine.SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, float(width) / height, 0.5f, 40.0f));
+		engine.SetProjection(DirectX::XMMatrixPerspectiveLH(1, float(height)/float(width), 0.5f, 40.0f));
 	}
 public:
 	int Start()
@@ -63,6 +63,7 @@ private:
 		engine.SetCamera(cam.GetViewMatrix());
 
 		model.Draw(engine);
+
 		engine.EndFrame();
 	}
 private:

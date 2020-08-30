@@ -14,6 +14,7 @@ IVShader : public IUnknown
 	virtual void __stdcall UpdateConstants(void* const* constants) = 0;
 	virtual void __stdcall Invoke(const void* vs_in, void* _out_vertex) = 0;
 	virtual void __stdcall GetByteCode(const char** _out_bytecode) = 0;
+	virtual void __stdcall GetMonotonicSize(uint32_t* _out_vsize) = 0;
 };
 
 extern "C" HRESULT __stdcall VFMakeShader(const char* ShaderName, IVShader** _out_VSPtr);

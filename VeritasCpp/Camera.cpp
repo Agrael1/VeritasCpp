@@ -33,8 +33,8 @@ DirectX::XMMATRIX Camera::GetViewMatrix() const noexcept
 }
 void Camera::Reset() noexcept
 {
-	pos = { -4.5f, 6.2f, -4.7f };
-	rot = { DirectX::XM_PIDIV4, DirectX::XM_PIDIV4 };
+	pos = { 0.0f, 0.0f, -2.0f };
+	rot = { 0.0f, 0.0f };
 }
 void Camera::Rotate(float dx, float dy) noexcept
 {

@@ -69,6 +69,12 @@ HRESULT __stdcall VContext::ClearRenderTarget(VRTV_DESC* rtv, uint32_t col)
 	std::fill((DirectX::PackedVector::XMCOLOR*)rtv->Scan0, (DirectX::PackedVector::XMCOLOR*)rtv->Scan0 + size_t(rtv->Width) * rtv->Height, col);
 	return S_OK;
 }
+HRESULT __stdcall VContext::ClearDepthStencil(VDSV_DESC* dsv, float value)
+{
+	float x = value;// std::clamp(value, 0.0f, 1.0f);
+	std::fill((float*)dsv->Scan0, (float*)dsv->Scan0 + size_t(dsv->Width) * dsv->Height, x);
+	return S_OK;
+}
 
 HRESULT __stdcall VContext::Map(IVBuffer* pResource, VMAPPED_SUBRESOURCE* _out_pMappedResource)
 {
@@ -81,40 +87,11 @@ HRESULT __stdcall VContext::Map(IVBuffer* pResource, VMAPPED_SUBRESOURCE* _out_p
 
 	return S_OK;
 }
-
 HRESULT __stdcall VContext::Unmap(IVBuffer* pResource)
 {
 	// may be used for multithreading for unlocking buffer for gpu thread 
 	return E_NOTIMPL;
 }
-
-void __stdcall VContext::DrawIndexed(uint32_t nofVertices)
-{
-	auto verts = IAStage.MakeVerticesIndexed(nofVertices);
-
-	std::array<void*, 4> x{};
-	for (size_t i = 0; i<4; i++)
-	{
-		x[i] = VSConstantBuffers[i] ? VSConstantBuffers[i]->data.data() : nullptr;
-	}
-	VSVertexShader->UpdateConstants(x.data());
-
-	for (size_t i = 0; i < 4; i++)
-	{
-		x[i] = PSConstantBuffers[i] ? PSConstantBuffers[i]->data.data() : nullptr;
-	}
-	PSPixelShader->UpdateConstants(x.data());
-
-	std::vector<XMVSOut> VSOut;
-	VSOut.resize(verts.size());
-
-	for (uint32_t i = 0; auto & v : verts)
-	{
-		VSVertexShader->Invoke(&v, &VSOut[i++]);
-	}
-	AssembleTriangles(VSOut);
-}
-
 
 HRESULT InputAssembler::SetIndexBuffer(IVBuffer* indexBuffer, VFORMAT format, uint32_t offsetBytes)
 {
