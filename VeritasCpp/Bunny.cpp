@@ -1,4 +1,4 @@
-#include "bunny.h"
+#include "Bunny.h"
 
 struct BunnyVertex const bunnyVertices[1048] = {
 	{ { -0.0856692f, 0.181792f, 0.157975f }, { -0.18915f, 0.919645f, 0.344203f } },

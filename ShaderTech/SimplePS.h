@@ -3,12 +3,12 @@
 
 struct LightVectorData
 {
-	float3U vToL;
-	float3U dirToL;
-	float1U distToL;
+	float3 vToL;
+	float3 dirToL;
+	float1 distToL;
 };
 
-inline LightVectorData CalculateLightVectorData(const float3U lightPos, const float3 fragPos)
+inline LightVectorData CalculateLightVectorData(const float3 lightPos, const float3 fragPos)
 {
 	LightVectorData lv;
 	lv.vToL = lightPos - fragPos;
@@ -21,11 +21,11 @@ inline float Attenuate(float attConst, float attLin, float attQuad, float distFr
 	return 1.0f / (attConst + attLin * distFragToL + attQuad * (distFragToL * distFragToL));
 }
 inline float3 Diffuse(
-	float3U diffuseColor,
+	float3 diffuseColor,
 	float diffuseIntensity,
 	float att,
-	const float3U viewDirFragToL,
-	const float3U viewNormal)
+	const float3 viewDirFragToL,
+	const float3 viewNormal)
 {
 	using namespace dx;
 	return diffuseColor * diffuseIntensity * att * dx::XMVectorMax(dx::XMVectorZero(), dx::XMVector3Dot(viewDirFragToL, viewNormal));
@@ -34,9 +34,9 @@ inline float3 Diffuse(
 inline float3 Speculate(
 	float3 specularColor,
 	float specularIntensity,
-	const float3U viewNormal,
-	const float3U viewFragToL,
-	const float3U viewPos,
+	const float3 viewNormal,
+	const float3 viewFragToL,
+	const float3 viewPos,
 	float att,
 	float specularPower)
 {
@@ -56,23 +56,23 @@ class SimplePS : public PixelShader<SimplePS>
 public:
 	struct PointLightCBuf
 	{
-		float3U viewLightPos;
-		float3U ambient;
-		float3U diffuseColor;
-		float1U diffuseIntensity;
-		float1U attConst;
-		float1U attLin;
-		float1U attQuad;
+		float3 viewLightPos;
+		float3 ambient;
+		float3 diffuseColor;
+		float1 diffuseIntensity;
+		float1 attConst;
+		float1 attLin;
+		float1 attQuad;
 	}light;
 	struct CBuffer
 	{
-		float3U materialColor;
-		float3U specularColor;
-		float1U specularWeight;
-		float1U specularGloss;
+		float3 materialColor;
+		float3 specularColor;
+		float1 specularWeight;
+		float1 specularGloss;
 	}cbuf;
 public:
-	float4 main(float3 viewFragPos, float3 viewNormal)
+	float4A main(float3 viewFragPos, float3 viewNormal)
 	{
 		using namespace dx;
 		// normalize the mesh normal

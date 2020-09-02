@@ -14,12 +14,12 @@ class VSwapChain : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicC
 		using unique_image = wil::unique_any<Gdiplus::GpBitmap*, decltype(&Gdiplus::DllExports::GdipDisposeImage), Gdiplus::DllExports::GdipDisposeImage>;
 		using unique_cached_bitmap = wil::unique_any<Gdiplus::GpCachedBitmap*, decltype(&Gdiplus::DllExports::GdipDeleteCachedBitmap), Gdiplus::DllExports::GdipDeleteCachedBitmap>;
 	public:
-		VFrame(int width, int height, Gdiplus::GpGraphics* in_target)noxnd;
+		VFrame(int width, int height, Gdiplus::GpGraphics* in_target);
 	public:
-		void LockImage(VRTV_DESC& _out_view, Gdiplus::Rect lockArea, Gdiplus::ImageLockMode mode)noxnd;
-		void LockFullImage(VRTV_DESC& _out_view, Gdiplus::ImageLockMode mode)noxnd;
-		void UnlockImage(VRTV_DESC& view)noxnd;
-		void Draw()const noxnd;
+		void LockImage(VRTV_DESC& _out_view, Gdiplus::Rect lockArea, Gdiplus::ImageLockMode mode);
+		void LockFullImage(VRTV_DESC& _out_view, Gdiplus::ImageLockMode mode);
+		void UnlockImage(VRTV_DESC& view);
+		void Draw()const;
 		VPIXEL_FORMAT GetPixelFormat()const noexcept;
 	private:
 		unique_image image;

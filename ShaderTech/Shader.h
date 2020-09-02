@@ -3,163 +3,8 @@
 #include <tuple>
 #include <span>
 #include "ShaderCommon.h"
+#include "ShaderMath.h"
 
-#include <Framework/DirectXMath/Inc/DirectXPackedVector.h>
-
-
-namespace dx = DirectX;
-using matrix = dx::XMMATRIX;
-using SV_VertexID = uint32_t;
-
-struct float1U
-{
-	float1U() = default;
-	float1U(const dx::XMVECTOR in)
-	{
-		dx::XMStoreFloat(&x, in);
-	}
-	float1U operator=(const dx::XMVECTOR in)
-	{
-		dx::XMStoreFloat(&x, in);
-		return *this;
-	}
-	operator dx::XMVECTOR()const
-	{
-		return dx::XMLoadFloat(&x);
-	}
-	operator float()const
-	{
-		return x;
-	}
-public:
-	float x;
-};
-struct float2U : public dx::XMFLOAT2
-{
-	float2U() = default;
-	float2U(const dx::XMVECTOR in)
-	{
-		dx::XMStoreFloat2(this, in);
-	}
-	float2U operator=(const dx::XMVECTOR in)
-	{
-		dx::XMStoreFloat2(this, in);
-		return *this;
-	}
-	operator dx::XMVECTOR()const
-	{
-		return dx::XMLoadFloat2(this);
-	}
-};
-struct float3U : public dx::XMFLOAT3
-{
-	float3U() = default;
-	float3U(const dx::XMVECTOR in)
-	{
-		dx::XMStoreFloat3(this, in);
-	}
-	float3U operator=(const dx::XMVECTOR in)
-	{
-		dx::XMStoreFloat3(this, in);
-		return *this;
-	}
-	operator dx::XMVECTOR()const
-	{
-		return dx::XMLoadFloat3(this);
-	}
-};
-struct float4U : public dx::XMFLOAT4
-{
-	float4U() = default;
-	float4U(const dx::XMVECTOR in)
-	{
-		dx::XMStoreFloat4(this, in);
-	}
-	float4U operator=(const dx::XMVECTOR in)
-	{
-		dx::XMStoreFloat4(this, in);
-		return *this;
-	}
-	operator dx::XMVECTOR()const
-	{
-		return dx::XMLoadFloat4(this);
-	}
-};
-
-XM_ALIGNED_STRUCT(16) float1
-{
-	float1() = default;
-	float1(const dx::XMVECTOR in)
-	{
-		dx::XMStoreFloat(&x, in);
-	}
-	float1 operator=(const dx::XMVECTOR in)
-	{
-		dx::XMStoreFloat(&x, in);
-		return *this;
-	}
-	operator dx::XMVECTOR()const
-	{
-		return dx::XMLoadFloat(&x);
-	}
-public:
-	float x;
-};
-struct float2 : public dx::XMFLOAT2A
-{
-	float2() = default;
-	float2(const dx::XMVECTOR in)
-	{
-		dx::XMStoreFloat2A(this, in);
-	}
-	float2 operator=(const dx::XMVECTOR in)
-	{
-		dx::XMStoreFloat2A(this, in);
-		return *this;
-	}
-	operator dx::XMVECTOR()const
-	{
-		return dx::XMLoadFloat2A(this);
-	}
-};
-struct float3 : public dx::XMFLOAT3A
-{
-	float3() = default;
-	float3(const dx::XMVECTOR in)
-	{
-		dx::XMStoreFloat3A(this, in);
-	}
-	float3 operator=(const dx::XMVECTOR in)
-	{
-		dx::XMStoreFloat3A(this, in);
-		return *this;
-	}
-	operator dx::XMVECTOR()const
-	{
-		return dx::XMLoadFloat3A(this);
-	}
-	constexpr operator float3U()const
-	{
-		return (float3U&)*this;
-	}
-};
-struct float4 : public dx::XMFLOAT4A
-{
-	float4() = default;
-	float4(const dx::XMVECTOR in)
-	{
-		dx::XMStoreFloat4A(this, in);
-	}
-	float4 operator=(const dx::XMVECTOR in)
-	{
-		dx::XMStoreFloat4A(this, in);
-		return *this;
-	}
-	operator dx::XMVECTOR()const
-	{
-		return dx::XMLoadFloat4A(this);
-	}
-};
 
 struct DumbVertex
 {
@@ -177,7 +22,7 @@ struct DumbPSOut
 };
 
 template<class...>struct types { using type = types;};
-template<class out, class...Args>struct xtypes { using type = typename types<Args...>; using Out_t = out; };
+template<class out, class...Args>struct xtypes { using type = types<Args...>; using Out_t = out; };
 template<class Sig> struct args;
 
 template<class Out, class M, class...Args>
@@ -274,21 +119,24 @@ struct VertexShader : public VertexShaderBase
 			std::tuple_cat(std::make_tuple(reinterpret_cast<T*>(this)), as_tuple(args_t<decltype(&T::main)>{}, std::span(in.data), in.SV_VertexID)));
 
 
-		if constexpr (sizeof(RQVSOutT) == sizeof(float4))
+		if constexpr (sizeof(RQVSOutT) == sizeof(float4A))
 		{
 			out.SV_PosCoord = 0;
 			std::copy((char*)&x, (char*)&x + sizeof(x), (char*)&out.attributes);
 		}
 		else
 		{
-			static_assert(sizeof(RQVSOutT::SV_Position) == sizeof(float4));
+			static_assert(alignof(decltype(RQVSOutT::SV_Position)) == alignof(float4A));
+			static_assert(sizeof(RQVSOutT::SV_Position) == sizeof(float4A));
+
 			out.SV_PosCoord = offsetof(RQVSOutT, SV_Position) / 16;
 			std::copy((char*)&x, (char*)&x + sizeof(x), (char*)&out.attributes);
 		}
 	}
-	constexpr virtual void __stdcall GetMonotonicSize(uint32_t* _out_vsize)override
+	void __stdcall GetMonotonicSize(uint32_t* _out_vsize)override
 	{
-		*_out_vsize = sizeof(out_t<decltype(&T::main)>) / 16;
+		using RQVSOutT = out_t<decltype(&T::main)>;
+		*_out_vsize = sizeof(RQVSOutT) / 16;
 	}
 };
 

@@ -12,9 +12,9 @@ public:
 
 	struct VSOut
 	{
-		float3 viewPos; // Position;
-		float3 viewNormal; // Normal;
-		float4 SV_Position; // SV_Position;
+		float3A viewPos; // Position;
+		float3A viewNormal; // Normal;
+		float4A SV_Position; // SV_Position;
 	};
 public:
 	VSOut main(float3 pos, float3 Normal)
