@@ -1,5 +1,7 @@
-#include "Device.h"
 #include "Context.h"
+
+#undef min
+#undef max
 
 HRESULT __stdcall VContext::IASetPrimitiveTopology(VPRIMITIVE_TOPOLOGY Topology)
 {
@@ -37,7 +39,7 @@ HRESULT __stdcall VContext::PSSetShader(IVShader* pPixelShader)
 }
 HRESULT __stdcall VContext::PSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers)
 {
-	std::span<VBuffer*const> x{ (VBuffer*const*)ppConstantBuffers, NumBuffers }; 
+	std::span<VBuffer* const> x{ (VBuffer* const*)ppConstantBuffers, NumBuffers };
 	std::copy(x.begin(), x.end(), PSConstantBuffers.begin() + StartSlot);
 	return S_OK;
 }
@@ -66,12 +68,12 @@ HRESULT __stdcall VContext::OMSetDepthStencil(const VDSV_DESC* DSV)
 }
 HRESULT __stdcall VContext::ClearRenderTarget(VRTV_DESC* rtv, uint32_t col)
 {
-	std::fill((DirectX::PackedVector::XMCOLOR*)rtv->Scan0, (DirectX::PackedVector::XMCOLOR*)rtv->Scan0 + size_t(rtv->Width) * rtv->Height, col);
+	std::fill((uint32_t*)rtv->Scan0, (uint32_t*)rtv->Scan0 + rtv->Width * rtv->Height, col);
 	return S_OK;
 }
 HRESULT __stdcall VContext::ClearDepthStencil(VDSV_DESC* dsv, float value)
 {
-	float x = value;// std::clamp(value, 0.0f, 1.0f);
+	float x = value;
 	std::fill((float*)dsv->Scan0, (float*)dsv->Scan0 + size_t(dsv->Width) * dsv->Height, x);
 	return S_OK;
 }
@@ -98,7 +100,7 @@ void __stdcall VContext::DrawIndexed(uint32_t nofVertices)
 	auto verts = IAStage.MakeVerticesIndexed(nofVertices);
 
 	std::array<void*, 4> x{};
-	for (size_t i = 0; i<4; i++)
+	for (size_t i = 0; i < 4; i++)
 	{
 		x[i] = VSConstantBuffers[i] ? VSConstantBuffers[i]->data.data() : nullptr;
 	}
@@ -136,8 +138,8 @@ void VContext::AssembleTriangles(std::vector<XMVSOut>& VSOut)
 void VContext::RSClipCullTriangles(XMVSOut& v0, XMVSOut& v1, XMVSOut& v2, uint32_t vosize)
 {
 	uint32_t idx = v0.SV_PosCoord;
-	constexpr dx::XMVECTORU32 preor = { 0x80000000, 0x80000000, 0x00000000, 0x00000000 };
-	constexpr dx::XMVECTORU32 preand = { 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF };
+	constexpr dx::XMVECTORU32 preor{ 0x80000000, 0x80000000, 0x00000000, 0x00000000 };
+	constexpr dx::XMVECTORU32 preand{ 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF };
 
 	using namespace DirectX;
 	const auto Clip1V = [=](XMVSOut& v0, XMVSOut& v1, XMVSOut& v2)
@@ -207,7 +209,6 @@ void VContext::RSClipCullTriangles(XMVSOut& v0, XMVSOut& v1, XMVSOut& v2, uint32
 	case 6: Clip2V(v1, v2, v0); break;
 	}
 }
-
 void VContext::RSPostProcessTriangle(XMVSOut& v0, XMVSOut& v1, XMVSOut& v2, uint32_t attrsize)
 {
 	using namespace DirectX;
@@ -285,7 +286,6 @@ void VContext::DrawTriangle(const XMVSOut& Vo0, const XMVSOut& Vo1, const XMVSOu
 		}
 	}
 }
-
 void VContext::DrawFlatTopTriangle(const XMVSOut& Vo0, const XMVSOut& Vo1, const XMVSOut& Vo2, uint32_t attrsize)
 {
 	using namespace DirectX;
@@ -303,7 +303,6 @@ void VContext::DrawFlatTopTriangle(const XMVSOut& Vo0, const XMVSOut& Vo1, const
 	// call the flat triangle render routine, right edge interpolant is it1
 	DrawFlatTriangle(Vo0, Vo2, dv0, dv1, InterpolantEdge, attrsize);
 }
-
 void VContext::DrawFlatBottomTriangle(const XMVSOut& Vo0, const XMVSOut& Vo1, const XMVSOut& Vo2, uint32_t attrsize)
 {
 	using namespace DirectX;
@@ -322,7 +321,6 @@ void VContext::DrawFlatBottomTriangle(const XMVSOut& Vo0, const XMVSOut& Vo1, co
 	// call the flat triangle render routine, right edge interpolant is it0
 	DrawFlatTriangle(Vo0, Vo2, dv0, dv1, InterpolantEdge, attrsize);
 }
-
 void VContext::DrawFlatTriangle(const XMVSOut& it0, const XMVSOut& it2, const XMVSOut& dv0, const XMVSOut& dv1, XMVSOut& itEdge1, uint32_t attrsize)
 {
 	using namespace DirectX;
@@ -375,19 +373,20 @@ void VContext::DrawFlatTriangle(const XMVSOut& it0, const XMVSOut& it2, const XM
 					_P[i] = iLine[i] * w;
 				// invoke pixel shader with interpolated vertex attributes
 				// and use result to set the pixel color on the screen
-				PackedVector::XMCOLOR col;
-				PSPixelShader->Invoke(&_P, &col);
-
-				if (zv == ((float*)OMRenderDepth.Scan0)[premulI + x]) //afxmt sanity check for data races
+				if (PSPixelShader)
 				{
-					((uint32_t*)OMRenderTargets[0].Scan0)[premulI + x] = col;
-				}
+					PackedVector::XMCOLOR col;
+					PSPixelShader->Invoke(&_P, &col);
 
+					if (zv == ((float*)OMRenderDepth.Scan0)[premulI + x]) //afxmt sanity check for data races
+					{
+						((uint32_t*)OMRenderTargets[0].Scan0)[premulI + x] = col;
+					}
+				}
 			}
 		}
 	}
 }
-
 std::pair<bool, float> VContext::DepthTest(uint32_t width_in, size_t PremulIndex, float z)
 {
 	//Warning! lockless programming!

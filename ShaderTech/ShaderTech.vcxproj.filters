@@ -13,29 +13,41 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Shared">
+      <UniqueIdentifier>{2d249848-bbef-41e0-8329-60c167fa926a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SimpleVS.h">
+    <ClInclude Include="pch.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderCommon.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="..\Shared\Descriptors.h">
+      <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="SimplePS.h">
+    <ClInclude Include="..\Shared\Interfaces.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\ShaderCommon.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\VeritasMath.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="PhongVS.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderMath.h">
+    <ClInclude Include="PhongPS.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ShaderCommon.cpp">
+    <ClCompile Include="ShaderTech.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

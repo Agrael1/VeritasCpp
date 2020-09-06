@@ -1,10 +1,11 @@
 #include "Window.h"
+#include "../resource.h"
 
 //Window Class winstyle
 Window::WindowClass Window::WindowClass::wndclass;
 
 Window::WindowClass::WindowClass()noexcept
-	:hinst( GetModuleHandle(nullptr) )
+	:hinst(GetModuleHandle(nullptr))
 {
 	appico.reset(LoadIcon(hinst, MAKEINTRESOURCE(IDI_ICON1)));
 	WNDCLASSEX wcWindow = { 0 };
@@ -27,11 +28,11 @@ Window::WindowClass::~WindowClass()
 	UnregisterClass(wndClassName, hinst);
 }
 
-const wchar_t* Window::WindowClass::GetName() noexcept
+constexpr const wchar_t* Window::WindowClass::GetName()
 {
 	return wndClassName;
 }
-HINSTANCE Window::WindowClass::GetInstance() noexcept
+constexpr HINSTANCE Window::WindowClass::GetInstance()
 {
 	return wndclass.hinst;
 }
@@ -39,7 +40,7 @@ HINSTANCE Window::WindowClass::GetInstance() noexcept
 
 
 Window::Window(uint32_t width, uint32_t height, std::wstring_view name)
-	:width(width),height(height)
+	:width(width), height(height)
 {
 	RECT rWindow;
 	rWindow.left = 100;
@@ -98,8 +99,8 @@ LRESULT WINAPI Window::HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	switch (msg)
-	{	
-	case WM_CLOSE:{
+	{
+	case WM_CLOSE: {
 		PostQuitMessage(0);// we don't want the DefProc to handle this message because
 		// we want our destructor to destroy the window, so return 0 instead of break
 		return 0;
@@ -125,7 +126,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 		break;
 	}
 
-	/*********** KEYBOARD MESSAGES ***********/
+					/*********** KEYBOARD MESSAGES ***********/
 	case WM_KEYDOWN:
 	case WM_SYSKEYDOWN: {// syskey commands need to be handled to track ALT key (VK_MENU) and F10
 		// stifle this keyboard message if imgui wants to capture
@@ -146,9 +147,9 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 		kbd.OnChar(static_cast<unsigned char>(wParam));
 		break;
 	}
-	/*********** END KEYBOARD MESSAGES ***********/
+				/*********** END KEYBOARD MESSAGES ***********/
 
-	/************* MOUSE MESSAGES ****************/
+				/************* MOUSE MESSAGES ****************/
 	case WM_MOUSEMOVE: {
 		const POINTS pt = MAKEPOINTS(lParam);
 		// cursorless exclusive gets first dibs
@@ -232,9 +233,9 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 		mouse.OnWheelDelta(pt.x, pt.y, delta);
 		break;
 	}
-	/************** END MOUSE MESSAGES **************/
+					  /************** END MOUSE MESSAGES **************/
 
-	/************** RAW MOUSE MESSAGES **************/
+					  /************** RAW MOUSE MESSAGES **************/
 	case WM_INPUT: {
 		if (!mouse.RawEnabled())
 		{
@@ -251,8 +252,8 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 		{
 			break;
 		}
-	
-		if(rawBuffer.size()!=size) rawBuffer.resize(size);
+
+		if (rawBuffer.size() != size) rawBuffer.resize(size);
 
 		if (GetRawInputData(
 			reinterpret_cast<HRAWINPUT>(lParam),
@@ -272,7 +273,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 		}
 		break;
 	}
-	/************** END RAW MOUSE MESSAGES **************/
+				 /************** END RAW MOUSE MESSAGES **************/
 	}
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);

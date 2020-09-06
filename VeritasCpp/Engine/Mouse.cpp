@@ -1,5 +1,5 @@
 #include "Mouse.h"
-#include <Framework\WinSetup.h>
+#include <WinSetup.h>
 
 
 std::pair<int, int> Mouse::GetPos() const noexcept
@@ -52,6 +52,11 @@ std::optional<Mouse::Event> Mouse::Read() noexcept
 		return e;
 	}
 	return{};
+}
+
+bool Mouse::IsEmpty() const noexcept
+{
+	return buffer.empty();
 }
 
 void Mouse::Flush() noexcept
@@ -177,4 +182,38 @@ void Mouse::OnWheelDelta(int x, int y, int delta) noexcept
 		wheelDeltaCarry += WHEEL_DELTA;
 		OnWheelDown(x, y);
 	}
+}
+
+Mouse::Event::Event(Type type, const Mouse& parent) noexcept
+	:
+	type(type),
+	leftIsPressed(parent.leftIsPressed),
+	rightIsPressed(parent.rightIsPressed),
+	x(parent.x),
+	y(parent.y)
+{}
+
+Mouse::Event::Type Mouse::Event::GetType() const noexcept
+{
+	return type;
+}
+std::pair<int, int> Mouse::Event::GetPos() const noexcept
+{
+	return{ x,y };
+}
+int Mouse::Event::GetPosX() const noexcept
+{
+	return x;
+}
+int Mouse::Event::GetPosY() const noexcept
+{
+	return y;
+}
+bool Mouse::Event::LeftIsPressed() const noexcept
+{
+	return leftIsPressed;
+}
+bool Mouse::Event::RightIsPressed() const noexcept
+{
+	return rightIsPressed;
 }

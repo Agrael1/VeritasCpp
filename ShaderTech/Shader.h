@@ -3,7 +3,7 @@
 #include <tuple>
 #include <span>
 #include "ShaderCommon.h"
-#include "ShaderMath.h"
+#include <VeritasMath.h>
 
 
 struct DumbVertex
@@ -21,7 +21,7 @@ struct DumbPSOut
 	uint32_t SV_Target;
 };
 
-template<class...>struct types { using type = types;};
+template<class...>struct types { using type = types; };
 template<class out, class...Args>struct xtypes { using type = types<Args...>; using Out_t = out; };
 template<class Sig> struct args;
 
@@ -31,44 +31,6 @@ struct args<Out(M::*)(Args...)> :xtypes<Out, Args...> {};
 template<class Sig> using args_t = typename args<Sig>::type;
 template<class Sig> using out_t = typename args<Sig>::Out_t;
 
-template<typename T>
-struct map
-{
-	static constexpr const char* ByteCode = "IN";
-	static constexpr uint32_t Stride = 0;
-};
-template<> struct map<float1>
-{
-	static constexpr const char* ByteCode = "f1";
-	static constexpr uint32_t Stride = sizeof(float1);
-};
-template<> struct map<float2>
-{
-	static constexpr const char* ByteCode = "f2";
-	static constexpr uint32_t Stride = sizeof(float2);
-};
-template<> struct map<float3>
-{
-	static constexpr const char* ByteCode = "f3";
-	static constexpr uint32_t Stride = sizeof(float3);
-};
-template<> struct map<float4>
-{
-	static constexpr const char* ByteCode = "f4";
-	static constexpr uint32_t Stride = sizeof(float4);
-};
-template<> struct map<SV_VertexID>
-{
-	static constexpr const char* ByteCode = "";
-	static constexpr uint32_t Stride = 0;
-};
-
-template <class...Params>
-constexpr void MakeBytecode(types<Params...>, std::string& in)
-{
-	in.reserve(sizeof...(Params) * 2);
-	in = (in + ... + map<Params>::ByteCode);
-}
 template<class T, class C>
 constexpr T determine(const dx::XMVECTOR target, SV_VertexID vid)
 {
@@ -94,26 +56,22 @@ constexpr std::tuple<Formats...> as_tuple(types<Formats...>, std::span<const dx:
 }
 
 
-struct VertexShaderBase : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVShader>
+struct ShaderBase : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVShader>
 {
-	virtual void __stdcall UpdateConstants(void* const* constants)override;
-	virtual void Invoke(const DumbVertex& in, DumbVSOut& out) = 0;
-	virtual void __stdcall Invoke(const void* vs_in, void* _out_vertex)override;
-	virtual void __stdcall GetByteCode(const char** _out_bytecode)override;
-protected:
-	std::string ByteCode;
 };
 
 template<class T>
-struct VertexShader : public VertexShaderBase
+struct VertexShader : public ShaderBase
 {
-	VertexShader()
-	{
-		MakeBytecode(args_t<decltype(&T::main)>{}, ByteCode);
-	}
-	void Invoke(const DumbVertex& in, DumbVSOut& out)override
+public:
+	VertexShader() = default;
+public:
+	void __stdcall Invoke(const void* vs_in, void* _out_vertex)override
 	{
 		using RQVSOutT = out_t<decltype(&T::main)>;
+
+		const auto& in = *static_cast<const DumbVertex*>(vs_in);
+		auto& out = *static_cast<DumbVSOut*>(_out_vertex);
 
 		RQVSOutT x = std::apply(&T::main,
 			std::tuple_cat(std::make_tuple(reinterpret_cast<T*>(this)), as_tuple(args_t<decltype(&T::main)>{}, std::span(in.data), in.SV_VertexID)));
@@ -122,7 +80,7 @@ struct VertexShader : public VertexShaderBase
 		if constexpr (sizeof(RQVSOutT) == sizeof(float4A))
 		{
 			out.SV_PosCoord = 0;
-			std::copy((char*)&x, (char*)&x + sizeof(x), (char*)&out.attributes);
+			std::copy((std::byte*)&x, (std::byte*)&x + sizeof(x), (std::byte*)&out.attributes);
 		}
 		else
 		{
@@ -130,7 +88,7 @@ struct VertexShader : public VertexShaderBase
 			static_assert(sizeof(RQVSOutT::SV_Position) == sizeof(float4A));
 
 			out.SV_PosCoord = offsetof(RQVSOutT, SV_Position) / 16;
-			std::copy((char*)&x, (char*)&x + sizeof(x), (char*)&out.attributes);
+			std::copy((std::byte*)&x, (std::byte*)&x + sizeof(x), (std::byte*)&out.attributes);
 		}
 	}
 	void __stdcall GetMonotonicSize(uint32_t* _out_vsize)override
@@ -141,38 +99,27 @@ struct VertexShader : public VertexShaderBase
 };
 
 
-struct PixelShaderBase : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVShader>
-{
-	virtual void __stdcall UpdateConstants(void* const* constants)override;
-	virtual void Invoke(const DumbVSOut& in, DumbPSOut& out) = 0;
-	virtual void __stdcall Invoke(const void* vs_in, void* _out_vertex)override;
-	virtual void __stdcall GetByteCode(const char** _out_bytecode)override;
-protected:
-	std::string ByteCode;
-};
-
 template<class T>
-struct PixelShader : public PixelShaderBase
+struct PixelShader : public ShaderBase
 {
-	PixelShader()
-	{
-		MakeBytecode(args_t<decltype(&T::main)>{}, ByteCode);
-	}
-	void Invoke(const DumbVSOut& in, DumbPSOut& out)override
+public:
+	PixelShader() = default;
+public:
+	void __stdcall Invoke(const void* ps_in, void* _out_vertex)override
 	{
 		using RQPSOutT = out_t<decltype(&T::main)>;
+		const DumbVSOut& in = *static_cast<const DumbVSOut*>(ps_in);
+		DumbPSOut& out = *static_cast<DumbPSOut*>(_out_vertex);
+
 		static_assert(sizeof(RQPSOutT) == sizeof(float4));
 
 		RQPSOutT x = std::apply(&T::main,
 			std::tuple_cat(std::make_tuple(reinterpret_cast<T*>(this)), as_tuple(args_t<decltype(&T::main)>{}, std::span(in.attributes))));
 
-		dx::PackedVector::XMStoreColor((dx::PackedVector::XMCOLOR*)&out.SV_Target, x );
+		dx::PackedVector::XMStoreColor((dx::PackedVector::XMCOLOR*)&out.SV_Target, x);
 	}
-	constexpr virtual void __stdcall GetMonotonicSize(uint32_t* _out_vsize)override
+	virtual void __stdcall GetMonotonicSize(uint32_t* _out_vsize)override
 	{
 		*_out_vsize = 1; //hardcoded for now
 	}
 };
-
-#undef max
-#undef min

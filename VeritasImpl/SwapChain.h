@@ -1,10 +1,8 @@
 #pragma once
-#include "GDISetup.h"
-#include "ConditionalNoexcept.h"
+#include <GdiException.h>
 #include <Interfaces.h>
-#include <Framework\wil\include\wil\win32_helpers.h>
+#include <wil\win32_helpers.h>
 #include <optional>
-
 #include "Texture.h"
 
 class VSwapChain : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVSwapChain>
@@ -26,20 +24,19 @@ class VSwapChain : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicC
 		mutable unique_cached_bitmap output;
 		Gdiplus::GpGraphics* target;
 		Gdiplus::Rect frameArea;
-		VPIXEL_FORMAT format;
+		VPIXEL_FORMAT format = VPIXEL_FORMAT::PARGB32bpp;
 	};
 public:
 	VSwapChain() = default;
 public:
-	HRESULT RuntimeClassInitialize(VSWAP_CHAIN_DESC* desc, IVDevice* gfx);
+	HRESULT RuntimeClassInitialize(const VSWAP_CHAIN_DESC* desc, const IVDevice* gfx);
 public:
-	void Present()override;
-	void GetRenderTarget(uint32_t number, VRTV_DESC* _out_buf)override;
+	void __stdcall Present()override;
+	void __stdcall GetRenderTarget(uint32_t number, VRTV_DESC* _out_buf)override;
 private:
 	~VSwapChain() = default;
 private:
 	std::optional<VFrame> Frame;
-	VRTV_DESC BackBuffer;
+	VRTV_DESC BackBuffer{ 0 };
 	wrl::ComPtr<VTexture> RenderBuffer;
 };
-

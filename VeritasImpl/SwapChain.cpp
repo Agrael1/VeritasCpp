@@ -1,6 +1,5 @@
-#include "Device.h"
-#include "GdiException.h"
 #include "SwapChain.h"
+#include "Device.h"
 
 
 VSwapChain::VFrame::VFrame(int width, int height, Gdiplus::GpGraphics* in_target)
@@ -22,7 +21,7 @@ void VSwapChain::VFrame::LockImage(VRTV_DESC& _out_view, Gdiplus::Rect lockArea,
 		&lockArea,
 		mode | Gdiplus::ImageLockModeUserInputBuf,
 		format,
-		(Gdiplus::BitmapData*)&_out_view));
+		(Gdiplus::BitmapData*) & _out_view));
 }
 void VSwapChain::VFrame::LockFullImage(VRTV_DESC& _out_view, Gdiplus::ImageLockMode mode)
 {
@@ -31,13 +30,13 @@ void VSwapChain::VFrame::LockFullImage(VRTV_DESC& _out_view, Gdiplus::ImageLockM
 		&frameArea,
 		mode | Gdiplus::ImageLockModeUserInputBuf,
 		format,
-		(Gdiplus::BitmapData*) &_out_view));
+		(Gdiplus::BitmapData*) & _out_view));
 }
 void VSwapChain::VFrame::UnlockImage(VRTV_DESC& view)
 {
 	GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipBitmapUnlockBits(
 		image.get(),
-		(Gdiplus::BitmapData*) &view));
+		(Gdiplus::BitmapData*) & view));
 }
 void VSwapChain::VFrame::Draw() const
 {
@@ -59,9 +58,9 @@ VPIXEL_FORMAT VSwapChain::VFrame::GetPixelFormat() const noexcept
 }
 
 
-HRESULT VSwapChain::RuntimeClassInitialize(VSWAP_CHAIN_DESC* desc, IVDevice* gfx)
+HRESULT VSwapChain::RuntimeClassInitialize(const VSWAP_CHAIN_DESC* desc, const IVDevice* gfx)
 {
-	Frame.emplace(desc->Width, desc->Height, static_cast<VGraphicsDevice*>(gfx)->GetRawGraphics());
+	Frame.emplace(desc->Width, desc->Height, static_cast<const VGraphicsDevice*>(gfx)->GetRawGraphics());
 
 	VTEXTURE_DESC vtx;
 	vtx.Width = desc->Width;
@@ -84,11 +83,5 @@ void VSwapChain::Present()
 {
 	Frame->UnlockImage(BackBuffer);
 	Frame->Draw();
-	Gdiplus::Rect frameArea;
-	frameArea.X = 100;
-	frameArea.Y = 0;
-	frameArea.Width = 1600-600;
-	frameArea.Height = 1050 - 100;
-
 	Frame->LockFullImage(BackBuffer, Gdiplus::ImageLockModeWrite);
 }

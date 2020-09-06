@@ -102,3 +102,23 @@ void Keyboard::TrimBuffer(std::queue<T>& buffer) noexcept
 	}
 }
 
+Keyboard::Event::Event(Type type, unsigned char code) noexcept
+	:
+	type(type),
+	code(code)
+{}
+
+bool Keyboard::Event::IsPress() const noexcept
+{
+	return type == Type::Press;
+}
+
+bool Keyboard::Event::IsRelease() const noexcept
+{
+	return type == Type::Release;
+}
+
+unsigned char Keyboard::Event::GetCode() const noexcept
+{
+	return code;
+}

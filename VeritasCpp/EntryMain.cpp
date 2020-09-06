@@ -1,4 +1,4 @@
-#include "App.h"
+﻿#include "App.h"
 
 int APIENTRY WinMain(
 	HINSTANCE hInstance,
@@ -9,7 +9,7 @@ int APIENTRY WinMain(
 {
 	try
 	{
-		return App{1000, 500}.Start();
+		return App{ 1000, 500 }.Start();
 	}
 	catch (const Exception& e)
 	{
@@ -23,6 +23,6 @@ int APIENTRY WinMain(
 	{
 		MessageBox(nullptr, L"No Details on this one", L"Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
 	}
-	
+
 	return -1;
 }

@@ -6,7 +6,9 @@ HRESULT VBuffer::RuntimeClassInitialize(const VBUFFER_DESC* in_desc, const void*
     if (desc.ByteWidth == 0) return E_INVALIDARG;
     data.resize(desc.ByteWidth);
 
-    if (_in_data) std::copy((const uint8_t*)_in_data, (const uint8_t*)_in_data + desc.ByteWidth, data.begin());
+    if (_in_data) 
+        std::copy((const uint8_t*)_in_data, (const uint8_t*)_in_data + desc.ByteWidth, data.begin());
+
     return S_OK;
 }
 

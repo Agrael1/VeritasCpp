@@ -3,22 +3,22 @@
 
 enum VBIND_FLAG : uint32_t
 {
-    VERTEX_BUFFER = 0x1L,
-    INDEX_BUFFER = 0x2L,
-    CONSTANT_BUFFER = 0x4L,
-    SHADER_RESOURCE = 0x8L,
-    STREAM_OUTPUT = 0x10L,
-    RENDER_TARGET = 0x20L,
-    DEPTH_STENCIL = 0x40L,
-    UNORDERED_ACCESS = 0x80L,
-    DECODER = 0x200L,
-    VIDEO_ENCODER = 0x400L
+	VERTEX_BUFFER = 0x1L,
+	INDEX_BUFFER = 0x2L,
+	CONSTANT_BUFFER = 0x4L,
+	SHADER_RESOURCE = 0x8L,
+	STREAM_OUTPUT = 0x10L,
+	RENDER_TARGET = 0x20L,
+	DEPTH_STENCIL = 0x40L,
+	UNORDERED_ACCESS = 0x80L,
+	DECODER = 0x200L,
+	VIDEO_ENCODER = 0x400L
 };
 enum VFORMAT
 {
-    FORMAT_NONE = 0,
-    FORMAT_UINT16 = 2,
-    FORMAT_UINT32 = 4,
+	FORMAT_NONE = 0,
+	FORMAT_UINT16 = 2,
+	FORMAT_UINT32 = 4,
 	FORMAT_R32G32B32A32_FLOAT,
 	FORMAT_R32G32B32_FLOAT,
 	FORMAT_R32G32_FLOAT,
@@ -26,12 +26,12 @@ enum VFORMAT
 };
 enum VPRIMITIVE_TOPOLOGY
 {
-    UNDEFINED = 0,
-    POINTLIST = 1,
-    LINELIST = 2,
-    LINESTRIP = 3,
-    TRIANGLELIST = 4,
-    TRIANGLESTRIP = 5,
+	UNDEFINED = 0,
+	POINTLIST = 1,
+	LINELIST = 2,
+	LINESTRIP = 3,
+	TRIANGLELIST = 4,
+	TRIANGLESTRIP = 5,
 };
 enum VPIXEL_FORMAT
 {
@@ -73,16 +73,16 @@ typedef struct VBUFFER_DESC
 } VBUFFER_DESC;
 typedef struct VINPUT_ELEMENT
 {
-    VFORMAT Format;
-    uint32_t InputSlot;
-    uint32_t AlignedByteOffset;
+	VFORMAT Format;
+	uint32_t InputSlot;
+	uint32_t AlignedByteOffset;
 }VINPUT_ELEMENT;
 typedef struct VTEXTURE_DESC
 {
-    uint32_t Width;
-    uint32_t Height;
+	uint32_t Width;
+	uint32_t Height;
 	VPIXEL_FORMAT PixelFormat;
-    uint32_t BindFlags;
+	uint32_t BindFlags;
 }VTEXTURE_DESC;
 
 constexpr auto MaxRenderTargets = 2u;
@@ -118,5 +118,5 @@ typedef struct VMAPPED_SUBRESOURCE
 {
 	void* pData;
 	int32_t RowPitch;
-	int32_t DepthPitch; //unused for now, acts as padding
+	int32_t DepthPitch;
 }VMAPPED_SUBRESOURCE;

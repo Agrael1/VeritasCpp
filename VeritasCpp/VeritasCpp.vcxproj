@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,8 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{64579B2E-AEE6-4549-B6A4-81D943430880}</ProjectGuid>
+    <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{78e57066-eb76-43c2-93ca-fb21575ad7ea}</ProjectGuid>
     <RootNamespace>VeritasCpp</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -28,9 +29,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>ClangCL</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <EnableASAN>false</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -42,14 +42,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>ClangCL</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <EnableASAN>false</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>ClangCL</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -74,192 +73,140 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
-    <ExtensionsToDeleteOnClean>*.ifc;$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Framework\wil\include;$(ProjectDir)Framework\fmt\include;$(ProjectDir)Framework\DirectXMath\Inc</AdditionalIncludeDirectories>
-      <EnableModules>true</EnableModules>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);$(OutDir)VeritasImpl.lib;$(OutDir)ShaderTech.lib</AdditionalDependencies>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)Shared\Framework\wil\include;$(SolutionDir)Shared\Framework\fmt\include;$(SolutionDir)Shared\Framework\DirectXMath\Inc;$(SolutionDir)Shared</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-      <EnableModules>false</EnableModules>
       <CompileAs>CompileAsCpp</CompileAs>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(SolutionDir)Shared\wil\include;$(SolutionDir)Shared\DirectXMath;$(SolutionDir)Shared;$(SolutionDir)Shared\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>gdiplus.lib;%(AdditionalDependencies);$(OutDir)VeritasImpl.lib;$(OutDir)ShaderTech.lib;$(OutDir)VeritasImpl.lib;$(OutDir)ShaderTech.lib</AdditionalDependencies>
+      <AdditionalDependencies>gdiplus.lib;$(OutDir)VeritasImpl.lib;$(OutDir)ShaderTech.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Framework\wil\include;$(ProjectDir)Framework\fmt\include;$(ProjectDir)Framework\DirectXMath\Inc</AdditionalIncludeDirectories>
-      <EnableModules>true</EnableModules>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <AdditionalIncludeDirectories>$(SolutionDir)Shared\wil\include;$(SolutionDir)Shared\DirectXMath;$(SolutionDir)Shared;$(SolutionDir)Shared\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);$(OutDir)VeritasImpl.lib;$(OutDir)ShaderTech.lib</AdditionalDependencies>
+      <AdditionalDependencies>gdiplus.lib;$(OutDir)VeritasImpl.lib;$(OutDir)ShaderTech.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <AdditionalIncludeDirectories>$(SolutionDir)Shared\wil\include;$(SolutionDir)Shared\DirectXMath;$(SolutionDir)Shared;$(SolutionDir)Shared\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>gdiplus.lib;$(OutDir)VeritasImpl.lib;$(OutDir)ShaderTech.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)Shared\Framework\wil\include;$(SolutionDir)Shared\Framework\fmt\include;$(SolutionDir)Shared\Framework\DirectXMath\Inc;$(SolutionDir)Shared</AdditionalIncludeDirectories>
-      <CompileAs>CompileAsCpp</CompileAs>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <EnableModules>false</EnableModules>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <AdditionalIncludeDirectories>$(SolutionDir)Shared\wil\include;$(SolutionDir)Shared\DirectXMath;$(SolutionDir)Shared;$(SolutionDir)Shared\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>gdiplus.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);$(OutDir)VeritasImpl.lib;$(OutDir)VeritasImpl.lib;$(OutDir)ShaderTech.lib</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>gdiplus.lib;$(OutDir)VeritasImpl.lib;$(OutDir)ShaderTech.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Shared\Framework\Exception.cpp" />
-    <ClCompile Include="..\Shared\Framework\fmt\src\format.cc" />
-    <ClCompile Include="..\Shared\Framework\fmt\src\posix.cc" />
-    <ClCompile Include="..\Shared\Framework\GdiException.cpp" />
-    <ClCompile Include="..\Shared\Framework\GDIPlusManager.cpp" />
-    <ClCompile Include="Bunny.cpp" />
-    <ClCompile Include="Engine\Arch\Bindable.cpp" />
-    <ClCompile Include="Engine\Arch\ConstantBuffer.cpp" />
-    <ClCompile Include="Engine\Arch\DepthStencil.cpp" />
-    <ClCompile Include="Engine\Arch\Drawable.cpp" />
-    <ClCompile Include="Engine\Arch\IndexBuffer.cpp" />
-    <ClCompile Include="Engine\Arch\InputLayout.cpp" />
-    <ClCompile Include="Engine\Arch\VertexBuffer.cpp" />
-    <ClCompile Include="Engine\Arch\VertexShader.cpp" />
+    <ClCompile Include="..\Shared\Exception.cpp" />
+    <ClCompile Include="..\Shared\fmt\src\format.cc" />
+    <ClCompile Include="..\Shared\fmt\src\posix.cc" />
+    <ClCompile Include="App.cpp" />
+    <ClCompile Include="Engine\Bindable.cpp" />
+    <ClCompile Include="Engine\Camera.cpp" />
+    <ClCompile Include="Engine\ConstantBuffers.cpp" />
+    <ClCompile Include="Engine\Drawable.cpp" />
+    <ClCompile Include="Engine\IndexBuffer.cpp" />
+    <ClCompile Include="Engine\InputLayout.cpp" />
     <ClCompile Include="Engine\Keyboard.cpp" />
+    <ClCompile Include="Engine\Model.cpp" />
     <ClCompile Include="Engine\Mouse.cpp" />
+    <ClCompile Include="Engine\PixelShader.cpp" />
     <ClCompile Include="Engine\VeritasEngine.cpp" />
+    <ClCompile Include="Engine\VertexBuffer.cpp" />
+    <ClCompile Include="Engine\VertexShader.cpp" />
     <ClCompile Include="Engine\Window.cpp" />
     <ClCompile Include="EntryMain.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="XModel.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Shared\Framework\ConditionalNoexcept.h" />
-    <ClInclude Include="..\Shared\Framework\DirectXMath\Inc\DirectXCollision.h" />
-    <ClInclude Include="..\Shared\Framework\DirectXMath\Inc\DirectXColors.h" />
-    <ClInclude Include="..\Shared\Framework\DirectXMath\Inc\DirectXMath.h" />
-    <ClInclude Include="..\Shared\Framework\DirectXMath\Inc\DirectXPackedVector.h" />
-    <ClInclude Include="..\Shared\Framework\Exception.h" />
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\chrono.h" />
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\color.h" />
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\compile.h" />
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\core.h" />
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\format-inl.h" />
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\format.h" />
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\locale.h" />
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\ostream.h" />
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\posix.h" />
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\printf.h" />
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\ranges.h" />
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\safe-duration-cast.h" />
-    <ClInclude Include="..\Shared\Framework\GdiException.h" />
-    <ClInclude Include="..\Shared\Framework\GDIPlusManager.h" />
-    <ClInclude Include="..\Shared\Framework\GDISetup.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\com.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\common.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\cppwinrt.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\filesystem.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\registry.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\resource.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\result.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\result_macros.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\result_originate.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\rpc_helpers.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\safecast.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\stl.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\token_helpers.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\win32_helpers.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\winrt.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\wistd_config.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\wistd_functional.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\wistd_memory.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\wistd_type_traits.h" />
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\wrl.h" />
-    <ClInclude Include="..\Shared\Framework\WinSetup.h" />
+    <ClInclude Include="..\Shared\Descriptors.h" />
+    <ClInclude Include="..\Shared\Exception.h" />
+    <ClInclude Include="..\Shared\GdiException.h" />
+    <ClInclude Include="..\Shared\GDIPlusManager.h" />
+    <ClInclude Include="..\Shared\GDISetup.h" />
+    <ClInclude Include="..\Shared\Interfaces.h" />
+    <ClInclude Include="..\Shared\ShaderCommon.h" />
+    <ClInclude Include="..\Shared\WinSetup.h" />
     <ClInclude Include="App.h" />
-    <ClInclude Include="Bunny.h" />
-    <ClInclude Include="Engine\Arch\Bindable.h" />
-    <ClInclude Include="Engine\Arch\ConstantBuffer.h" />
-    <ClInclude Include="Engine\Arch\DepthStencil.h" />
-    <ClInclude Include="Engine\Arch\Drawable.h" />
-    <ClInclude Include="Engine\Arch\IndexBuffer.h" />
-    <ClInclude Include="Engine\Arch\InputLayout.h" />
-    <ClInclude Include="Engine\Arch\PixelShader.h" />
-    <ClInclude Include="Engine\Arch\VertexBuffer.h" />
-    <ClInclude Include="Engine\Arch\VertexShader.h" />
+    <ClInclude Include="Engine\Bindable.h" />
+    <ClInclude Include="Engine\BindableCommon.h" />
+    <ClInclude Include="Engine\Camera.h" />
+    <ClInclude Include="Engine\ConstantBuffers.h" />
+    <ClInclude Include="Engine\Drawable.h" />
+    <ClInclude Include="Engine\IndexBuffer.h" />
+    <ClInclude Include="Engine\InputLayout.h" />
     <ClInclude Include="Engine\Keyboard.h" />
+    <ClInclude Include="Engine\Model.h" />
     <ClInclude Include="Engine\Mouse.h" />
+    <ClInclude Include="Engine\PixelShader.h" />
     <ClInclude Include="Engine\VeritasEngine.h" />
+    <ClInclude Include="Engine\VertexBuffer.h" />
+    <ClInclude Include="Engine\VertexShader.h" />
     <ClInclude Include="Engine\Window.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Plane.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="XModel.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="VeritasCpp.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="TLR.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Resource.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

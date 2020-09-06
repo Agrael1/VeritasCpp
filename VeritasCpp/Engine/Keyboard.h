@@ -15,27 +15,15 @@ public:
 			Press,
 			Release,
 		};
+	public:
+		Event(Type type, unsigned char code) noexcept;
+	public:
+		bool IsPress() const noexcept;
+		bool IsRelease() const noexcept;
+		unsigned char GetCode() const noexcept;
 	private:
 		Type type;
 		unsigned char code;
-	public:
-		Event(Type type, unsigned char code) noexcept
-			:
-			type(type),
-			code(code)
-		{}
-		bool IsPress() const noexcept
-		{
-			return type == Type::Press;
-		}
-		bool IsRelease() const noexcept
-		{
-			return type == Type::Release;
-		}
-		unsigned char GetCode() const noexcept
-		{
-			return code;
-		}
 	};
 public:
 	Keyboard() = default;

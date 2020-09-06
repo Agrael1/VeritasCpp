@@ -32,43 +32,20 @@ public:
 		int x;
 		int y;
 	public:
-		Event(Type type, const Mouse& parent) noexcept
-			:
-			type(type),
-			leftIsPressed(parent.leftIsPressed),
-			rightIsPressed(parent.rightIsPressed),
-			x(parent.x),
-			y(parent.y)
-		{}
-		Type GetType() const noexcept
-		{
-			return type;
-		}
-		std::pair<int, int> GetPos() const noexcept
-		{
-			return{ x,y };
-		}
-		int GetPosX() const noexcept
-		{
-			return x;
-		}
-		int GetPosY() const noexcept
-		{
-			return y;
-		}
-		bool LeftIsPressed() const noexcept
-		{
-			return leftIsPressed;
-		}
-		bool RightIsPressed() const noexcept
-		{
-			return rightIsPressed;
-		}
+		Event(Type type, const Mouse& parent) noexcept;
+	public:
+		Type GetType() const noexcept;
+		std::pair<int, int> GetPos() const noexcept;
+		int GetPosX() const noexcept;
+		int GetPosY() const noexcept;
+		bool LeftIsPressed() const noexcept;
+		bool RightIsPressed() const noexcept;
 	};
 public:
 	Mouse() = default;
 	Mouse(const Mouse&) = delete;
 	Mouse& operator=(const Mouse&) = delete;
+public:
 	std::pair<int, int> GetPos() const noexcept;
 	std::optional<RawDelta> ReadRawDelta() noexcept;
 	int GetPosX() const noexcept;
@@ -77,10 +54,7 @@ public:
 	bool LeftIsPressed() const noexcept;
 	bool RightIsPressed() const noexcept;
 	std::optional<Mouse::Event> Read() noexcept;
-	bool IsEmpty() const noexcept
-	{
-		return buffer.empty();
-	}
+	bool IsEmpty() const noexcept;
 	void Flush() noexcept;
 	void EnableRaw() noexcept;
 	void DisableRaw() noexcept;
@@ -101,13 +75,16 @@ private:
 	void OnWheelDelta(int x, int y, int delta) noexcept;
 private:
 	static constexpr unsigned int bufferSize = 16u;
+
 	int x = 0;
 	int y = 0;
+	int wheelDeltaCarry = 0;
+
 	bool leftIsPressed = false;
 	bool rightIsPressed = false;
 	bool isInWindow = false;
-	int wheelDeltaCarry = 0;
 	bool rawEnabled = false;
+
 	std::queue<Event> buffer;
 	std::queue<RawDelta> rawDeltaBuffer;
 };

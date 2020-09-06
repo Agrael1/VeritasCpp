@@ -1,7 +1,7 @@
 #pragma once
-#include <Engine\Window.h>
+#include "Window.h"
 #include <Interfaces.h>
-#include <Framework\DirectXMath\Inc\DirectXPackedVector.h>
+#include <Inc\DirectXPackedVector.h>
 
 using RenderTargetView = VRTV_DESC;
 using DepthStencilView = VDSV_DESC;

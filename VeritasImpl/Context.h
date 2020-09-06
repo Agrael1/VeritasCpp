@@ -1,5 +1,4 @@
 #pragma once
-#include <Interfaces.h>
 #include <array>
 #include <span>
 #include <algorithm>
@@ -9,27 +8,9 @@
 #include "InputLayout.h"
 #include "Texture.h"
 
-#include <DirectXMath\Inc\DirectXPackedVector.h>
+#include <VeritasMath.h>
 
 namespace dx = DirectX;
-
-struct float4 : public dx::XMFLOAT4A
-{
-    float4() = default;
-    float4(const dx::XMVECTOR in)
-    {
-        dx::XMStoreFloat4A(this, in);
-    }
-    float4 operator=(const dx::XMVECTOR in)
-    {
-        dx::XMStoreFloat4A(this, in);
-        return *this;
-    }
-    operator dx::XMVECTOR()const
-    {
-        return dx::XMLoadFloat4A(this);
-    }
-};
 
 struct XMVertex
 {
@@ -126,8 +107,8 @@ public:
         assert(NumVertices % 3 == 0);
         std::vector<XMVertex> out;
         out.resize(NumVertices);
-        
-        for (uint32_t vtx = 0; auto& v : out)
+
+        for (uint32_t vtx = 0; auto & v : out)
         {
             for (uint32_t i = 0; i < GetMonotonicSize(); i++)
             {
@@ -155,7 +136,7 @@ public:
             }
             v.SV_VertexID = vtx++;
         }
-        return std::move(out);
+        return out;
     }
     std::vector<XMVertex> MakeVerticesIndexed(uint32_t NumIndices)const
     {
@@ -165,14 +146,14 @@ public:
         out.resize(NumIndices);
         auto* indexPtr = &IAIndexBuffer->data[0];
 
-        for (uint32_t idx = 0; auto & v : out)
+        for (auto & v : out)
         {
             v.SV_VertexID = (*((uint32_t*)indexPtr)) & ((1ull << IAIndexFormat * CHAR_BIT) - 1);
             indexPtr += IAIndexFormat;
             for (uint32_t i = 0; i < GetMonotonicSize(); i++)
             {
                 auto& x = IAInputLayout->il[i];
-                
+
                 size_t index = v.SV_VertexID * IABufferStrides[x.InputSlot] + IABufferOffsets[x.InputSlot] + x.AlignedByteOffset;
                 auto* data = &IAVertexBuffers[x.InputSlot]->data[index];
 
@@ -206,32 +187,32 @@ private:
     wrl::ComPtr<VBuffer> IAIndexBuffer;
     VFORMAT IAIndexFormat = FORMAT_NONE;
     uint32_t IAIndexOffset = 0;
-    std::array<wrl::ComPtr<VBuffer>, 4> IAVertexBuffers{0};
-    std::array<uint32_t, 4> IABufferStrides{0};
-    std::array<uint32_t, 4> IABufferOffsets{0};
+    std::array<wrl::ComPtr<VBuffer>, 4> IAVertexBuffers{ 0 };
+    std::array<uint32_t, 4> IABufferStrides{ 0 };
+    std::array<uint32_t, 4> IABufferOffsets{ 0 };
 
 
     //VPRIMITIVE_TOPOLOGY IATopology; //TODO: make topology
 };
 
-class VContext: public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVContext>
+class VContext : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVContext>
 {
 public:
-	VContext() = default;
+    VContext() = default;
 public:
-	HRESULT __stdcall IASetPrimitiveTopology(VPRIMITIVE_TOPOLOGY Topology)override;
-	HRESULT __stdcall IASetVertexBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppVertexBuffers, const uint32_t* pStrides, const uint32_t* pOffsets)override;
-	HRESULT __stdcall IASetIndexBuffer(IVBuffer* indexBuffer, VFORMAT format, uint32_t offsetBytes)override;
-	HRESULT __stdcall IASetInputLayout(IVInputLayout* pInputLayout)override;
-	HRESULT __stdcall VSSetShader(IVShader* pVertexShader)override;
-	HRESULT __stdcall VSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers)override;
-	HRESULT __stdcall PSSetShader(IVShader* pPixelShader)override;
-	HRESULT __stdcall PSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers)override;
+    HRESULT __stdcall IASetPrimitiveTopology(VPRIMITIVE_TOPOLOGY Topology)override;
+    HRESULT __stdcall IASetVertexBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppVertexBuffers, const uint32_t* pStrides, const uint32_t* pOffsets)override;
+    HRESULT __stdcall IASetIndexBuffer(IVBuffer* indexBuffer, VFORMAT format, uint32_t offsetBytes)override;
+    HRESULT __stdcall IASetInputLayout(IVInputLayout* pInputLayout)override;
+    HRESULT __stdcall VSSetShader(IVShader* pVertexShader)override;
+    HRESULT __stdcall VSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers)override;
+    HRESULT __stdcall PSSetShader(IVShader* pPixelShader)override;
+    HRESULT __stdcall PSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers)override;
     HRESULT __stdcall RSSetViewport(uint32_t numVPs, const VVIEWPORT_DESC* in)override;
-	HRESULT __stdcall OMSetRenderTargets(uint32_t numViews, const VRTV_DESC* const _arr_RTVs)override;
+    HRESULT __stdcall OMSetRenderTargets(uint32_t numViews, const VRTV_DESC* const _arr_RTVs)override;
     HRESULT __stdcall OMSetDepthStencil(const VDSV_DESC* DSV)override;
 
-	HRESULT __stdcall ClearRenderTarget(VRTV_DESC* rtv, uint32_t col)override;
+    HRESULT __stdcall ClearRenderTarget(VRTV_DESC* rtv, uint32_t col)override;
     HRESULT __stdcall ClearDepthStencil(VDSV_DESC* dsv, float value)override;
     HRESULT __stdcall Map(IVBuffer* pResource, VMAPPED_SUBRESOURCE* _out_pMappedResource)override;
     HRESULT __stdcall Unmap(IVBuffer* pResource)override;
@@ -257,15 +238,16 @@ private:
         XMVSOut& itEdge1, uint32_t attrsize);
     std::pair<bool, float> DepthTest(uint32_t width_in, size_t PremulIndex, float z);
 private:
+    float4 RSVPScale;
+    float4 RSVPOffset;
+
     InputAssembler IAStage;
     wrl::ComPtr<IVShader> VSVertexShader;
     wrl::ComPtr<IVShader> PSPixelShader;
     std::array<wrl::ComPtr<VBuffer>, 4> VSConstantBuffers;
-	std::array<wrl::ComPtr<VBuffer>, 4> PSConstantBuffers;
+    std::array<wrl::ComPtr<VBuffer>, 4> PSConstantBuffers;
     VVIEWPORT_DESC RSViewPort{ 0 };
-    dx::XMVECTOR RSVPScale{ 0 };
-    dx::XMVECTOR RSVPOffset{ 0 };
 
-    std::array<VRTV_DESC, MaxRenderTargets> OMRenderTargets{ 0 };
+    std::array<VRTV_DESC, MaxRenderTargets> OMRenderTargets;
     VDSV_DESC OMRenderDepth{ 0 };
 };

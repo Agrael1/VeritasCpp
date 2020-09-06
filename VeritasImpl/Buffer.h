@@ -1,7 +1,6 @@
 #pragma once
 #include <Interfaces.h>
 #include <vector>
-#include <algorithm>
 
 class VBuffer : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVBuffer>
 {

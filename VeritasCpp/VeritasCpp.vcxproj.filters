@@ -1,331 +1,199 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Файлы исходного кода">
+    <Filter Include="Исходные файлы">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Заголовочные файлы">
+    <Filter Include="Файлы заголовков">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
     <Filter Include="Файлы ресурсов">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Заголовочные файлы\Engine">
-      <UniqueIdentifier>{7bd0b8bf-3f86-4590-8f4a-ac8c20e04b15}</UniqueIdentifier>
+    <Filter Include="Файлы заголовков\Engine">
+      <UniqueIdentifier>{e7b85903-b9eb-4108-858d-2ee8fb9ccfbd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы исходного кода\Engine">
-      <UniqueIdentifier>{238fd3ca-186f-4609-a934-3db3fd10fa64}</UniqueIdentifier>
+    <Filter Include="Файлы заголовков\Engine\Input">
+      <UniqueIdentifier>{7d11e43a-e03e-4f72-bd4e-05e3a8c06d96}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Заголовочные файлы\Engine\Input">
-      <UniqueIdentifier>{57fb7183-3044-4c29-86c2-db370e840b63}</UniqueIdentifier>
+    <Filter Include="Исходные файлы\Engine">
+      <UniqueIdentifier>{e77b558f-79fb-480e-92a1-b640fbdb4410}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы исходного кода\Engine\Input">
-      <UniqueIdentifier>{cf3e4a58-adcb-4029-adcb-62237b3f4bef}</UniqueIdentifier>
+    <Filter Include="Исходные файлы\Engine\Input">
+      <UniqueIdentifier>{11c6c417-321a-415c-9da9-e621f17c4d49}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Заголовочные файлы\Engine\Primitives">
-      <UniqueIdentifier>{f3c9095e-cd83-4bef-953f-ec02efdd1ee0}</UniqueIdentifier>
+    <Filter Include="Shared">
+      <UniqueIdentifier>{90a1b824-923b-4f9f-96c7-b166b4cc2de8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы исходного кода\Engine\Primitives">
-      <UniqueIdentifier>{a17c974f-54dc-48cd-9468-9be91c5981a6}</UniqueIdentifier>
+    <Filter Include="Shared\fmt">
+      <UniqueIdentifier>{041911f8-73b1-499f-a5a2-b82f6dd78bbe}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы исходного кода\Engine\Architecture">
-      <UniqueIdentifier>{13c81f35-09dc-49f3-a9db-17166277711f}</UniqueIdentifier>
+    <Filter Include="Исходные файлы\Engine\Architecture">
+      <UniqueIdentifier>{306a17f0-e8e5-43f2-9c2e-01fdce2524e8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Заголовочные файлы\Engine\Architecture">
-      <UniqueIdentifier>{bfa62e3f-eb5b-4fa2-9558-5c598014d292}</UniqueIdentifier>
+    <Filter Include="Файлы заголовков\Engine\Architecture">
+      <UniqueIdentifier>{1f68192a-711c-4b06-ad27-f53cf2ce6f91}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Заголовочные файлы\Test">
-      <UniqueIdentifier>{7a90273c-ad82-4f06-abd1-df849cb54741}</UniqueIdentifier>
+    <Filter Include="Исходные файлы\Engine\Test">
+      <UniqueIdentifier>{5646722b-2e9d-4855-a860-e0f55a7f9b76}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Заголовочные файлы\Shared">
-      <UniqueIdentifier>{ac2c8a29-e8fe-4e59-993c-1edf571ef643}</UniqueIdentifier>
+    <Filter Include="Файлы заголовков\Engine\Test">
+      <UniqueIdentifier>{36236683-6a23-4ac1-810d-8f5cc464ca39}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Заголовочные файлы\Shared\wil">
-      <UniqueIdentifier>{5ed33212-cdad-4a49-9c7b-0d89a8f10092}</UniqueIdentifier>
+    <Filter Include="Исходные файлы\Engine\Objects">
+      <UniqueIdentifier>{7554d4a4-7455-4270-97fd-08e09a170dca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Заголовочные файлы\Shared\DirectXMath">
-      <UniqueIdentifier>{0608b7a8-6ed1-4e01-9075-b450bd9be3db}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы исходного кода\Shared">
-      <UniqueIdentifier>{ba226639-0974-4361-83e4-0db4cfbfc622}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы исходного кода\Shared\fmt">
-      <UniqueIdentifier>{4f1ef225-fd94-4a73-b1bd-5a0dccbce5e7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Заголовочные файлы\Shared\fmt">
-      <UniqueIdentifier>{e8750125-17e2-4b06-bf6e-3224444ac687}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы исходного кода\Engine\Objects">
-      <UniqueIdentifier>{2de5cde7-c8ba-4df7-8175-32e194c63f91}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Заголовочные файлы\Engine\Objects">
-      <UniqueIdentifier>{5a441f9b-1f0f-4ad2-a330-2a981c06cf25}</UniqueIdentifier>
+    <Filter Include="Файлы заголовков\Engine\Objects">
+      <UniqueIdentifier>{701a8791-2018-4025-b7a5-36b0d19dc983}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Engine\Window.cpp">
-      <Filter>Файлы исходного кода\Engine</Filter>
+    <ClCompile Include="EntryMain.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\VeritasEngine.cpp">
-      <Filter>Файлы исходного кода\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Mouse.cpp">
-      <Filter>Файлы исходного кода\Engine\Input</Filter>
+    <ClCompile Include="App.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Keyboard.cpp">
-      <Filter>Файлы исходного кода\Engine\Input</Filter>
+      <Filter>Исходные файлы\Engine\Input</Filter>
     </ClCompile>
-    <ClCompile Include="EntryMain.cpp">
-      <Filter>Файлы исходного кода</Filter>
+    <ClCompile Include="Engine\Mouse.cpp">
+      <Filter>Исходные файлы\Engine\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Bunny.cpp">
-      <Filter>Файлы исходного кода\Engine\Primitives</Filter>
+    <ClCompile Include="Engine\Window.cpp">
+      <Filter>Исходные файлы\Engine\Input</Filter>
     </ClCompile>
-    <ClCompile Include="XModel.cpp">
-      <Filter>Заголовочные файлы\Test</Filter>
+    <ClCompile Include="Engine\VeritasEngine.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Arch\IndexBuffer.cpp">
-      <Filter>Файлы исходного кода\Engine\Architecture</Filter>
+    <ClCompile Include="..\Shared\fmt\src\format.cc">
+      <Filter>Shared\fmt</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Arch\Bindable.cpp">
-      <Filter>Файлы исходного кода\Engine\Architecture</Filter>
+    <ClCompile Include="..\Shared\fmt\src\posix.cc">
+      <Filter>Shared\fmt</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Arch\InputLayout.cpp">
-      <Filter>Файлы исходного кода\Engine\Architecture</Filter>
+    <ClCompile Include="..\Shared\Exception.cpp">
+      <Filter>Shared</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Arch\VertexBuffer.cpp">
-      <Filter>Файлы исходного кода\Engine\Architecture</Filter>
+    <ClCompile Include="Engine\Bindable.cpp">
+      <Filter>Исходные файлы\Engine\Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\Framework\Exception.cpp">
-      <Filter>Файлы исходного кода\Shared</Filter>
+    <ClCompile Include="Engine\Drawable.cpp">
+      <Filter>Исходные файлы\Engine\Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\Framework\GdiException.cpp">
-      <Filter>Файлы исходного кода\Shared</Filter>
+    <ClCompile Include="Engine\IndexBuffer.cpp">
+      <Filter>Исходные файлы\Engine\Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\Framework\GDIPlusManager.cpp">
-      <Filter>Файлы исходного кода\Shared</Filter>
+    <ClCompile Include="Engine\VertexBuffer.cpp">
+      <Filter>Исходные файлы\Engine\Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\Framework\fmt\src\format.cc">
-      <Filter>Файлы исходного кода\Shared\fmt</Filter>
+    <ClCompile Include="Engine\Model.cpp">
+      <Filter>Исходные файлы\Engine\Test</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\Framework\fmt\src\posix.cc">
-      <Filter>Файлы исходного кода\Shared\fmt</Filter>
+    <ClCompile Include="Engine\VertexShader.cpp">
+      <Filter>Исходные файлы\Engine\Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Arch\VertexShader.cpp">
-      <Filter>Файлы исходного кода\Engine\Architecture</Filter>
+    <ClCompile Include="Engine\PixelShader.cpp">
+      <Filter>Исходные файлы\Engine\Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Arch\DepthStencil.cpp">
-      <Filter>Файлы исходного кода\Engine\Architecture</Filter>
+    <ClCompile Include="Engine\ConstantBuffers.cpp">
+      <Filter>Исходные файлы\Engine\Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Arch\ConstantBuffer.cpp">
-      <Filter>Файлы исходного кода\Engine\Architecture</Filter>
+    <ClCompile Include="Engine\InputLayout.cpp">
+      <Filter>Исходные файлы\Engine\Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Arch\Drawable.cpp">
-      <Filter>Файлы исходного кода\Engine\Architecture</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Файлы исходного кода\Engine\Objects</Filter>
+    <ClCompile Include="Engine\Camera.cpp">
+      <Filter>Исходные файлы\Engine\Objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Engine\VeritasEngine.h">
-      <Filter>Заголовочные файлы\Engine</Filter>
+    <ClInclude Include="..\Shared\Exception.h">
+      <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Window.h">
-      <Filter>Заголовочные файлы\Engine</Filter>
+    <ClInclude Include="..\Shared\GdiException.h">
+      <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Mouse.h">
-      <Filter>Заголовочные файлы\Engine\Input</Filter>
+    <ClInclude Include="..\Shared\GDIPlusManager.h">
+      <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Keyboard.h">
-      <Filter>Заголовочные файлы\Engine\Input</Filter>
+    <ClInclude Include="..\Shared\GDISetup.h">
+      <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="Bunny.h">
-      <Filter>Заголовочные файлы\Engine\Primitives</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Arch\Bindable.h">
-      <Filter>Заголовочные файлы\Engine\Architecture</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Arch\IndexBuffer.h">
-      <Filter>Заголовочные файлы\Engine\Architecture</Filter>
-    </ClInclude>
-    <ClInclude Include="XModel.h">
-      <Filter>Заголовочные файлы\Test</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Arch\InputLayout.h">
-      <Filter>Заголовочные файлы\Engine\Architecture</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Arch\VertexBuffer.h">
-      <Filter>Заголовочные файлы\Engine\Architecture</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\ConditionalNoexcept.h">
-      <Filter>Заголовочные файлы\Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\Exception.h">
-      <Filter>Заголовочные файлы\Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\GdiException.h">
-      <Filter>Заголовочные файлы\Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\GDIPlusManager.h">
-      <Filter>Заголовочные файлы\Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\GDISetup.h">
-      <Filter>Заголовочные файлы\Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\WinSetup.h">
-      <Filter>Заголовочные файлы\Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\com.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\common.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\cppwinrt.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\filesystem.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\registry.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\resource.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\result.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\result_macros.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\result_originate.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\rpc_helpers.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\safecast.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\stl.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\token_helpers.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\win32_helpers.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\winrt.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\wistd_config.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\wistd_functional.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\wistd_memory.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\wistd_type_traits.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\wil\include\wil\wrl.h">
-      <Filter>Заголовочные файлы\Shared\wil</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\DirectXMath\Inc\DirectXCollision.h">
-      <Filter>Заголовочные файлы\Shared\DirectXMath</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\DirectXMath\Inc\DirectXColors.h">
-      <Filter>Заголовочные файлы\Shared\DirectXMath</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\DirectXMath\Inc\DirectXMath.h">
-      <Filter>Заголовочные файлы\Shared\DirectXMath</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\DirectXMath\Inc\DirectXPackedVector.h">
-      <Filter>Заголовочные файлы\Shared\DirectXMath</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\chrono.h">
-      <Filter>Заголовочные файлы\Shared\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\color.h">
-      <Filter>Заголовочные файлы\Shared\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\compile.h">
-      <Filter>Заголовочные файлы\Shared\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\core.h">
-      <Filter>Заголовочные файлы\Shared\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\format.h">
-      <Filter>Заголовочные файлы\Shared\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\format-inl.h">
-      <Filter>Заголовочные файлы\Shared\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\locale.h">
-      <Filter>Заголовочные файлы\Shared\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\ostream.h">
-      <Filter>Заголовочные файлы\Shared\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\posix.h">
-      <Filter>Заголовочные файлы\Shared\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\printf.h">
-      <Filter>Заголовочные файлы\Shared\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\ranges.h">
-      <Filter>Заголовочные файлы\Shared\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Framework\fmt\include\fmt\safe-duration-cast.h">
-      <Filter>Заголовочные файлы\Shared\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Arch\VertexShader.h">
-      <Filter>Заголовочные файлы\Engine\Architecture</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Arch\DepthStencil.h">
-      <Filter>Заголовочные файлы\Engine\Architecture</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Arch\PixelShader.h">
-      <Filter>Заголовочные файлы\Engine\Architecture</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Arch\ConstantBuffer.h">
-      <Filter>Заголовочные файлы\Engine\Architecture</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Arch\Drawable.h">
-      <Filter>Заголовочные файлы\Engine\Architecture</Filter>
+    <ClInclude Include="..\Shared\WinSetup.h">
+      <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="App.h">
-      <Filter>Заголовочные файлы</Filter>
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Заголовочные файлы\Engine\Objects</Filter>
+    <ClInclude Include="Engine\Keyboard.h">
+      <Filter>Файлы заголовков\Engine\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Plane.h">
-      <Filter>Заголовочные файлы\Engine\Primitives</Filter>
+    <ClInclude Include="Engine\Mouse.h">
+      <Filter>Файлы заголовков\Engine\Input</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Window.h">
+      <Filter>Файлы заголовков\Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\VeritasEngine.h">
+      <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Interfaces.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Descriptors.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\ShaderCommon.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Bindable.h">
+      <Filter>Файлы заголовков\Engine\Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Drawable.h">
+      <Filter>Файлы заголовков\Engine\Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\IndexBuffer.h">
+      <Filter>Файлы заголовков\Engine\Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\VertexBuffer.h">
+      <Filter>Файлы заголовков\Engine\Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Model.h">
+      <Filter>Файлы заголовков\Engine\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\BindableCommon.h">
+      <Filter>Файлы заголовков\Engine\Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\VertexShader.h">
+      <Filter>Файлы заголовков\Engine\Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PixelShader.h">
+      <Filter>Файлы заголовков\Engine\Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\InputLayout.h">
+      <Filter>Файлы заголовков\Engine\Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ConstantBuffers.h">
+      <Filter>Файлы заголовков\Engine\Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Camera.h">
+      <Filter>Файлы заголовков\Engine\Objects</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="VeritasCpp.rc">
+      <Filter>Файлы ресурсов</Filter>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="TLR.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Resource.rc">
-      <Filter>Файлы ресурсов</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

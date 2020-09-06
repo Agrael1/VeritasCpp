@@ -1,18 +1,25 @@
 #pragma once
 #include <Descriptors.h>
-#include <wrl.h>
-#include "../ShaderTech/ShaderCommon.h"
+#include <ShaderCommon.h>
+
+#ifdef  VERITASIMPL_EXPORTS 
+/*Enabled as "export" while compiling the dll project*/
+#define VERITASAPI __declspec(dllexport)  
+#else
+/*Enabled as "import" in the Client side for using already created dll file*/
+#define VERITASAPI __declspec(dllimport)  
+#endif
 
 namespace wrl = Microsoft::WRL;
 
 // {979E8BE5-01F7-4264-99D1-7517ACD6B138}
 DEFINE_GUID(IID_VBuffer,
-    0x979e8be5, 0x1f7, 0x4264, 0x99, 0xd1, 0x75, 0x17, 0xac, 0xd6, 0xb1, 0x38);
+	0x979e8be5, 0x1f7, 0x4264, 0x99, 0xd1, 0x75, 0x17, 0xac, 0xd6, 0xb1, 0x38);
 
 MIDL_INTERFACE("979E8BE5-01F7-4264-99D1-7517ACD6B138")
 IVBuffer : public IUnknown
 {
-    virtual void __stdcall GetDesc(VBUFFER_DESC * _out_Desc) = 0;
+	virtual void __stdcall GetDesc(VBUFFER_DESC * _out_Desc) = 0;
 };
 
 // {6A4326ED-4D1D-40EA-AC33-F0CE0C74FA13}
@@ -32,7 +39,7 @@ DEFINE_GUID(IID_VTexture,
 MIDL_INTERFACE("71FBFB13-F224-47A4-853F-3A088B95D552")
 IVTexture : public IUnknown
 {
-	virtual void GetDesc(VTEXTURE_DESC * desc)const = 0;
+	virtual void __stdcall GetDesc(VTEXTURE_DESC * desc)const = 0;
 };
 
 
@@ -43,10 +50,10 @@ DEFINE_GUID(IID_VDevice,
 MIDL_INTERFACE("0085FC95-F47C-47A2-99CE-A92E13471C05")
 IVDevice : public IUnknown
 {
-	virtual HRESULT __stdcall CreateBuffer(const VBUFFER_DESC* desc, IVBuffer** _out_Bufptr, const void* initialData = nullptr) = 0;
+	virtual HRESULT __stdcall CreateBuffer(const VBUFFER_DESC * desc, IVBuffer * *_out_Bufptr, const void* initialData = nullptr) = 0;
 	virtual HRESULT __stdcall CreateTexture2D(const VTEXTURE_DESC* desc, IVTexture** _out_texptr, const void* initialData = nullptr) = 0;
-	virtual HRESULT __stdcall CreateRenderTargetView(IVTexture* resource, VRTV_DESC* _out_rtv) = 0;
-	virtual HRESULT __stdcall CreateDepthStencilView(IVTexture* resource, VDSV_DESC* _out_rtv) = 0;
+	virtual HRESULT __stdcall CreateRenderTargetView(IVTexture* resource, VRTV_DESC* _out_rtv)const = 0;
+	virtual HRESULT __stdcall CreateDepthStencilView(IVTexture* resource, VDSV_DESC* _out_rtv)const = 0;
 	virtual HRESULT __stdcall CreateInputLayout(const VINPUT_ELEMENT* pInputElementDescs, uint32_t NumElements,
 		const void* pShaderBytecodeWithInputSignature, uint32_t BytecodeLength, IVInputLayout** _out_InputLayout) = 0;
 };
@@ -92,5 +99,5 @@ IVSwapChain : public IUnknown
 };
 
 
-extern "C" HRESULT __stdcall VFCreateDevice(HWND window, IVDevice **_out_device, IVContext **_out_context);
-extern "C" HRESULT __stdcall VFCreateSwapChain(VSWAP_CHAIN_DESC * descriptor, IVDevice * device, IVSwapChain * *_out_swapchain);
+extern "C" VERITASAPI HRESULT __stdcall VFCreateDevice(HWND window, IVDevice * *_out_device, IVContext * *_out_context);
+extern "C" VERITASAPI HRESULT __stdcall VFCreateSwapChain(VSWAP_CHAIN_DESC * descriptor, IVDevice * device, IVSwapChain * *_out_swapchain);

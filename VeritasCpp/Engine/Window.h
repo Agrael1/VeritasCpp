@@ -1,13 +1,11 @@
 #pragma once
-#include <Framework\Exception.h>
-#include <Framework\wil\include\wil\win32_helpers.h>
+#include <Exception.h>
+#include <wil\win32_helpers.h>
 #include "Mouse.h"
 #include "Keyboard.h"
 #include <vector>
 #include <optional>
 #include <span>
-
-#include "resource.h"
 
 class Window
 {
@@ -19,8 +17,8 @@ class Window
 		WindowClass(const WindowClass&) = delete;
 		WindowClass& operator=(const WindowClass&) = delete;
 	public:
-		static const wchar_t* GetName()noexcept;
-		static HINSTANCE GetInstance()noexcept;
+		static constexpr const wchar_t* GetName();
+		static constexpr HINSTANCE GetInstance();
 	private:
 		wil::unique_hicon appico;
 		HINSTANCE hinst;
@@ -30,7 +28,7 @@ class Window
 public:
 	Window(uint32_t width, uint32_t height, std::wstring_view name);
 	Window(const Window&) = delete;
-	Window& operator=(const Window&) = delete;	
+	Window& operator=(const Window&) = delete;
 public:
 	void ConfineCursor() noexcept;
 	void FreeCursor() noexcept;

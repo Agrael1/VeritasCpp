@@ -1,7 +1,5 @@
 #include "Device.h"
-#include "GdiException.h"
-#include <wrl.h>
-
+#include <GdiException.h>
 #include "Buffer.h"
 #include "Texture.h"
 #include "InputLayout.h"
@@ -31,12 +29,12 @@ HRESULT __stdcall VGraphicsDevice::CreateTexture2D(const VTEXTURE_DESC* desc, IV
 {
 	return wrl::MakeAndInitialize<VTexture>(_out_texptr, desc, initialData);
 }
-HRESULT __stdcall VGraphicsDevice::CreateRenderTargetView(IVTexture* resource, VRTV_DESC* _out_rtv) 
+HRESULT __stdcall VGraphicsDevice::CreateRenderTargetView(IVTexture* resource, VRTV_DESC* _out_rtv)const
 {
 	static_cast<VTexture*>(resource)->GetView(_out_rtv);
 	return S_OK;
 }
-HRESULT __stdcall VGraphicsDevice::CreateDepthStencilView(IVTexture* resource, VDSV_DESC* _out_rtv) 
+HRESULT __stdcall VGraphicsDevice::CreateDepthStencilView(IVTexture* resource, VDSV_DESC* _out_rtv)const
 {
 	static_cast<VTexture*>(resource)->GetView(_out_rtv);
 	return S_OK;
@@ -46,7 +44,7 @@ HRESULT __stdcall VGraphicsDevice::CreateInputLayout(const VINPUT_ELEMENT* pInpu
 	return wrl::MakeAndInitialize<VInputLayout>(_out_InputLayout, pInputElementDescs, NumElements);
 }
 
-Gdiplus::GpGraphics* VGraphicsDevice::GetRawGraphics() noexcept
+Gdiplus::GpGraphics* VGraphicsDevice::GetRawGraphics()const noexcept
 {
 	return pGfx.get();
 }

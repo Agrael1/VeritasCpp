@@ -2,16 +2,16 @@
 
 
 VeritasEngine::VeritasEngine(uint16_t width, uint16_t height)
-	:window(width,height,L"VTest")
+	:window(width, height, L"VTest")
 {
 	VSWAP_CHAIN_DESC sd;
 	sd.BufferCount = 1;
 	sd.Height = height;
 	sd.Width = width;
 	sd.OutputWindow = 0;
-	sd.Windowed = TRUE;	
+	sd.Windowed = TRUE;
 
-	
+
 	VFCreateDevice(window.GetWindowHandle(), &pDevice, &pContext);
 	VFCreateSwapChain(&sd, pDevice.Get(), &pSwap);
 	pSwap->GetRenderTarget(0, &rtv);
@@ -42,11 +42,9 @@ Window& VeritasEngine::Wnd()
 	return window;
 }
 
-
-
 void VeritasEngine::BeginFrame(float r, float g, float b) noexcept
 {
-	DirectX::PackedVector::XMCOLOR col(r,g,b,1.f);
+	DirectX::PackedVector::XMCOLOR col(r, g, b, 1.f);
 	pContext->ClearRenderTarget(&rtv, col);
 	pContext->ClearDepthStencil(&dsv, INFINITY);
 }
