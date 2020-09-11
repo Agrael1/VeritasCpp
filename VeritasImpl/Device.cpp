@@ -1,25 +1,9 @@
 #include "Device.h"
-#include <GdiException.h>
 #include "Buffer.h"
 #include "Texture.h"
 #include "InputLayout.h"
 
-GDIPlusManager gdipm;
 
-HRESULT VGraphicsDevice::RuntimeClassInitialize(HWND window, bool ICCColorAdjustment)
-{
-	HWND hwnd = window;
-
-	if (ICCColorAdjustment)
-	{
-		GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipCreateFromHWNDICM(hwnd, &pGfx));
-	}
-	else
-	{
-		GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipCreateFromHWND(hwnd, &pGfx));
-	}
-	return S_OK;
-}
 
 HRESULT __stdcall VGraphicsDevice::CreateBuffer(const VBUFFER_DESC* desc, IVBuffer** _out_Bufptr, const void* initialData)
 {
@@ -42,9 +26,4 @@ HRESULT __stdcall VGraphicsDevice::CreateDepthStencilView(IVTexture* resource, V
 HRESULT __stdcall VGraphicsDevice::CreateInputLayout(const VINPUT_ELEMENT* pInputElementDescs, uint32_t NumElements, const void* pShaderBytecodeWithInputSignature, uint32_t BytecodeLength, IVInputLayout** _out_InputLayout)
 {
 	return wrl::MakeAndInitialize<VInputLayout>(_out_InputLayout, pInputElementDescs, NumElements);
-}
-
-Gdiplus::GpGraphics* VGraphicsDevice::GetRawGraphics()const noexcept
-{
-	return pGfx.get();
 }

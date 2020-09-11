@@ -1,13 +1,24 @@
 #include "SwapChain.h"
 #include "Device.h"
+#include "GdiException.h"
 
+GDIPlusManager gdipm;
 
-VSwapChain::VFrame::VFrame(int width, int height, Gdiplus::GpGraphics* in_target)
-	:target(in_target), frameArea(0, 0, width, height)
+VSwapChain::VFrame::VFrame(int width, int height, HWND hwnd, bool ICCColorAdjustment)
+	: frameArea(0, 0, width, height)
 {
+	if (ICCColorAdjustment)
+	{
+		GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipCreateFromHWNDICM(hwnd, &pGfx));
+	}
+	else
+	{
+		GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipCreateFromHWND(hwnd, &pGfx));
+	}
+
 	GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipCreateBitmapFromGraphics(width,
 		height,
-		target,
+		pGfx.get(),
 		&image));
 
 	GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipGetImagePixelFormat(image.get(), reinterpret_cast<Gdiplus::PixelFormat*>(&format)));
@@ -42,12 +53,12 @@ void VSwapChain::VFrame::Draw() const
 {
 	GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipCreateCachedBitmap(
 		image.get(),
-		target,
+		pGfx.get(),
 		&output
 	));
 
 	GDI_CALL_EXCEPT(Gdiplus::DllExports::GdipDrawCachedBitmap(
-		target,
+		pGfx.get(),
 		output.get(),
 		0, 0
 	));
@@ -58,21 +69,19 @@ VPIXEL_FORMAT VSwapChain::VFrame::GetPixelFormat() const noexcept
 }
 
 
-HRESULT VSwapChain::RuntimeClassInitialize(const VSWAP_CHAIN_DESC* desc, const IVDevice* gfx)
+VSwapChain::VSwapChain(const VSWAP_CHAIN_DESC* desc, IVDevice* gfx, HWND hwnd)
+	:Frame(desc->Width, desc->Height, hwnd)
 {
-	Frame.emplace(desc->Width, desc->Height, static_cast<const VGraphicsDevice*>(gfx)->GetRawGraphics());
-
 	VTEXTURE_DESC vtx;
 	vtx.Width = desc->Width;
 	vtx.Height = desc->Height;
 	vtx.BindFlags = VBIND_FLAG::RENDER_TARGET;
-	vtx.PixelFormat = Frame->GetPixelFormat();
+	vtx.PixelFormat = Frame.GetPixelFormat();
 
 	wrl::MakeAndInitialize<VTexture>(&RenderBuffer, &vtx);
 	gfx->CreateRenderTargetView(RenderBuffer.Get(), &BackBuffer);
 
-	Frame->LockFullImage(BackBuffer, Gdiplus::ImageLockModeWrite);
-	return S_OK;
+	Frame.LockFullImage(BackBuffer, Gdiplus::ImageLockModeWrite);
 }
 
 void VSwapChain::GetRenderTarget(uint32_t number, VRTV_DESC* _out_buf)
@@ -81,7 +90,7 @@ void VSwapChain::GetRenderTarget(uint32_t number, VRTV_DESC* _out_buf)
 }
 void VSwapChain::Present()
 {
-	Frame->UnlockImage(BackBuffer);
-	Frame->Draw();
-	Frame->LockFullImage(BackBuffer, Gdiplus::ImageLockModeWrite);
+	Frame.UnlockImage(BackBuffer);
+	Frame.Draw();
+	Frame.LockFullImage(BackBuffer, Gdiplus::ImageLockModeWrite);
 }

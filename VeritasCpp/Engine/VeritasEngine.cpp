@@ -11,9 +11,8 @@ VeritasEngine::VeritasEngine(uint16_t width, uint16_t height)
 	sd.OutputWindow = 0;
 	sd.Windowed = TRUE;
 
-
-	VFCreateDevice(window.GetWindowHandle(), &pDevice, &pContext);
-	VFCreateSwapChain(&sd, pDevice.Get(), &pSwap);
+	VFCreateDevice(&pDevice, &pContext);
+	VFCreateSwapChain(&sd, pDevice.Get(), window.GetWindowHandle(),&pSwap);
 	pSwap->GetRenderTarget(0, &rtv);
 	pContext->OMSetRenderTargets(1, &rtv);
 
