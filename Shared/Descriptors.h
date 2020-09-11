@@ -1,7 +1,7 @@
 #pragma once
-#include <cstdint>
+#include <stdint.h>
 
-enum VBIND_FLAG : uint32_t
+typedef enum VBIND_FLAG
 {
 	VERTEX_BUFFER = 0x1L,
 	INDEX_BUFFER = 0x2L,
@@ -13,8 +13,8 @@ enum VBIND_FLAG : uint32_t
 	UNORDERED_ACCESS = 0x80L,
 	DECODER = 0x200L,
 	VIDEO_ENCODER = 0x400L
-};
-enum VFORMAT
+}VBIND_FLAG;
+typedef enum VFORMAT
 {
 	FORMAT_NONE = 0,
 	FORMAT_UINT16 = 2,
@@ -23,8 +23,8 @@ enum VFORMAT
 	FORMAT_R32G32B32_FLOAT,
 	FORMAT_R32G32_FLOAT,
 	FORMAT_R32_FLOAT
-};
-enum VPRIMITIVE_TOPOLOGY
+}VFORMAT;
+typedef enum VPRIMITIVE_TOPOLOGY
 {
 	UNDEFINED = 0,
 	POINTLIST = 1,
@@ -32,8 +32,8 @@ enum VPRIMITIVE_TOPOLOGY
 	LINESTRIP = 3,
 	TRIANGLELIST = 4,
 	TRIANGLESTRIP = 5,
-};
-enum VPIXEL_FORMAT
+}VPRIMITIVE_TOPOLOGY;
+typedef enum VPIXEL_FORMAT
 {
 	Indexed = 0x00010000 // Indexes into a palette
 	, GDI = 0x00020000 // Is a GDI-supported format
@@ -62,7 +62,7 @@ enum VPIXEL_FORMAT
 	, CMYK32bpp = (15 | (32 << 8))
 	, Max = 16
 	, FLOAT32bpp = ARGB32bpp
-};
+}VPIXEL_FORMAT;
 
 typedef struct VBUFFER_DESC
 {
@@ -85,8 +85,8 @@ typedef struct VTEXTURE_DESC
 	uint32_t BindFlags;
 }VTEXTURE_DESC;
 
-constexpr auto MaxRenderTargets = 2u;
-constexpr auto MaxViewPorts = 2u;
+#define MaxRenderTargets 2u
+#define MaxViewPorts 2u
 
 typedef struct VVIEWPORT_DESC
 {
