@@ -4,7 +4,6 @@
 
 class VTexture : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVTexture>
 {
-	friend class VSwapChain;
 	friend class VGraphicsDevice;
 public:
 	HRESULT RuntimeClassInitialize(const VTEXTURE_DESC* in_desc, const void* _in_data = nullptr);

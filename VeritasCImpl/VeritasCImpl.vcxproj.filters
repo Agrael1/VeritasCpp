@@ -36,6 +36,12 @@
     <ClCompile Include="Allocator.c">
       <Filter>Исходные файлы\Extention</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Device.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Buffer.h">
@@ -52,6 +58,12 @@
     </ClInclude>
     <ClInclude Include="RuntimeClass.h">
       <Filter>Файлы заголовков\Extention</Filter>
+    </ClInclude>
+    <ClInclude Include="Device.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

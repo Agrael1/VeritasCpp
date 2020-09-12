@@ -22,7 +22,7 @@ do																		\
 	pClass->vfptr = __rcat2(__,__rcat3(What,_,vftbl));												\
 	__rcat3(What, _, ctor)(pClass, __VA_ARGS__);						\
 																		\
-	*OUT_ppInterface = pClass;											\
+	*OUT_ppInterface = (void*)pClass;											\
 }while(0)
 
 HRESULT __stdcall QueryInterface(IUnknown* This, void* riid, void** ppvObject);

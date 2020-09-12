@@ -1,11 +1,10 @@
-#include "RuntimeClass.h"
-#include "Buffer.h"
+#include "Device.h"
 
-#pragma region COM Routines
-void MakeBuffer(void** x)
+HRESULT __stdcall VFCreateDevice(IVDevice** _out_device, struct IVContext** _out_context)
 {
-	MakeAndInitialize(x, VBuffer);
+	MakeAndInitialize(_out_device, VGraphicsDevice);
+	//RETURN_IF_FAILED(wrl::MakeAndInitialize<VContext>(_out_context));
+
+	return S_OK;
 }
 
-
-#pragma endregion

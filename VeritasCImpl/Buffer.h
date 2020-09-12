@@ -1,5 +1,4 @@
 #pragma once
-#include "RuntimeClass.h"
 #include "Allocator.h"
 
 #define c_class VBuffer
