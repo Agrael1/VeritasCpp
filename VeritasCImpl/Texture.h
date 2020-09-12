@@ -13,6 +13,8 @@ class
 	uint8_t* data;
 };
 
+extern void GetView(VTexture* This, VRTV_DESC* _out_rtv);
+
 #if !defined(TEXTURE_IMPL)
 #undef c_class
 #endif

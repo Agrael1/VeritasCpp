@@ -167,6 +167,7 @@
     <ClCompile Include="Buffer.c" />
     <ClCompile Include="Device.c" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="InputLayout.c" />
     <ClCompile Include="Texture.c" />
     <ClCompile Include="VGIFactory.c" />
   </ItemGroup>
@@ -175,6 +176,7 @@
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Allocator.h" />
     <ClInclude Include="Device.h" />
+    <ClInclude Include="InputLayout.h" />
     <ClInclude Include="RuntimeClass.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="VGIFactory.h" />

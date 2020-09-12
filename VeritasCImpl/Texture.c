@@ -5,6 +5,14 @@ static void __stdcall GetDesc(const VTexture* This, VTEXTURE_DESC* _out_desc)
 {
 	*_out_desc = This->desc;
 }
+void GetView(VTexture* This, VRTV_DESC* _out_rtv)
+{
+	(_out_rtv)->Width = This->desc.Width;
+	(_out_rtv)->Height = This->desc.Height;
+	(_out_rtv)->PixelFormat = This->desc.PixelFormat;
+	(_out_rtv)->Stride = This->size * This->desc.Width;
+	(_out_rtv)->Scan0 = This->data;
+}
 
 HRESULT RuntimeClassInitialize(VTexture* This, const VTEXTURE_DESC* in_desc, const void* _in_data)
 {
