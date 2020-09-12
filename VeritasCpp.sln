@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VeritasCpp", "VeritasCpp\VeritasCpp.vcxproj", "{78E57066-EB76-43C2-93CA-FB21575AD7EA}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShaderTech", "ShaderTech\ShaderTech.vcxproj", "{1B468428-DFE2-4D1D-B513-E2423551989F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VeritasImpl", "VeritasImpl\VeritasImpl.vcxproj", "{D14993A2-8A92-4D2F-922A-25C67A670A86}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VeritasCImpl", "VeritasCImpl\VeritasCImpl.vcxproj", "{647659F6-DA9B-4B47-ABAA-17A3883CCA85}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SwapChain", "SwapChain\SwapChain.vcxproj", "{1BE3F070-9F05-47CD-8EB2-CBF75389DDD3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VeritasCpp", "VeritasCpp\VeritasCpp.vcxproj", "{78E57066-EB76-43C2-93CA-FB21575AD7EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +21,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{78E57066-EB76-43C2-93CA-FB21575AD7EA}.Debug|x64.ActiveCfg = Debug|x64
-		{78E57066-EB76-43C2-93CA-FB21575AD7EA}.Debug|x64.Build.0 = Debug|x64
-		{78E57066-EB76-43C2-93CA-FB21575AD7EA}.Debug|x86.ActiveCfg = Debug|Win32
-		{78E57066-EB76-43C2-93CA-FB21575AD7EA}.Debug|x86.Build.0 = Debug|Win32
-		{78E57066-EB76-43C2-93CA-FB21575AD7EA}.Release|x64.ActiveCfg = Release|x64
-		{78E57066-EB76-43C2-93CA-FB21575AD7EA}.Release|x64.Build.0 = Release|x64
-		{78E57066-EB76-43C2-93CA-FB21575AD7EA}.Release|x86.ActiveCfg = Release|Win32
-		{78E57066-EB76-43C2-93CA-FB21575AD7EA}.Release|x86.Build.0 = Release|Win32
 		{1B468428-DFE2-4D1D-B513-E2423551989F}.Debug|x64.ActiveCfg = Debug|x64
 		{1B468428-DFE2-4D1D-B513-E2423551989F}.Debug|x64.Build.0 = Debug|x64
 		{1B468428-DFE2-4D1D-B513-E2423551989F}.Debug|x86.ActiveCfg = Debug|Win32
@@ -51,6 +45,22 @@ Global
 		{647659F6-DA9B-4B47-ABAA-17A3883CCA85}.Release|x64.Build.0 = Release|x64
 		{647659F6-DA9B-4B47-ABAA-17A3883CCA85}.Release|x86.ActiveCfg = Release|Win32
 		{647659F6-DA9B-4B47-ABAA-17A3883CCA85}.Release|x86.Build.0 = Release|Win32
+		{1BE3F070-9F05-47CD-8EB2-CBF75389DDD3}.Debug|x64.ActiveCfg = Debug|x64
+		{1BE3F070-9F05-47CD-8EB2-CBF75389DDD3}.Debug|x64.Build.0 = Debug|x64
+		{1BE3F070-9F05-47CD-8EB2-CBF75389DDD3}.Debug|x86.ActiveCfg = Debug|Win32
+		{1BE3F070-9F05-47CD-8EB2-CBF75389DDD3}.Debug|x86.Build.0 = Debug|Win32
+		{1BE3F070-9F05-47CD-8EB2-CBF75389DDD3}.Release|x64.ActiveCfg = Release|x64
+		{1BE3F070-9F05-47CD-8EB2-CBF75389DDD3}.Release|x64.Build.0 = Release|x64
+		{1BE3F070-9F05-47CD-8EB2-CBF75389DDD3}.Release|x86.ActiveCfg = Release|Win32
+		{1BE3F070-9F05-47CD-8EB2-CBF75389DDD3}.Release|x86.Build.0 = Release|Win32
+		{78E57066-EB76-43C2-93CA-FB21575AD7EA}.Debug|x64.ActiveCfg = Debug|x64
+		{78E57066-EB76-43C2-93CA-FB21575AD7EA}.Debug|x64.Build.0 = Debug|x64
+		{78E57066-EB76-43C2-93CA-FB21575AD7EA}.Debug|x86.ActiveCfg = Debug|Win32
+		{78E57066-EB76-43C2-93CA-FB21575AD7EA}.Debug|x86.Build.0 = Debug|Win32
+		{78E57066-EB76-43C2-93CA-FB21575AD7EA}.Release|x64.ActiveCfg = Release|x64
+		{78E57066-EB76-43C2-93CA-FB21575AD7EA}.Release|x64.Build.0 = Release|x64
+		{78E57066-EB76-43C2-93CA-FB21575AD7EA}.Release|x86.ActiveCfg = Release|Win32
+		{78E57066-EB76-43C2-93CA-FB21575AD7EA}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

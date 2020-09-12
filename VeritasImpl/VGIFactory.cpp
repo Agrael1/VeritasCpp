@@ -1,4 +1,4 @@
-#include "SwapChain.h"
+#include "wil/result_macros.h"
 #include "Device.h"
 #include "Context.h"
 
@@ -8,8 +8,4 @@ HRESULT __stdcall VFCreateDevice(IVDevice** _out_device, IVContext** _out_contex
 	RETURN_IF_FAILED(wrl::MakeAndInitialize<VContext>(_out_context));
 
 	return S_OK;
-}
-HRESULT __stdcall VFCreateSwapChain(const VSWAP_CHAIN_DESC* descriptor, IVDevice* device, HWND window, IVSwapChain** _out_swapchain)
-{
-	return wrl::Make<VSwapChain>(descriptor, device, window).CopyTo(_out_swapchain);
 }

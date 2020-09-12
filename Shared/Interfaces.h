@@ -100,4 +100,4 @@ IVSwapChain : public IUnknown
 
 
 extern "C" VERITASAPI HRESULT __stdcall VFCreateDevice(IVDevice * *_out_device, IVContext * *_out_context);
-extern "C" VERITASAPI HRESULT __stdcall VFCreateSwapChain(const VSWAP_CHAIN_DESC * descriptor, IVDevice * device, HWND window, IVSwapChain **_out_swapchain);
+extern "C" HRESULT __stdcall VFCreateSwapChain(const VSWAP_CHAIN_DESC * descriptor, IVDevice * device, HWND window, IVSwapChain **_out_swapchain);

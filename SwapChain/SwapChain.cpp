@@ -1,6 +1,7 @@
 #include "SwapChain.h"
-#include "Device.h"
 #include "GdiException.h"
+
+import "GDIPlusManager.h";
 
 GDIPlusManager gdipm;
 
@@ -78,7 +79,7 @@ VSwapChain::VSwapChain(const VSWAP_CHAIN_DESC* desc, IVDevice* gfx, HWND hwnd)
 	vtx.BindFlags = VBIND_FLAG::RENDER_TARGET;
 	vtx.PixelFormat = Frame.GetPixelFormat();
 
-	wrl::MakeAndInitialize<VTexture>(&RenderBuffer, &vtx);
+	gfx->CreateTexture2D(&vtx, &RenderBuffer);
 	gfx->CreateRenderTargetView(RenderBuffer.Get(), &BackBuffer);
 
 	Frame.LockFullImage(BackBuffer, Gdiplus::ImageLockModeWrite);
@@ -93,4 +94,9 @@ void VSwapChain::Present()
 	Frame.UnlockImage(BackBuffer);
 	Frame.Draw();
 	Frame.LockFullImage(BackBuffer, Gdiplus::ImageLockModeWrite);
+}
+
+HRESULT __stdcall VFCreateSwapChain(const VSWAP_CHAIN_DESC* descriptor, IVDevice* device, HWND window, IVSwapChain** _out_swapchain)
+{
+	return wrl::Make<VSwapChain>(descriptor, device, window).CopyTo(_out_swapchain);
 }

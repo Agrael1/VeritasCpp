@@ -1,9 +1,8 @@
 #pragma once
-#include <GDIPlusManager.h>
+#include "GDISetup.h"
 #include <Interfaces.h>
 #include <wil\win32_helpers.h>
-#include <optional>
-#include "Texture.h"
+
 
 class VSwapChain : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicCom>, IVSwapChain>
 {
@@ -21,8 +20,8 @@ class VSwapChain : public wrl::RuntimeClass<wrl::RuntimeClassFlags<wrl::ClassicC
 		void Draw()const;
 		VPIXEL_FORMAT GetPixelFormat()const noexcept;
 	private:
-		unique_image image;
 		mutable unique_cached_bitmap output;
+		unique_image image;
 		unique_gdi pGfx;
 		Gdiplus::Rect frameArea;
 		VPIXEL_FORMAT format = VPIXEL_FORMAT::PARGB32bpp;
@@ -37,6 +36,5 @@ private:
 private:
 	VFrame Frame;
 	VRTV_DESC BackBuffer{ 0 };
-	wrl::ComPtr<VGraphicsDevice> pDevice;
-	wrl::ComPtr<VTexture> RenderBuffer;
+	wrl::ComPtr<IVTexture> RenderBuffer;
 };

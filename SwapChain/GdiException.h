@@ -1,7 +1,8 @@
 #pragma once
-#include <GDISetup.h>
 #include <Exception.h>
 #include <string>
+
+import "GDISetup.h";
 
 class GdiException : public Exception
 {

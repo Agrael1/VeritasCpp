@@ -1,5 +1,5 @@
 #pragma once
-#include <GDISetup.h>
+import "GDISetup.h";
 
 class GDIPlusManager
 {

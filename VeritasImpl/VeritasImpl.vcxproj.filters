@@ -27,9 +27,6 @@
     <ClInclude Include="..\Shared\Interfaces.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="SwapChain.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -53,19 +50,10 @@
     <ClCompile Include="VGIFactory.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="SwapChain.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="..\Shared\Exception.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\GdiException.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\GDIPlusManager.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
     <ClCompile Include="..\Shared\fmt\src\format.cc">
