@@ -87,6 +87,7 @@ typedef struct VTEXTURE_DESC
 
 #define MaxRenderTargets 2u
 #define MaxViewPorts 2u
+#define MaxBuffers 4u
 
 typedef struct VVIEWPORT_DESC
 {

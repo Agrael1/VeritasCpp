@@ -98,6 +98,12 @@ IVSwapChain : public IUnknown
 	virtual void __stdcall GetRenderTarget(uint32_t number, VRTV_DESC* _out_buf) = 0;
 };
 
-
-extern "C" VERITASAPI HRESULT __stdcall VFCreateDevice(IVDevice * *_out_device, IVContext * *_out_context);
-extern "C" HRESULT __stdcall VFCreateSwapChain(const VSWAP_CHAIN_DESC * descriptor, IVDevice * device, HWND window, IVSwapChain **_out_swapchain);
+#ifdef __cplusplus
+extern "C" {
+#endif
+	VERITASAPI HRESULT __stdcall VFCreateDevice(IVDevice** _out_device, IVContext** _out_context);
+	HRESULT __stdcall VFCreateSwapChain(const VSWAP_CHAIN_DESC * descriptor, IVDevice * device, HWND window, IVSwapChain * *_out_swapchain);
+#ifdef __cplusplus
+}
+#endif
+ 

@@ -19,7 +19,7 @@ do																		\
 	struct What* pClass = (struct What*)((unsigned char*)p + sizeof(Allocator));						\
 																		\
 	pClass->__internal_refcount = 1;									\
-	pClass->vfptr = __rcat2(__,__rcat3(What,_,vftbl));												\
+	pClass->vfptr.method = __rcat2(__,__rcat3(What,_,vftbl));												\
 	__rcat3(What, _, ctor)(pClass, __VA_ARGS__);						\
 																		\
 	*OUT_ppInterface = (void*)pClass;											\
@@ -30,7 +30,7 @@ uint32_t __stdcall AddRef(IUnknown* This);
 uint32_t __stdcall Release(IUnknown* This);
 
 #define __COM_IUnknown 					  \
-(const IUnknown_vtbl){					  \
+{										  \
 	.QueryInterface = QueryInterface,	  \
 	.AddRef = AddRef,					  \
 	.Release = Release					  \

@@ -165,17 +165,22 @@
   <ItemGroup>
     <ClCompile Include="Allocator.c" />
     <ClCompile Include="Buffer.c" />
+    <ClCompile Include="Context.c" />
     <ClCompile Include="Device.c" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="InputAssembly.c" />
     <ClCompile Include="InputLayout.c" />
     <ClCompile Include="Texture.c" />
     <ClCompile Include="VGIFactory.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Shared\CInterfaces.h" />
+    <ClInclude Include="..\Shared\Veritas Math\VeritasMath.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Allocator.h" />
+    <ClInclude Include="Context.h" />
     <ClInclude Include="Device.h" />
+    <ClInclude Include="InputAssembly.h" />
     <ClInclude Include="InputLayout.h" />
     <ClInclude Include="RuntimeClass.h" />
     <ClInclude Include="Texture.h" />

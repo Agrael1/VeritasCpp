@@ -1,9 +1,10 @@
 #include "Device.h"
+#include "Context.h"
 
-HRESULT __stdcall VFCreateDevice(IVDevice** _out_device, struct IVContext** _out_context)
+__declspec(dllexport) HRESULT __stdcall VFCreateDevice(IVDevice** _out_device, struct IVContext** _out_context)
 {
 	MakeAndInitialize(_out_device, VGraphicsDevice);
-	//RETURN_IF_FAILED(wrl::MakeAndInitialize<VContext>(_out_context));
+	MakeAndInitialize(_out_context, VContext);
 
 	return S_OK;
 }

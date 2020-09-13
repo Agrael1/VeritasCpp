@@ -1,0 +1,198 @@
+import "oaidl.idl";
+import "ocidl.idl";
+
+typedef unsigned uint32_t;
+typedef int int32_t;
+
+typedef enum VBIND_FLAG
+{
+	VERTEX_BUFFERx1L,
+	INDEX_BUFFERx2L,
+	CONSTANT_BUFFERx4L,
+	SHADER_RESOURCEx8L,
+	STREAM_OUTPUTx10L,
+	RENDER_TARGETx20L,
+	DEPTH_STENCILx40L,
+	UNORDERED_ACCESSx80L,
+	DECODERx200L,
+	VIDEO_ENCODERx400L
+}VBIND_FLAG;
+typedef enum VFORMAT
+{
+	FORMAT_NONE,
+	FORMAT_UINT16 = 2,
+	FORMAT_UINT32 = 4,
+	FORMAT_R32G32B32A32_FLOAT,
+	FORMAT_R32G32B32_FLOAT,
+	FORMAT_R32G32_FLOAT,
+	FORMAT_R32_FLOAT
+}VFORMAT;
+typedef enum VPRIMITIVE_TOPOLOGY
+{
+	UNDEFINED,
+	POINTLIST = 1,
+	LINELIST = 2,
+	LINESTRIP = 3,
+	TRIANGLELIST = 4,
+	TRIANGLESTRIP = 5,
+}VPRIMITIVE_TOPOLOGY;
+typedef enum VPIXEL_FORMAT
+{
+	Indexedx00010000 // Indexes into a palette
+	, GDIx00020000 // Is a GDI-supported format
+	, Alphax00040000 // Has an alpha component
+	, PAlphax00080000 // Pre-multiplied alpha
+	, Extendedx00100000 // Extended color 16 bits/channel
+	, Canonicalx00200000
+
+	, Undefined
+	, DontCare
+}VPIXEL_FORMAT;
+
+typedef struct VBUFFER_DESC
+{
+	uint32_t        ByteWidth;
+	uint32_t        BindFlags;
+	uint32_t        StructureByteStride;
+	uint32_t		Reserved;
+} VBUFFER_DESC;
+typedef struct VINPUT_ELEMENT
+{
+	VFORMAT Format;
+	uint32_t InputSlot;
+	uint32_t AlignedByteOffset;
+}VINPUT_ELEMENT;
+typedef struct VTEXTURE_DESC
+{
+	uint32_t Width;
+	uint32_t Height;
+	VPIXEL_FORMAT PixelFormat;
+	uint32_t BindFlags;
+}VTEXTURE_DESC;
+
+#define MaxRenderTargets 2u
+#define MaxViewPorts 2u
+#define MaxBuffers 4u
+
+typedef struct VVIEWPORT_DESC
+{
+	uint32_t Width;
+	uint32_t Height;
+	uint32_t TopLeftX;
+	uint32_t TopLeftY;
+}VVIEWPORT_DESC;
+typedef struct VRTV_DESC
+{
+	uint32_t Width;
+	uint32_t Height;
+	uint32_t Stride;
+	VPIXEL_FORMAT PixelFormat;
+	unsigned __int3264 Scan0;
+	unsigned __int3264 Reserved;
+}VRTV_DESC, VDSV_DESC;
+
+typedef struct VSWAP_CHAIN_DESC
+{
+	uint32_t Width;
+	uint32_t Height;
+	uint32_t BufferCount;
+	unsigned __int3264 OutputWindow;
+	int32_t Windowed;
+}VSWAP_CHAIN_DESC;
+typedef struct VMAPPED_SUBRESOURCE
+{
+	unsigned __int3264 pData;
+	int32_t RowPitch;
+	int32_t DepthPitch;
+}VMAPPED_SUBRESOURCE;
+
+[
+	uuid(979E8BE5-01F7-4264-99D1-7517ACD6B138),
+	version(1.0)
+]
+interface IVBuffer : IUnknown
+{
+	HRESULT GetDesc([out] VBUFFER_DESC * _out_Desc);
+};
+
+[
+	uuid(6A4326ED-4D1D-40EA-AC33-F0CE0C74FA13),
+	version(1.0)
+]
+interface IVInputLayout : IUnknown
+{
+};
+
+[
+	uuid(71FBFB13-F224-47A4-853F-3A088B95D552),
+	version(1.0)
+]
+interface IVTexture : IUnknown
+{
+	HRESULT GetDesc([out]VTEXTURE_DESC * _out_desc);
+};
+
+
+[
+	uuid(238B3FF9-0BCB-4706-9237-E4632DA5E5C9),
+	version(1.0)
+]
+interface IVShader : IUnknown
+{
+	HRESULT UpdateConstants([in, max_is(4)]unsigned __int3264 const* constants);
+	HRESULT Invoke(const unsigned __int3264 _in_data, unsigned __int3264 _out_data);
+	HRESULT GetMonotonicSize(uint32_t* _out_vsize);
+};
+
+[
+	uuid(0085FC95-F47C-47A2-99CE-A92E13471C05),
+	version(1.0)
+]
+interface IVDevice : IUnknown
+{
+	HRESULT CreateBuffer([in] const VBUFFER_DESC * desc,[out]IVBuffer * *_out_Bufptr, const unsigned __int3264 initialData);
+	HRESULT CreateTexture2D([in]const VTEXTURE_DESC* desc, [out]IVTexture** _out_texptr, const unsigned __int3264 initialData);
+	HRESULT CreateRenderTargetView([in]IVTexture* resource, [out] VRTV_DESC* _out_rtv);
+	HRESULT CreateDepthStencilView([in]IVTexture* resource, [out] VDSV_DESC* _out_rtv);
+	HRESULT CreateInputLayout(const VINPUT_ELEMENT* pInputElementDescs, uint32_t NumElements,
+		const unsigned __int3264 pShaderBytecodeWithInputSignature, uint32_t BytecodeLength, [out]IVInputLayout** _out_InputLayout);
+};
+
+
+[
+	uuid(2CBC26A3-8408-4EF8-8B77-54CD55178D6F),
+	version(1.0)
+]
+interface IVContext : IUnknown
+{
+	HRESULT IASetPrimitiveTopology([in] VPRIMITIVE_TOPOLOGY Topology);
+	HRESULT IASetVertexBuffers([in]uint32_t StartSlot, [in]uint32_t NumBuffers, IVBuffer* const* ppVertexBuffers, const uint32_t* pStrides, const uint32_t* pOffsets);
+	HRESULT IASetIndexBuffer(IVBuffer* indexBuffer, VFORMAT format, uint32_t offsetBytes);
+	HRESULT IASetInputLayout(IVInputLayout* pInputLayout);
+	HRESULT VSSetShader(IVShader* pVertexShader);
+	HRESULT VSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers);
+	HRESULT PSSetShader(IVShader* pVertexShader);
+	HRESULT PSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers);
+	HRESULT RSSetViewport(uint32_t numVPs, const VVIEWPORT_DESC* pVP);
+	HRESULT OMSetRenderTargets(uint32_t numViews, const VRTV_DESC* const _arr_RTVs);
+	HRESULT OMSetDepthStencil(const VDSV_DESC* DSV);
+
+	HRESULT ClearRenderTarget(VRTV_DESC* rtv, uint32_t col);
+	HRESULT ClearDepthStencil(VDSV_DESC* dsv, float value);
+	HRESULT Map(IVBuffer* pResource, VMAPPED_SUBRESOURCE* _out_pMappedResource);
+	HRESULT Unmap(IVBuffer* pResource);
+
+	HRESULT DrawIndexed(uint32_t nofVertices);
+	HRESULT Draw(uint32_t nofVertices);
+};
+
+
+[
+	uuid(33B6E20B-3C6F-412A-AB6A-42580B911D2B),
+	version(1.0)
+]
+interface IVSwapChain : IUnknown
+{
+	HRESULT Present();
+	HRESULT GetRenderTarget(uint32_t number, VRTV_DESC* _out_buf);
+};

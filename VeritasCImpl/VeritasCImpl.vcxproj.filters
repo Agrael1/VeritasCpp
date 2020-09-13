@@ -45,6 +45,12 @@
     <ClCompile Include="InputLayout.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="Context.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="InputAssembly.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Buffer.h">
@@ -70,6 +76,15 @@
     </ClInclude>
     <ClInclude Include="InputLayout.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Context.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="InputAssembly.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Veritas Math\VeritasMath.h">
+      <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

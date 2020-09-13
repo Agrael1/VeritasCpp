@@ -21,5 +21,5 @@ extern HRESULT RuntimeClassInitialize();\
 extern void RuntimeClassDestroy(c_class* This);\
 struct c_class
 
-#define VirtualTable(Interf) static const __rcat3(Interf,_,vtbl) vfptr =
+#define VirtualTable(Interf) static const __rcat2(Interf,Vtbl) vfptr =
 #define ENDCLASSDESC const void* const __rcat2(__,__rcat3(c_class,_,vftbl)) = &vfptr;
