@@ -3,7 +3,7 @@
 
 HRESULT RuntimeClassInitialize(VInputLayout* This, const VINPUT_ELEMENT* in_descs, uint32_t NumElements)
 {
-	if (in_descs) memcpy_s(This->il, NumElements * sizeof(VINPUT_ELEMENT), in_descs, NumElements * sizeof(VINPUT_ELEMENT));
+	if (in_descs) memcpy_s(This->il, 16 * sizeof(VINPUT_ELEMENT), in_descs, NumElements * sizeof(VINPUT_ELEMENT));
 	This->monotonicSize = NumElements;
 	return S_OK;
 }

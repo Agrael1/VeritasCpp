@@ -7,20 +7,15 @@
 class
 {
     COM_INTERFACE(IVContext);
-    /*HRESULT __stdcall IASetPrimitiveTopology(VPRIMITIVE_TOPOLOGY Topology)override;
-    HRESULT __stdcall IASetVertexBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppVertexBuffers, const uint32_t* pStrides, const uint32_t* pOffsets)override;
-    HRESULT __stdcall IASetIndexBuffer(IVBuffer* indexBuffer, VFORMAT format, uint32_t offsetBytes)override;
-    HRESULT __stdcall IASetInputLayout(IVInputLayout* pInputLayout)override;
+    /*
     HRESULT __stdcall VSSetShader(IVShader* pVertexShader)override;
     HRESULT __stdcall VSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers)override;
     HRESULT __stdcall PSSetShader(IVShader* pPixelShader)override;
     HRESULT __stdcall PSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers)override;
     HRESULT __stdcall RSSetViewport(uint32_t numVPs, const VVIEWPORT_DESC* in)override;
     HRESULT __stdcall OMSetRenderTargets(uint32_t numViews, const VRTV_DESC* const _arr_RTVs)override;
-    HRESULT __stdcall OMSetDepthStencil(const VDSV_DESC* DSV)override;
+    override;
 
-    HRESULT __stdcall ClearRenderTarget(VRTV_DESC* rtv, uint32_t col)override;
-    HRESULT __stdcall ClearDepthStencil(VDSV_DESC* dsv, float value)override;
     HRESULT __stdcall Map(IVBuffer* pResource, VMAPPED_SUBRESOURCE* _out_pMappedResource)override;
     HRESULT __stdcall Unmap(IVBuffer* pResource)override;
 
@@ -52,14 +47,12 @@ private:
     wrl::ComPtr<IVShader> PSPixelShader;
     std::array<wrl::ComPtr<VBuffer>, 4> VSConstantBuffers;
     std::array<wrl::ComPtr<VBuffer>, 4> PSConstantBuffers;
-    { 0 };
-
-    
-    VDSV_DESC OMRenderDepth{ 0 };*/
+    */
     VMFLOAT4 RSVPScale;
     VMFLOAT4 RSVPOffset;
     VVIEWPORT_DESC RSViewPort;
     VRTV_DESC OMRenderTargets[MaxRenderTargets];
+    VDSV_DESC OMRenderDepth;
     InputAssembler IAStage;
 };
 
