@@ -1,6 +1,5 @@
 #pragma once
 #include "InputAssembly.h"
-#include "Veritas Math/VeritasMath.h"
 
 #define c_class VContext
 

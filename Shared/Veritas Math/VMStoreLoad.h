@@ -8,6 +8,11 @@
 #include "VMathTypes.h"
 #include "MathConstants.h"
 
+inline VMVECTOR __vectorcall VMLoadFloat(const float* pSource)
+{
+	assert(pSource);
+	return _mm_load_ss(pSource);
+}
 
 // Load Float2 into VMVECTOR
 inline VMVECTOR __vectorcall VMLoadFloat2
@@ -68,6 +73,16 @@ inline VMVECTOR __vectorcall VMLoadFloat4A
 	assert(pSource);
 	assert(((uintptr_t)pSource & 0xF) == 0);
 	return _mm_load_ps(&pSource->x);
+}
+
+// Load Float4A into VMVECTOR
+inline VMVECTOR __vectorcall VMLoadFloat4
+(
+	const VMFLOAT4* pSource
+)
+{
+	assert(pSource);
+	return _mm_loadu_ps(&pSource->x);
 }
 
 inline VMMATRIX __vectorcall VMLoadFloat4x4

@@ -86,5 +86,8 @@
     <ClInclude Include="..\Shared\Veritas Math\VeritasMath.h">
       <Filter>Shared</Filter>
     </ClInclude>
+    <ClInclude Include="..\Shared\CommonTypes.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 #include "Buffer.h"
 
+
 HRESULT VBuffer::RuntimeClassInitialize(const VBUFFER_DESC* in_desc, const void* _in_data)
 {
     desc = *in_desc;

@@ -175,6 +175,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Shared\CInterfaces.h" />
+    <ClInclude Include="..\Shared\CommonTypes.h" />
     <ClInclude Include="..\Shared\Veritas Math\VeritasMath.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Allocator.h" />
