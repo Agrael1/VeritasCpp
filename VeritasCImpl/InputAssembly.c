@@ -1,10 +1,11 @@
 #include "InputAssembly.h"
 
+extern inline void ComPtrRelease(IUnknown* This);
+
 HRESULT __stdcall InputASetPrimitiveTopology(InputAssembler* This, VPRIMITIVE_TOPOLOGY Topology)
 {
 	return E_NOTIMPL;
 }
-
 
 HRESULT __stdcall InputASetVertexBuffers(InputAssembler* This, uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppVertexBuffers, const uint32_t* pStrides, const uint32_t* pOffsets)
 {
@@ -18,10 +19,8 @@ HRESULT __stdcall InputASetVertexBuffers(InputAssembler* This, uint32_t StartSlo
 	while (Start != End)
 	{
 		IUnknown** Buffer = (IUnknown**)Start;
-		if (*Buffer)
-		{
-			(*Buffer)->method->Release(*Buffer);
-		}
+        ComPtrRelease(*Buffer);
+
 		*Start++ = (VBuffer*)*ppVertexBuffers++;
 		if((*Buffer))
 			(*Buffer)->method->AddRef(*Buffer);
@@ -57,18 +56,18 @@ HRESULT __stdcall InputASetInputLayout(InputAssembler* This, IVInputLayout* pInp
 	return S_OK;
 }
 
-uint32_t GetMonotonicSize(const InputAssembler* This)
+uint32_t InputAGetMonotonicSize(const InputAssembler* This)
 {
     return (uint32_t)This->IAInputLayout->monotonicSize;
 }
-VMVertex* InputAMakeVertices(const InputAssembler* This, uint32_t NumVertices)
+void InputAMakeVertices(const InputAssembler* This, uint32_t NumVertices, VMVertex* _out_VArray)
 {
     assert(NumVertices % 3 == 0);
-    VMVertex* out = calloc(NumVertices, sizeof(VMVertex));
+    VMVertex* out = _out_VArray;
 
     VMVertex* OutStart = out;
     VMVertex* OutEnd = OutStart + NumVertices;
-    uint32_t MSize = GetMonotonicSize(This);
+    uint32_t MSize = InputAGetMonotonicSize(This);
     unsigned vtx = 0;
 
     while (OutStart != OutEnd)
@@ -99,18 +98,17 @@ VMVertex* InputAMakeVertices(const InputAssembler* This, uint32_t NumVertices)
         }
         (*OutStart).SV_VertexID = vtx++;
     }
-    return out;
 }
-VMVertex* MakeVerticesIndexed(const InputAssembler* This, uint32_t NumIndices)
+void InputAMakeVerticesIndexed(const InputAssembler* This, uint32_t NumIndices, VMVertex* _out_VArray)
 {
     assert(NumIndices % 3 == 0);
     assert(This->IAIndexBuffer);
-	VMVertex* out = calloc(NumIndices, sizeof(VMVertex));
+	VMVertex* out = _out_VArray;
 	uint8_t* indexPtr = This->IAIndexBuffer->data;
 
 	VMVertex* OutStart = out;
 	VMVertex* OutEnd = OutStart + NumIndices;
-	uint32_t MSize = GetMonotonicSize(This);
+	uint32_t MSize = InputAGetMonotonicSize(This);
 
     while (OutStart != OutEnd)
     {
@@ -143,6 +141,16 @@ VMVertex* MakeVerticesIndexed(const InputAssembler* This, uint32_t NumIndices)
         }
         OutStart++;
     }
-    return out;
+}
+
+void InputADestroy(InputAssembler* This)
+{
+    ComPtrRelease(This->IAIndexBuffer);
+    ComPtrRelease(This->IAInputLayout);
+    for (uint32_t i = 0; i < MaxBuffers; i++)
+    {
+        ComPtrRelease(This->IAVertexBuffers[i]);
+    }
+    
 }
 

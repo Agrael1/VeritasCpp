@@ -7,16 +7,6 @@ class
 {
     COM_INTERFACE(IVContext);
     /*
-    HRESULT __stdcall VSSetShader(IVShader* pVertexShader)override;
-    HRESULT __stdcall VSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers)override;
-    HRESULT __stdcall PSSetShader(IVShader* pPixelShader)override;
-    HRESULT __stdcall PSSetConstantBuffers(uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers)override;
-    HRESULT __stdcall RSSetViewport(uint32_t numVPs, const VVIEWPORT_DESC* in)override;
-    HRESULT __stdcall OMSetRenderTargets(uint32_t numViews, const VRTV_DESC* const _arr_RTVs)override;
-    override;
-
-    HRESULT __stdcall Map(IVBuffer* pResource, VMAPPED_SUBRESOURCE* _out_pMappedResource)override;
-    HRESULT __stdcall Unmap(IVBuffer* pResource)override;
 
     void __stdcall Draw(uint32_t nofVertices)override
     {
@@ -40,13 +30,12 @@ private:
     std::pair<bool, float> DepthTest(uint32_t width_in, size_t PremulIndex, float z);
 private:
 
-
-
-    wrl::ComPtr<IVShader> VSVertexShader;
-    wrl::ComPtr<IVShader> PSPixelShader;
-    std::array<wrl::ComPtr<VBuffer>, 4> VSConstantBuffers;
-    std::array<wrl::ComPtr<VBuffer>, 4> PSConstantBuffers;
     */
+
+    /* COMPtr */ IVShader* VSVertexShader;
+    /* COMPtr */ IVShader* PSPixelShader;
+    /* ComPtr */ VBuffer*  VSConstantBuffers[MaxBuffers];
+    /* ComPtr */ VBuffer*  PSConstantBuffers[MaxBuffers];
     VMFLOAT4 RSVPScale;
     VMFLOAT4 RSVPOffset;
     VVIEWPORT_DESC RSViewPort;
