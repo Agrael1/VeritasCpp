@@ -212,6 +212,17 @@ inline VMVECTOR __vectorcall VMVector3TransformNormal
 }
 
 // Compares 2 vectors <=
+inline unsigned char __vectorcall VMVector3Less
+(
+	FVMVECTOR V1,
+	FVMVECTOR V2
+)
+{
+	VMVECTOR vTemp = _mm_cmplt_ps(V1, V2);
+	return (((_mm_movemask_ps(vTemp) & 7) == 7) != 0);
+}
+
+// Compares 2 vectors <=
 inline unsigned char __vectorcall VMVector3LessOrEqual
 (
 	FVMVECTOR V1,

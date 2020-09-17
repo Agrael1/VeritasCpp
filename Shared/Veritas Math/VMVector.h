@@ -92,6 +92,15 @@ inline VMVECTOR __vectorcall VMVectorSplatW
 	return XM_PERMUTE_PS(V, _MM_SHUFFLE(3, 3, 3, 3));
 }
 
+inline VMVECTOR __vectorcall VMVectorMergeZW
+(
+	FVMVECTOR V1,
+	FVMVECTOR V2
+)
+{
+	return _mm_unpackhi_ps(V1, V2);
+}
+
 // Divide Vector by another
 inline VMVECTOR __vectorcall VMVectorDivide
 (
@@ -165,6 +174,12 @@ inline VMVECTOR __vectorcall VMVectorSet
 )
 {
 	return _mm_set_ps(w, z, y, x);
+}
+
+// Initialize a vector with a replicated floating point value
+inline VMVECTOR __vectorcall VMVectorReplicate(float Value)
+{
+	return _mm_set_ps1(Value);
 }
 
 // Multiply one vec by another
@@ -357,6 +372,11 @@ inline VMVECTOR __vectorcall VMVectorReciprocalEst
 )
 {
 	return _mm_rcp_ps(V);
+}
+
+inline VMVECTOR __vectorcall VMVectorReciprocal(FVMVECTOR V)
+{
+	return _mm_div_ps(g_XMOne.v, V);
 }
 
 // Dot Product between 2 4-component vectors

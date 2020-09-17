@@ -1,5 +1,6 @@
 #pragma once
 #include "InputAssembly.h"
+#include "Rasterizer.h"
 
 #define c_class VContext
 
@@ -7,12 +8,6 @@ class
 {
     COM_INTERFACE(IVContext);
     /*
-
-    void __stdcall Draw(uint32_t nofVertices)override
-    {
-
-    }
-    void __stdcall DrawIndexed(uint32_t nofVertices)override;
 private:
     void AssembleTriangles(std::vector<XMVSOut>& VSOut);
     void RSClipCullTriangles(XMVSOut& v0, XMVSOut& v1, XMVSOut& v2, uint32_t vosize);
@@ -33,15 +28,12 @@ private:
     */
 
     /* COMPtr */ IVShader* VSVertexShader;
-    /* COMPtr */ IVShader* PSPixelShader;
     /* ComPtr */ VBuffer*  VSConstantBuffers[MaxBuffers];
-    /* ComPtr */ VBuffer*  PSConstantBuffers[MaxBuffers];
-    VMFLOAT4 RSVPScale;
-    VMFLOAT4 RSVPOffset;
-    VVIEWPORT_DESC RSViewPort;
+    
     VRTV_DESC OMRenderTargets[MaxRenderTargets];
     VDSV_DESC OMRenderDepth;
     InputAssembler IAStage;
+    Rasterizer RSStage;
 };
 
 #if !defined(CONTEXT_IMPL)

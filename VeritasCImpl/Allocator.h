@@ -1,5 +1,6 @@
 #pragma once
 #include "RuntimeClass.h"
+#include <VA_OPT.h>
 #include <malloc.h>
 #include <assert.h>
 
@@ -19,10 +20,10 @@ do																		\
 	struct What* pClass = (struct What*)((unsigned char*)p + sizeof(Allocator));						\
 																		\
 	pClass->__internal_refcount = 1;									\
-	pClass->vfptr.method = __rcat2(__,__rcat3(What,_,vftbl));												\
-	__rcat3(What, _, ctor)(pClass, __VA_ARGS__);						\
+	pClass->vfptr.method = __rcat2(__,__rcat3(What,_,vftbl));			\
+	__rcat3(What, _, ctor)(pClass IFN(__VA_ARGS__)(,__VA_ARGS__) );		\
 																		\
-	*OUT_ppInterface = (void*)pClass;											\
+	*OUT_ppInterface = (void*)pClass;									\
 }while(0)
 
 HRESULT __stdcall QueryInterface(IUnknown* This, void* riid, void** ppvObject);

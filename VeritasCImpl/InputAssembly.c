@@ -1,4 +1,5 @@
 #include "InputAssembly.h"
+#include <limits.h>
 
 extern inline void ComPtrRelease(IUnknown* This);
 
@@ -81,16 +82,16 @@ void InputAMakeVertices(const InputAssembler* This, uint32_t NumVertices, VMVert
             switch (x->Format)
             {
             case FORMAT_R32G32B32A32_FLOAT:
-                (*OutStart).data[i] = VMLoadFloat4((VMFLOAT4*)(data));
+                (*OutStart).data[i].v = VMLoadFloat4((VMFLOAT4*)(data));
                 break;
             case FORMAT_R32G32B32_FLOAT:
-                (*OutStart).data[i] = VMLoadFloat3((VMFLOAT3*)(data));
+                (*OutStart).data[i].v = VMLoadFloat3((VMFLOAT3*)(data));
                 break;
             case FORMAT_R32G32_FLOAT:
-                (*OutStart).data[i] = VMLoadFloat2((VMFLOAT2*)(data));
+                (*OutStart).data[i].v = VMLoadFloat2((VMFLOAT2*)(data));
                 break;
             case FORMAT_R32_FLOAT:
-                (*OutStart).data[i] = VMLoadFloat((float*)(data));
+                (*OutStart).data[i].v = VMLoadFloat((float*)(data));
                 break;
             default:
                 break;
@@ -124,16 +125,16 @@ void InputAMakeVerticesIndexed(const InputAssembler* This, uint32_t NumIndices, 
             switch (x->Format)
             {
             case FORMAT_R32G32B32A32_FLOAT:
-				(*OutStart).data[i] = VMLoadFloat4((VMFLOAT4*)(data));
+				(*OutStart).data[i].v = VMLoadFloat4((VMFLOAT4*)(data));
                 break;
             case FORMAT_R32G32B32_FLOAT:
-				(*OutStart).data[i] = VMLoadFloat3((VMFLOAT3*)(data));
+				(*OutStart).data[i].v = VMLoadFloat3((VMFLOAT3*)(data));
                 break;
             case FORMAT_R32G32_FLOAT:
-				(*OutStart).data[i] = VMLoadFloat2((VMFLOAT2*)(data));
+				(*OutStart).data[i].v = VMLoadFloat2((VMFLOAT2*)(data));
                 break;
             case FORMAT_R32_FLOAT:
-				(*OutStart).data[i] = VMLoadFloat((float*)(data));
+				(*OutStart).data[i].v = VMLoadFloat((float*)(data));
                 break;
             default:
                 break;

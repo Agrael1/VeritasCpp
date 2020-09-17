@@ -51,6 +51,9 @@
     <ClCompile Include="InputAssembly.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="Rasterizer.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Buffer.h">
@@ -87,6 +90,12 @@
       <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\Shared\CommonTypes.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Rasterizer.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\VA_OPT.h">
       <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>

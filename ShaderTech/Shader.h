@@ -14,7 +14,7 @@ struct DumbVertex
 struct DumbVSOut
 {
 	dx::XMVECTOR attributes[16];
-	uint32_t SV_PosCoord;
+	uint32_t reserved;			//not in use
 };
 struct DumbPSOut
 {
@@ -76,25 +76,28 @@ public:
 		RQVSOutT x = std::apply(&T::main,
 			std::tuple_cat(std::make_tuple(reinterpret_cast<T*>(this)), as_tuple(args_t<decltype(&T::main)>{}, std::span(in.data), in.SV_VertexID)));
 
+		std::copy((std::byte*)&x, (std::byte*)&x + sizeof(x), (std::byte*)&out.attributes);
+	}
+	constexpr void __stdcall GetMonotonicSize(uint32_t* _out_vsize)override
+	{
+		using RQVSOutT = out_t<decltype(&T::main)>;
+		*_out_vsize = sizeof(RQVSOutT) / 16;
+	}
+	constexpr void __stdcall GetPositionIndex(uint32_t* _out_poscoord)override
+	{
+		using RQVSOutT = out_t<decltype(&T::main)>;
 
 		if constexpr (sizeof(RQVSOutT) == sizeof(float4A))
 		{
-			out.SV_PosCoord = 0;
-			std::copy((std::byte*)&x, (std::byte*)&x + sizeof(x), (std::byte*)&out.attributes);
+			*_out_poscoord = 0;
 		}
 		else
 		{
 			static_assert(alignof(decltype(RQVSOutT::SV_Position)) == alignof(float4A));
 			static_assert(sizeof(RQVSOutT::SV_Position) == sizeof(float4A));
 
-			out.SV_PosCoord = offsetof(RQVSOutT, SV_Position) / 16;
-			std::copy((std::byte*)&x, (std::byte*)&x + sizeof(x), (std::byte*)&out.attributes);
+			*_out_poscoord = offsetof(RQVSOutT, SV_Position) / 16;
 		}
-	}
-	void __stdcall GetMonotonicSize(uint32_t* _out_vsize)override
-	{
-		using RQVSOutT = out_t<decltype(&T::main)>;
-		*_out_vsize = sizeof(RQVSOutT) / 16;
 	}
 };
 
@@ -121,5 +124,8 @@ public:
 	virtual void __stdcall GetMonotonicSize(uint32_t* _out_vsize)override
 	{
 		*_out_vsize = 1; //hardcoded for now
+	}
+	constexpr void __stdcall GetPositionIndex(uint32_t* _out_poscoord)override
+	{
 	}
 };

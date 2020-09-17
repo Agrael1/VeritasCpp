@@ -115,6 +115,15 @@ inline VMMATRIX __vectorcall VMLoadFloat4x4A
 }
 
 
+inline void __vectorcall VMStoreFloat
+(
+	float* pDestination, 
+	FVMVECTOR  V
+)
+{
+	assert(pDestination);
+	_mm_store_ss(pDestination, V);
+}
 
 inline void __vectorcall VMStoreFloat2
 (

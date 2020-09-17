@@ -1,6 +1,7 @@
 #define CONTEXT_IMPL
 #include "Context.h"
 
+
 HRESULT __stdcall IASetPrimitiveTopology(VContext* This, VPRIMITIVE_TOPOLOGY Topology)
 {
 	return InputASetPrimitiveTopology(&This->IAStage, Topology);
@@ -31,14 +32,7 @@ HRESULT __stdcall VSSetShader(VContext* This, IVShader* pVertexShader)
 }
 HRESULT __stdcall PSSetShader(VContext* This, IVShader* pPixelShader)
 {
-	ComPtrRelease(This->PSPixelShader);
-
-	This->PSPixelShader = pPixelShader;
-	if (This->PSPixelShader)
-	{
-		This->PSPixelShader->method->_unknwn.AddRef((IUnknown*)This->PSPixelShader);
-	}
-	return S_OK;
+	return RasterSetShader(&This->RSStage, pPixelShader);
 }
 
 HRESULT __stdcall VSSetConstantBuffers(VContext* This, uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers)
@@ -62,22 +56,7 @@ HRESULT __stdcall VSSetConstantBuffers(VContext* This, uint32_t StartSlot, uint3
 }
 HRESULT __stdcall PSSetConstantBuffers(VContext* This, uint32_t StartSlot, uint32_t NumBuffers, IVBuffer* const* ppConstantBuffers)
 {
-	if (StartSlot + NumBuffers > MaxBuffers) return E_BOUNDS;
-	VBuffer** Start = This->PSConstantBuffers + StartSlot;
-	VBuffer** End = Start + NumBuffers;
-
-	while (Start != End)
-	{
-		IUnknown** Buffer = (IUnknown**)Start;
-		ComPtrRelease(*Buffer);
-
-		*Start++ = (VBuffer*)*ppConstantBuffers++;
-		if ((*Buffer))
-		{
-			(*Buffer)->method->AddRef(*Buffer);
-		}
-	}
-	return S_OK;
+	return RasterSetConstantBuffers(&This->RSStage, StartSlot, NumBuffers, ppConstantBuffers);
 }
 
 HRESULT __stdcall OMSetRenderTargets(VContext* This, uint32_t numViews, const VRTV_DESC* const _arr_RTVs)
@@ -94,12 +73,7 @@ HRESULT __stdcall OMSetDepthStencil(VContext* This, const VDSV_DESC* DSV)
 }
 HRESULT __stdcall RSSetViewport(VContext* This, uint32_t numVPs, const VVIEWPORT_DESC* in)
 {
-	This->RSViewPort = *in;
-	const float HalfViewportWidth = in->Width * 0.5f;
-	const float HalfViewportHeight = in->Height * 0.5f;
-	VMStoreFloat4(&This->RSVPScale, VMVectorSet(HalfViewportWidth, -HalfViewportHeight, 1.0f, 0.0f));
-	VMStoreFloat4(&This->RSVPOffset, VMVectorSet(HalfViewportWidth, HalfViewportHeight, 1.0f, 0.0f));
-	return S_OK;
+	return RasterSetViewPort(&This->RSStage, numVPs, in);
 }
 
 HRESULT __stdcall ClearRenderTarget(VContext* This, VRTV_DESC* rtv, uint32_t col)
@@ -138,8 +112,9 @@ HRESULT __stdcall Unmap(VContext* This, IVBuffer* pResource)
 	return E_NOTIMPL;
 }
 
-void __stdcall DrawIndexed(VContext* This, uint32_t nofVertices)
+HRESULT __stdcall DrawIndexed(VContext* This, uint32_t nofVertices)
 {
+	if (!This->VSVertexShader) return E_PENDING;
 	void* x[MaxBuffers] = {NULL};
 	for (size_t i = 0; i < 4; i++)
 	{
@@ -147,29 +122,35 @@ void __stdcall DrawIndexed(VContext* This, uint32_t nofVertices)
 	}
 	This->VSVertexShader->method->UpdateConstants(This->VSVertexShader, x);
 
-	for (size_t i = 0; i < 4; i++)
+	if (This->RSStage.PSPixelShader)
 	{
-		x[i] = This->PSConstantBuffers[i] ? This->PSConstantBuffers[i]->data : nullptr;
+		for (size_t i = 0; i < 4; i++)
+		{
+			x[i] = This->RSStage.PSConstantBuffers[i] ? This->RSStage.PSConstantBuffers[i]->data : nullptr;
+		}
+		This->RSStage.PSPixelShader->method->UpdateConstants(This->RSStage.PSPixelShader, x);
 	}
-	This->PSPixelShader->method->UpdateConstants(This->VSVertexShader, x);
 
 
-	VMVertex* verts = malloc(nofVertices * sizeof(VMVertex));
+	VMVertex* verts = _mm_malloc(nofVertices * sizeof(VMVertex), _Alignof(VMVertex));
 	InputAMakeVerticesIndexed(&This->IAStage, nofVertices, verts);
 
 	for (uint32_t i = 0; i < nofVertices; i++)
 	{
-		This->VSVertexShader->method->Invoke(This->VSVertexShader, &verts, &verts);
+		This->VSVertexShader->method->Invoke(This->VSVertexShader, verts + i, verts + i);
 	}
 
 	uint32_t vosize = 0;
+	uint32_t PosCoord = 0;
 	This->VSVertexShader->method->GetMonotonicSize(This->VSVertexShader, &vosize);
-	//for (size_t it = 0u; it < nofVertices; it += 3)
-	//{
-	//	RSClipCullTriangles(verts[it], verts[it + 1], verts[it + 2], vosize);
-	//}
+	This->VSVertexShader->method->GetPositionIndex(This->VSVertexShader, &PosCoord);
 
-	free(verts);
+	for (size_t it = 0u; it < nofVertices; it += 3)
+	{
+		RasterizeTriangle(&This->RSStage, verts + it, PosCoord, vosize);
+	}
+
+	_mm_free(verts);
 }
 
 HRESULT RuntimeClassInitialize(VContext* This)
@@ -179,11 +160,11 @@ HRESULT RuntimeClassInitialize(VContext* This)
 void RuntimeClassDestroy(VContext* This)
 {
 	InputADestroy(&This->IAStage);
-	ComPtrRelease(This->PSPixelShader);
+	ComPtrRelease(This->RSStage.PSPixelShader);
 	ComPtrRelease(This->VSVertexShader);
 	for (uint32_t i = 0; i < MaxBuffers; i++)
 	{
-		ComPtrRelease(This->PSConstantBuffers[i]);
+		ComPtrRelease(This->RSStage.PSConstantBuffers[i]);
 		ComPtrRelease(This->VSConstantBuffers[i]);
 	}
 
@@ -211,6 +192,8 @@ VirtualTable(IVContext)
 	.ClearDepthStencil = ClearDepthStencil,
 	.ClearRenderTarget = ClearRenderTarget,
 	.Map = Map,
-	.Unmap = Unmap
+	.Unmap = Unmap,
+
+	.DrawIndexed = DrawIndexed
 };
 ENDCLASSDESC

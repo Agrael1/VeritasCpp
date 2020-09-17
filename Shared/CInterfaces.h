@@ -69,7 +69,7 @@ typedef struct IVShaderVtbl
     IUnknownVtbl _unknwn;
     void(STDMETHODCALLTYPE* UpdateConstants)(
         IVShader* This,
-        /* [in] */ const void* constants);
+        /* [in] */ void* constants[MaxBuffers]);
 
     void(STDMETHODCALLTYPE* Invoke)(
         IVShader* This,
@@ -79,6 +79,10 @@ typedef struct IVShaderVtbl
     void(STDMETHODCALLTYPE* GetMonotonicSize)(
         IVShader* This,
         uint32_t* _out_vsize);
+
+    void(STDMETHODCALLTYPE* GetPositionIndex)(
+        IVShader* This,
+        uint32_t* _out_poscoord);
 }IVShaderVtbl;
 interface IVShader
 {
