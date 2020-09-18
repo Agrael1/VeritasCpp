@@ -84,6 +84,11 @@ typedef struct VTEXTURE_DESC
 	VPIXEL_FORMAT PixelFormat;
 	uint32_t BindFlags;
 }VTEXTURE_DESC;
+typedef struct ShaderPrivateData
+{
+	uint32_t VertexSize; //vertex size in blocks of 16 bytes
+	uint32_t PositionIndex;
+}ShaderPrivateData;
 
 #define MaxRenderTargets 2u
 #define MaxViewPorts 2u

@@ -63,12 +63,12 @@ HRESULT __stdcall OMSetRenderTargets(VContext* This, uint32_t numViews, const VR
 {
 	if (numViews > MaxRenderTargets) return E_INVALIDARG;
 	size_t sz = numViews * sizeof(VRTV_DESC);
-	memcpy_s(This->OMRenderTargets, MaxRenderTargets * sizeof(VRTV_DESC), _arr_RTVs, sz);
+	memcpy_s(This->RSStage.OMRenderTargets, MaxRenderTargets * sizeof(VRTV_DESC), _arr_RTVs, sz);
 	return S_OK;
 }
 HRESULT __stdcall OMSetDepthStencil(VContext* This, const VDSV_DESC* DSV)
 {
-	This->OMRenderDepth = *DSV;
+	This->RSStage.OMRenderDepth = *DSV;
 	return S_OK;
 }
 HRESULT __stdcall RSSetViewport(VContext* This, uint32_t numVPs, const VVIEWPORT_DESC* in)
@@ -140,14 +140,12 @@ HRESULT __stdcall DrawIndexed(VContext* This, uint32_t nofVertices)
 		This->VSVertexShader->method->Invoke(This->VSVertexShader, verts + i, verts + i);
 	}
 
-	uint32_t vosize = 0;
-	uint32_t PosCoord = 0;
-	This->VSVertexShader->method->GetMonotonicSize(This->VSVertexShader, &vosize);
-	This->VSVertexShader->method->GetPositionIndex(This->VSVertexShader, &PosCoord);
+	ShaderPrivateData pd;
+	This->VSVertexShader->method->GetShaderPrivateData(This->VSVertexShader, &pd);
 
 	for (size_t it = 0u; it < nofVertices; it += 3)
 	{
-		RasterizeTriangle(&This->RSStage, verts + it, PosCoord, vosize);
+		RasterizeTriangle(&This->RSStage, verts + it, pd);
 	}
 
 	_mm_free(verts);

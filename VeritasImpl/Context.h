@@ -20,14 +20,6 @@ struct XMVertex
 struct XMVSOut
 {
 public:
-    float4& Position()
-    {
-        return attributes[SV_PosCoord];
-    }
-    const float4& Position()const
-    {
-        return attributes[SV_PosCoord];
-    }
     void Scale(const float4& factor, uint32_t attrsize)
     {
         using namespace DirectX;
@@ -224,18 +216,18 @@ public:
     void __stdcall DrawIndexed(uint32_t nofVertices)override;
 private:
     void AssembleTriangles(std::vector<XMVSOut>& VSOut);
-    void RSClipCullTriangles(XMVSOut& v0, XMVSOut& v1, XMVSOut& v2, uint32_t vosize);
-    void RSPostProcessTriangle(XMVSOut& v0, XMVSOut& v1, XMVSOut& v2, uint32_t attrsize);
+    void RSClipCullTriangles(XMVSOut& v0, XMVSOut& v1, XMVSOut& v2, ShaderPrivateData pd);
+    void RSPostProcessTriangle(XMVSOut& v0, XMVSOut& v1, XMVSOut& v2, ShaderPrivateData pd);
 
-    void DrawTriangle(const XMVSOut& Vo0, const XMVSOut& Vo1, const XMVSOut& Vo2, uint32_t attrsize);
-    void DrawFlatTopTriangle(const XMVSOut& Vo0, const XMVSOut& Vo1, const XMVSOut& Vo2, uint32_t attrsize);
-    void DrawFlatBottomTriangle(const XMVSOut& Vo0, const XMVSOut& Vo1, const XMVSOut& Vo2, uint32_t attrsize);
+    void DrawTriangle(const XMVSOut& Vo0, const XMVSOut& Vo1, const XMVSOut& Vo2, ShaderPrivateData pd);
+    void DrawFlatTopTriangle(const XMVSOut& Vo0, const XMVSOut& Vo1, const XMVSOut& Vo2, ShaderPrivateData pd);
+    void DrawFlatBottomTriangle(const XMVSOut& Vo0, const XMVSOut& Vo1, const XMVSOut& Vo2, ShaderPrivateData pd);
 
     void DrawFlatTriangle(const XMVSOut& it0,
         const XMVSOut& it2,
         const XMVSOut& dv0,
         const XMVSOut& dv1,
-        XMVSOut& itEdge1, uint32_t attrsize);
+        XMVSOut& itEdge1, ShaderPrivateData pd);
     std::pair<bool, float> DepthTest(uint32_t width_in, size_t PremulIndex, float z);
 private:
     float4 RSVPScale;

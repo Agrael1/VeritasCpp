@@ -76,13 +76,9 @@ typedef struct IVShaderVtbl
         const void* _in_data,
         void* _out_data);
 
-    void(STDMETHODCALLTYPE* GetMonotonicSize)(
+    void(STDMETHODCALLTYPE* GetShaderPrivateData)(
         IVShader* This,
-        uint32_t* _out_vsize);
-
-    void(STDMETHODCALLTYPE* GetPositionIndex)(
-        IVShader* This,
-        uint32_t* _out_poscoord);
+        ShaderPrivateData* _out_pdata);
 }IVShaderVtbl;
 interface IVShader
 {

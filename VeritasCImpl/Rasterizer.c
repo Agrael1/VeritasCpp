@@ -1,5 +1,11 @@
 #include "Rasterizer.h"
+#include <stdatomic.h>
 
+typedef struct 
+{
+	int pass;
+	float zv;
+}DepthTest_t;
 
 HRESULT RasterSetViewPort(Rasterizer* This, uint32_t numVPs, const VVIEWPORT_DESC* in)
 {
@@ -43,29 +49,34 @@ HRESULT __stdcall RasterSetConstantBuffers(Rasterizer* This, uint32_t StartSlot,
 	return S_OK;
 }
 
-void Clip1V(VMVertex* v0, VMVertex* v1, VMVertex* v2, VMVertex _out[3], uint32_t idx, uint32_t voSize)
+void Clip1V(VMVertex* v0, VMVertex* v1, VMVertex* v2, VMVertex _out[3], ShaderPrivateData pd)
 {
+	uint32_t idx = pd.PositionIndex;
+
 	const float alphaA = (-v0->data[idx].f[2]) / (v1->data[idx].f[2] - v0->data[idx].f[2]);
 	const float alphaB = (-v0->data[idx].f[2]) / (v2->data[idx].f[2] - v0->data[idx].f[2]);
 	// interpolate to get second triangle
-	_out[1] = *v0 = VSOutInterpolate(v0, v1, alphaA, voSize);
-	_out[0] = VSOutInterpolate(v0, v2, alphaB, voSize);
+	_out[1] = *v0 = VSOutInterpolate(v0, v1, alphaA, pd.VertexSize);
+	_out[0] = VSOutInterpolate(v0, v2, alphaB, pd.VertexSize);
 	_out[2] = *v2;
 };
-void Clip2V(VMVertex* v0, VMVertex* v1, VMVertex* v2, uint32_t idx, uint32_t voSize)
+void Clip2V(VMVertex* v0, VMVertex* v1, VMVertex* v2, ShaderPrivateData pd)
 {
+	uint32_t idx = pd.PositionIndex;
 	// calculate alpha values for getting adjusted vertices
 	const float alpha0 = (-v0->data[idx].f[2]) / (v2->data[idx].f[2] - v0->data[idx].f[2]);
 	const float alpha1 = (-v1->data[idx].f[2]) / (v2->data[idx].f[2] - v1->data[idx].f[2]);
 	// interpolate to get v0a and v0b
 
-	*v0 = VSOutInterpolate(v0, v2, alpha0, voSize);
-	*v1 = VSOutInterpolate(v1, v2, alpha1, voSize);
+	*v0 = VSOutInterpolate(v0, v2, alpha0, pd.VertexSize);
+	*v1 = VSOutInterpolate(v1, v2, alpha1, pd.VertexSize);
 };
-int RasterClipCullTriangle(VMVertex* TriangleStart, VMVertex _out_opt_AddTri[3], uint32_t idx, uint32_t voSize)
+int RasterClipCullTriangle(VMVertex* TriangleStart, VMVertex _out_opt_AddTri[3], ShaderPrivateData pd)
 {
 	const XMVECTORU32 preor = {0x80000000, 0x80000000, 0x00000000, 0x00000000};
 	const XMVECTORU32 preand = {0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF};
+
+	uint32_t idx = pd.PositionIndex;
 
 	VMVECTOR V0 = TriangleStart[0].data[idx].v;
 	VMVECTOR V1 = TriangleStart[1].data[idx].v;
@@ -100,25 +111,39 @@ int RasterClipCullTriangle(VMVertex* TriangleStart, VMVertex _out_opt_AddTri[3],
 	switch (selector)
 	{
 	case 0: return 1;
-	case 1: Clip1V(TriangleStart + 0, TriangleStart + 1, TriangleStart + 2, _out_opt_AddTri, idx, voSize); return 2;
-	case 2: Clip1V(TriangleStart + 1, TriangleStart + 2, TriangleStart + 0, _out_opt_AddTri, idx, voSize); return 2;
-	case 3: Clip2V(TriangleStart + 0, TriangleStart + 1, TriangleStart + 2, idx, voSize); break;
-	case 4: Clip1V(TriangleStart + 2, TriangleStart + 0, TriangleStart + 1, _out_opt_AddTri, idx, voSize); return 2;
-	case 5: Clip2V(TriangleStart + 2, TriangleStart + 0, TriangleStart + 1, idx, voSize); break;
-	case 6: Clip2V(TriangleStart + 1, TriangleStart + 2, TriangleStart + 0, idx, voSize); break;
+	case 1: Clip1V(TriangleStart + 0, TriangleStart + 1, TriangleStart + 2, _out_opt_AddTri, pd); return 2;
+	case 2: Clip1V(TriangleStart + 1, TriangleStart + 2, TriangleStart + 0, _out_opt_AddTri, pd); return 2;
+	case 3: Clip2V(TriangleStart + 0, TriangleStart + 1, TriangleStart + 2, pd); return 1;
+	case 4: Clip1V(TriangleStart + 2, TriangleStart + 0, TriangleStart + 1, _out_opt_AddTri, pd); return 2;
+	case 5: Clip2V(TriangleStart + 2, TriangleStart + 0, TriangleStart + 1, pd); return 1;
+	case 6: Clip2V(TriangleStart + 1, TriangleStart + 2, TriangleStart + 0, pd); return 1;
 	}
+}
+
+DepthTest_t DepthTest(Rasterizer* This, uint32_t width_in, size_t PremulIndex, float z)
+{
+	DepthTest_t dt;
+	//Warning! lockless programming!
+	_Atomic float* reg = (_Atomic float*)(&((float*)This->OMRenderDepth.Scan0)[PremulIndex + width_in]);
+	float zv = atomic_load(reg);
+
+	do
+	{
+		if (z >= zv) return (DepthTest_t) { false, z };
+	} while (!atomic_compare_exchange_weak(reg, &zv, z));
+
+	return (DepthTest_t){ true, z };
 }
 
 void DrawFlatTriangle
 (
-	const Rasterizer* This,
+	Rasterizer* This,
 	const VMVertex* it0,
 	const VMVertex* it2,
 	const VMVertex* dv0,
 	const VMVertex* dv1,
 	VMVertex itEdge1,
-	uint32_t attrsize,
-	uint32_t idx
+	ShaderPrivateData pd
 )
 {
 	// create edge interpolant for left edge (always v0)
@@ -126,6 +151,8 @@ void DrawFlatTriangle
 	VMVertex iLine;
 	VMVertex diLine;
 	VMVertex _P;
+	uint32_t idx = pd.PositionIndex;
+	uint32_t attrsize = pd.VertexSize;
 
 	// calculate start and end scanlines (AABB)
 	const int yStart = max((int)ceil(it0->data[idx].f[1] - 0.5f), 0);
@@ -162,83 +189,87 @@ void DrawFlatTriangle
 
 		for (int x = xStart; x < xEnd; x++, VSOutAdd_I(&iLine, diLine, attrsize))
 		{
-			if (auto [pass, zv] = DepthTest(x, premulI, iLine.Position().z); pass)
+			DepthTest_t dt = DepthTest(This, x, premulI, iLine.data[idx].f[2]);
+			if (dt.pass)
 			{
-				// recover interpolated z from interpolated 1/z
-				FXMVECTOR w = XMVectorReciprocalEst(XMVectorSplatW(iLine.Position()));
-				for (unsigned i = 0; i < attrsize; i++)
-					_P[i] = iLine[i] * w;
-				// invoke pixel shader with interpolated vertex data
-				// and use result to set the pixel color on the screen
-				if (PSPixelShader)
+				if (This->PSPixelShader)
 				{
-					PackedVector::XMCOLOR col;
-					PSPixelShader->Invoke(&_P, &col);
+					// recover interpolated z from interpolated 1/z
+					FVMVECTOR w = VMVectorReciprocalEst(VMVectorSplatW(iLine.data[idx].v));
+					for (unsigned i = 0; i < attrsize; i++)
+						_P.data[i].v = VMVectorMultiply(iLine.data[i].v, w);
+					// invoke pixel shader with interpolated vertex data
+					// and use result to set the pixel color on the screen
 
-					if (zv == ((float*)OMRenderDepth.Scan0)[premulI + x]) //afxmt sanity check for data races
+
+					uint32_t col;
+					This->PSPixelShader->method->Invoke(This->PSPixelShader,&_P, &col);
+
+					if (dt.zv == ((float*)This->OMRenderDepth.Scan0)[premulI + x]) //afxmt sanity check for data races
 					{
-						((uint32_t*)OMRenderTargets[0].Scan0)[premulI + x] = col;
+						((uint32_t*)This->OMRenderTargets[0].Scan0)[premulI + x] = col;
 					}
 				}
 			}
 		}
 	}
 }
-void DrawFlatTopTriangle(const Rasterizer* This, const VMVertex* Vo0, const VMVertex* Vo1, const VMVertex* Vo2, uint32_t voSize, uint32_t idx)
+void DrawFlatTopTriangle(Rasterizer* This, const VMVertex* Vo0, const VMVertex* Vo1, const VMVertex* Vo2, ShaderPrivateData pd)
 {
 	// calulcate dVertex / dy
 	// change in interpolant for every 1 change in y
-	VMVertex dv0 = VSOutSubtract(Vo2, Vo0, voSize);
-	VMVertex dv1 = VSOutSubtract(Vo2, Vo1, voSize);
-	float delta_Y = VMVectorGetY(VMVectorReciprocal(dv0.data[idx].v));
+	VMVertex dv0 = VSOutSubtract(Vo2, Vo0, pd.VertexSize);
+	VMVertex dv1 = VSOutSubtract(Vo2, Vo1, pd.VertexSize);
+	float delta_Y = VMVectorGetY(VMVectorReciprocal(dv0.data[pd.PositionIndex].v));
 
 	// delta over 0 and 1 resp
-	VSOutScale_I(&dv0, delta_Y, voSize);
-	VSOutScale_I(&dv1, delta_Y, voSize);
+	VSOutScale_I(&dv0, delta_Y, pd.VertexSize);
+	VSOutScale_I(&dv1, delta_Y, pd.VertexSize);
 
 	// call the flat triangle render routine, right edge interpolant is it1
-	DrawFlatTriangle(This, Vo0, Vo2, &dv0, &dv1, *Vo1, voSize, idx);
+	DrawFlatTriangle(This, Vo0, Vo2, &dv0, &dv1, *Vo1, pd);
 }
-void DrawFlatBottomTriangle(const Rasterizer* This, const VMVertex* Vo0, const VMVertex* Vo1, const VMVertex* Vo2, uint32_t voSize, uint32_t idx)
+void DrawFlatBottomTriangle(Rasterizer* This, const VMVertex* Vo0, const VMVertex* Vo1, const VMVertex* Vo2, ShaderPrivateData pd)
 {
 	// calulcate dVertex / dy
 	// change in interpolant for every 1 change in y
-	VMVertex dv0 = VSOutSubtract(Vo1, Vo0, voSize);
-	VMVertex dv1 = VSOutSubtract(Vo2, Vo0, voSize);
-	float delta_Y = VMVectorGetY(VMVectorReciprocal(dv0.data[idx].v)); // minimize div (reciprocalEst is not good enough)
+	VMVertex dv0 = VSOutSubtract(Vo1, Vo0, pd.VertexSize);
+	VMVertex dv1 = VSOutSubtract(Vo2, Vo0, pd.VertexSize);
+	float delta_Y = VMVectorGetY(VMVectorReciprocal(dv0.data[pd.PositionIndex].v)); // minimize div (reciprocalEst is not good enough)
 
 																			// delta over 1 and 2 resp
-	VSOutScale_I(&dv0, delta_Y, voSize);
-	VSOutScale_I(&dv1, delta_Y, voSize);
+	VSOutScale_I(&dv0, delta_Y, pd.VertexSize);
+	VSOutScale_I(&dv1, delta_Y, pd.VertexSize);
 
 	// call the flat triangle render routine, right edge interpolant is it0
-	DrawFlatTriangle(This, Vo0, Vo2, &dv0, &dv1, *Vo0, voSize, idx);
+	DrawFlatTriangle(This, Vo0, Vo2, &dv0, &dv1, *Vo0, pd);
 }
-void DrawTriangle(const Rasterizer* This, VMVertex* TriangleStart, uint32_t idx, uint32_t voSize)
+void DrawTriangle(Rasterizer* This, VMVertex* TriangleStart, ShaderPrivateData pd)
 {
+	uint32_t idx = pd.PositionIndex;
 	// using pointers so we can swap (for sorting purposes)
 	const VMVertex* pv0 = TriangleStart+0;
 	const VMVertex* pv1 = TriangleStart+1;
 	const VMVertex* pv2 = TriangleStart+2;
 
 	// sorting vertices by y
-	if (pv1->data[idx].f[1] < pv0->data[idx].f[1]) swapptr(pv0, pv1);
-	if (pv2->data[idx].f[1] < pv1->data[idx].f[1]) swapptr(pv1, pv2);
-	if (pv1->data[idx].f[1] < pv0->data[idx].f[1]) swapptr(pv0, pv1);
+	if (pv1->data[idx].f[1] < pv0->data[idx].f[1]) swapptr(&pv0, &pv1);
+	if (pv2->data[idx].f[1] < pv1->data[idx].f[1]) swapptr(&pv1, &pv2);
+	if (pv1->data[idx].f[1] < pv0->data[idx].f[1]) swapptr(&pv0, &pv1);
 
 	if (pv0->data[idx].f[1] == pv1->data[idx].f[1]) // natural flat top
 	{
 		// sorting top vertices by x
-		if (pv1->data[idx].f[0] < pv0->data[idx].f[0]) swapptr(pv0, pv1);
+		if (pv1->data[idx].f[0] < pv0->data[idx].f[0]) swapptr(&pv0, &pv1);
 
-		DrawFlatTopTriangle(This, pv0, pv1, pv2, voSize, idx);
+		DrawFlatTopTriangle(This, pv0, pv1, pv2, pd);
 	}
 	else if (pv1->data[idx].f[1] == pv2->data[idx].f[1]) // natural flat bottom
 	{
 		// sorting bottom vertices by x
-		if (pv2->data[idx].f[0] < pv1->data[idx].f[0]) swapptr(pv1, pv2);
+		if (pv2->data[idx].f[0] < pv1->data[idx].f[0]) swapptr(&pv1, &pv2);
 
-		DrawFlatBottomTriangle(This, pv0, pv1, pv2, voSize, idx);
+		DrawFlatBottomTriangle(This, pv0, pv1, pv2, pd);
 	}
 	else // general triangle
 	{
@@ -246,22 +277,23 @@ void DrawTriangle(const Rasterizer* This, VMVertex* TriangleStart, uint32_t idx,
 		const float alphaSplit =
 			(pv1->data[idx].f[1] - pv0->data[idx].f[1]) /
 			(pv2->data[idx].f[1] - pv0->data[idx].f[1]);
-		const VMVertex vi = VSOutInterpolate(pv0, pv2, alphaSplit, voSize);
+		const VMVertex vi = VSOutInterpolate(pv0, pv2, alphaSplit, pd.VertexSize);
 
 		if (pv1->data[idx].f[0] < vi.data[idx].f[0]) // major right
 		{
-			DrawFlatBottomTriangle(This, pv0, pv1, &vi, voSize, idx);
-			DrawFlatTopTriangle(This, pv1, &vi, pv2, voSize, idx);
+			DrawFlatBottomTriangle(This, pv0, pv1, &vi, pd);
+			DrawFlatTopTriangle(This, pv1, &vi, pv2, pd);
 		}
 		else // major left
 		{
-			DrawFlatBottomTriangle(This, pv0, &vi, pv1, voSize, idx);
-			DrawFlatTopTriangle(This, &vi, pv1, pv2, voSize, idx);
+			DrawFlatBottomTriangle(This, pv0, &vi, pv1, pd);
+			DrawFlatTopTriangle(This, &vi, pv1, pv2, pd);
 		}
 	}
 }
-bool RasterPostProcessTriangle(const Rasterizer* This, VMVertex* TriangleStart, uint32_t idx, uint32_t voSize)
+bool RasterPostProcessTriangle(const Rasterizer* This, VMVertex* TriangleStart, ShaderPrivateData pd)
 {
+	uint32_t idx = pd.PositionIndex;
 	VMVertex* v0 = TriangleStart;
 	VMVertex* v1 = TriangleStart + 1;
 	VMVertex* v2 = TriangleStart + 2;
@@ -284,7 +316,7 @@ bool RasterPostProcessTriangle(const Rasterizer* This, VMVertex* TriangleStart, 
 	if (x.f[2] < 0.0f)
 		return false;
 	
-	for (unsigned i = 0; i < voSize; i++)
+	for (unsigned i = 0; i < pd.VertexSize; i++)
 	{
 		if (i == idx) continue;
 		v0->data[i].v = VMVectorMultiply(v0->data[i].v, X.r[0]);
@@ -300,18 +332,20 @@ size_t RasterGetSize(const Rasterizer* This)
 	return (x->Height - x->TopLeftY) * (x->Width - x->TopLeftX);
 }
 
-void RasterizeTriangle(Rasterizer* This, VMVertex* TriangleStart, uint32_t PosCoord, uint32_t voSize)
+void RasterizeTriangle(Rasterizer* This, VMVertex* TriangleStart, ShaderPrivateData pd)
 {
 	VMVertex AddTri[3];
-	int out = RasterClipCullTriangle(TriangleStart, AddTri, PosCoord, voSize);
+	int out = RasterClipCullTriangle(TriangleStart, AddTri, pd);
 	if (!out) return;
 	if (out == 2)
 	{
-		if (RasterPostProcessTriangle(This, AddTri, PosCoord, voSize));
-		
+		if (RasterPostProcessTriangle(This, AddTri, pd))
+		{
+			DrawTriangle(This, AddTri, pd);
+		}
 	}
-	if (RasterPostProcessTriangle(This, TriangleStart, PosCoord, voSize))
+	if (RasterPostProcessTriangle(This, TriangleStart, pd))
 	{
-
+		DrawTriangle(This, TriangleStart, pd);
 	}
 }

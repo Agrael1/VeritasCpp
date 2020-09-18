@@ -78,25 +78,21 @@ public:
 
 		std::copy((std::byte*)&x, (std::byte*)&x + sizeof(x), (std::byte*)&out.attributes);
 	}
-	constexpr void __stdcall GetMonotonicSize(uint32_t* _out_vsize)override
+	constexpr void __stdcall GetShaderPrivateData(ShaderPrivateData* _out_pdata)override
 	{
 		using RQVSOutT = out_t<decltype(&T::main)>;
-		*_out_vsize = sizeof(RQVSOutT) / 16;
-	}
-	constexpr void __stdcall GetPositionIndex(uint32_t* _out_poscoord)override
-	{
-		using RQVSOutT = out_t<decltype(&T::main)>;
+		_out_pdata->VertexSize = sizeof(RQVSOutT) / 16;
 
 		if constexpr (sizeof(RQVSOutT) == sizeof(float4A))
 		{
-			*_out_poscoord = 0;
+			_out_pdata->PositionIndex = 0;
 		}
 		else
 		{
 			static_assert(alignof(decltype(RQVSOutT::SV_Position)) == alignof(float4A));
 			static_assert(sizeof(RQVSOutT::SV_Position) == sizeof(float4A));
 
-			*_out_poscoord = offsetof(RQVSOutT, SV_Position) / 16;
+			_out_pdata->PositionIndex = offsetof(RQVSOutT, SV_Position) / 16;
 		}
 	}
 };
@@ -121,11 +117,8 @@ public:
 
 		dx::PackedVector::XMStoreColor((dx::PackedVector::XMCOLOR*)&out.SV_Target, x);
 	}
-	virtual void __stdcall GetMonotonicSize(uint32_t* _out_vsize)override
+	constexpr void __stdcall GetShaderPrivateData(ShaderPrivateData* _out_pdata)override
 	{
-		*_out_vsize = 1; //hardcoded for now
-	}
-	constexpr void __stdcall GetPositionIndex(uint32_t* _out_poscoord)override
-	{
+		_out_pdata->VertexSize = 1;
 	}
 };
